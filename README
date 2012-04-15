@@ -1,0 +1,18 @@
+TreePath
+========
+
+A library which compiles XPath-like expressions into objects that allow
+one to perform queries on any tree data structure, obtaining a list of
+nodes that match the query expression.
+
+At this point nothing is fixed. The general idea is that this will look as
+much as possible like XPath, and function as much as possible in the same
+way, while not expecting the trees queried to have any XML-specific properties.
+
+David Houghton
+15 April 2012
+
+License
+-------
+This software is distributed under the terms of the FSF Lesser Gnu
+Public License (see lgpl.txt).
