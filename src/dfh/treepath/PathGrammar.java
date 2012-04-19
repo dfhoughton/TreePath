@@ -15,7 +15,7 @@ import dfh.grammar.Grammar;
 public class PathGrammar {
 	public static String[] rules = {
 			//
-			"ROOT = <path> [ '|' <path> ]*",//
+			"treepath = <path> [ '|' <path> ]*",//
 			"path = <step>++",//
 			"step = <forward> <predicate>*+",//
 			"forward = '/'{,2} <name> | '.'{1,2}",//
@@ -23,7 +23,21 @@ public class PathGrammar {
 			"wildcard = '*'",//
 			"specific = /(?:\\w|\\\\.)++/",//
 			"pattern = /~(?:[^~\\\\]|\\\\.)++~/ (compiles)",//
-			"attribute = /@[\\p{L}_$][\\p{L}_$\\p{N}]*+/",//
+			"aname = /@[\\p{L}_$][\\p{L}_$\\p{N}]*+/",//
+			"attribute = <aname> <args>?",//
+			"args = '(' <s> <arg> [{tail} [ <s> ',' <s> <arg> ]* ] <s> ')'",//
+			"arg = <treepath> | <literal>",//
+			"literal = <squote> | <dquote>",//
+			"squote = /'(?:[^']|\\\\.)++'/",//
+			"dquote = /\"(?:[^\"]|\\\\.)++\"/",//
+			"predicate = '[' <s> [ <treepath> | <condition> ] <s> ']'",//
+			"s = /\\s*+/",//
+			"condition = <attribute> | <not_cnd> | <or_cnd> | <and_cnd> | <xor_cnd> | <group>",//
+			"group = '(' <s> <condition> <s> ')'",//
+			"not_cnd = /!|not/ <s> <condition>",//
+			"or_cnd = <condition> [ <s> /\\||or/ <s> <condition> ]+",//
+			"and_cnd = <condition> [ <s> /&|and/ <s> <condition> ]+",//
+			"xor_cnd = <condition> [ <s> /^|xor/ <s> <condition> ]+",//
 	};
 	public static Grammar g = new Grammar(rules);
 	static {
@@ -38,5 +52,9 @@ public class PathGrammar {
 				}
 			}
 		});
+	}
+	
+	public static void main(String[] args) {
+		System.out.print(g.describe());
 	}
 }
