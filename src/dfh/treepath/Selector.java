@@ -1,11 +1,11 @@
 package dfh.treepath;
 
-import java.util.List;
+import java.util.Collection;
 
 interface Selector<N> {
 	/**
 	 * @param n
 	 * @return the set of nodes passing this selector's condition
 	 */
-	List<N> select(N n);
+	Collection<N> select(Collection<N> n);
 }

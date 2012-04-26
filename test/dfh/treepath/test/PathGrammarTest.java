@@ -12,7 +12,7 @@ public class PathGrammarTest {
 
 	@Test
 	public void rootTest() {
-		Match m = PathGrammar.g.matches("/").match();
+		Match m = PathGrammar.g.matches("/.").match();
 		assertNotNull(m);
 	}
 

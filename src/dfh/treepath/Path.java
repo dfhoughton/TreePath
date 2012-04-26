@@ -13,15 +13,13 @@ public class Path<N> {
 	}
 
 	public Collection<N> select(N n) {
+		List<N> initialList = new ArrayList<N>(1);
+		initialList.add(n);
 		Collection<N> selection = new LinkedHashSet<N>();
 		for (Selector<N>[] alternate : selectors) {
-			List<N> candidates = alternate[0].select(n);
-			for (int i = 1; i < alternate.length; i++) {
-				List<N> generation = new ArrayList<N>();
-				for (N c : candidates)
-					generation.addAll(alternate[i].select(c));
-				candidates = generation;
-			}
+			Collection<N> candidates = alternate[0].select(initialList);
+			for (int i = 1; i < alternate.length; i++)
+				candidates = alternate[i].select(candidates);
 			selection.addAll(candidates);
 		}
 		return selection;

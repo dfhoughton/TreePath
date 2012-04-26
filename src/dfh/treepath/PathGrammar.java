@@ -17,31 +17,55 @@ import dfh.grammar.MatchTest;
  * 
  */
 public class PathGrammar {
+	/**
+	 * Axes known to tree path grammar.
+	 * <p>
+	 * 
+	 * @author David F. Houghton - Apr 23, 2012
+	 * 
+	 */
+	public static enum Axis {
+		preceding, precedingSibling, following, followingSibling, ancestor, ancestorOrSelf, descendant, descendantOrSelf, sibling, siblingOrSelf, leaf, self, parent, child;
+		public static Axis vo(String s) {
+			if (s.indexOf('-') == -1)
+				return valueOf(s);
+			if ("preceding-sibling".equals(s))
+				return precedingSibling;
+			if ("following-sibling".equals(s))
+				return followingSibling;
+			if ("ancestor-or-self".equals(s))
+				return ancestorOrSelf;
+			if ("descendant-or-self".equals(s))
+				return descendantOrSelf;
+			if ("sibling-or-self".equals(s))
+				return siblingOrSelf;
+			return null;
+		}
+	}
+
 	public static String[] rules = {
 			//
 			"treepath = <path> [ '|' <path> ]*",//
-			"path = <relative_path> | <absolute_path>",//
-			"absolute_path = '/' <relative_path>? | '//' <relative_path>",//
-			"relative_path = <step> [ <step_separator> <step> ]*+",//
-			"step_separator = '/'{1,2}",//
-			"abbreviated_path = <relative_path> '//' <step>",//
+			"path = <first_step> <subsequent_step>*+",//
+			"first_step = [{segment} <separator>?+ <step> ]",//
+			"subsequent_step = [{segment} <separator> <step> ]",//
+			"separator = /\\/[\\/>]?/",//
 			"step = <full> | <abbreviated>",//
 			"full = <axis>?+ <forward> <predicate>*+",//
-			"axis = not after '//' <axis_name> '::'", //
-			"axis_name = /(?>preceding(?>-sibling)?+|following(?>-sibling)?+|descendant(?>-or-self)?+|ancestor(?>-or-self)?+)/",//
+			"axis = not after [ '//' | '/>' ] <axis_name> '::'", //
+			"axis_name = /(?>s(?>ibling(?>-or-self)?+|elf)|p(?>receding(?>-sibling)?+|arent)|leaf|following(?>-sibling)?+|descendant(?>-or-self)?+|child|ancestor(?>-or-self)?+)/",//
 			"abbreviated = '.' | '..'",//
-			"forward = <name> | '.'{1,2}",//
-			"name = <wildcard> | <specific> | <pattern>",//
+			"forward = <wildcard> | <specific> | <pattern>",//
 			"wildcard = '*'",//
 			"specific = /[\\p{L}_](?:[\\p{L}\\p{N}_]|\\\\.)*+/",//
 			"pattern = /~(?:[^~\\\\]|\\\\.)++~/ (compiles)",//
-			"aname = /@[\\p{L}_$][\\p{L}_$\\p{N}]*+/",//
+			"aname = /@(?:[\\p{L}_$]|\\\\.)(?:[\\p{L}_$\\p{N}]|\\\\.)*+/",//
 			"attribute = <aname> <args>?",//
 			"args = '(' <s> <arg> [ <s> ',' <s> <arg> ]* <s> ')'",//
 			"arg = <treepath> | <literal> | <num> | <attribute>",//
 			"num = <signed_int> | <float>",//
 			"signed_int = /[+-]?+/ <int>",//
-			"float = /[+-]/?+ <int>?+ /\\.\\d++/ [ /e[+-]?+/i <int> ]?+",//
+			"float = /[+-]?+/ <int>?+ /\\.\\d++/ [ /e[+-]?+/i <int> ]?+",//
 			"literal = <squote> | <dquote>",//
 			"squote = /'(?:[^']|\\\\.)++'/",//
 			"dquote = /\"(?:[^\"]|\\\\.)++\"/",//
@@ -51,10 +75,10 @@ public class PathGrammar {
 			"condition = <term> | <not_cnd> | <or_cnd> | <and_cnd> | <xor_cnd> | <group>",//
 			"term = <attribute> | <path>",//
 			"group = '(' <s> <condition> <s> ')'",//
-			"not_cnd = '!' <s> <condition> (not_precedence)",//
-			"or_cnd = <condition> [ <s> '||' <s> <condition> ]+",//
-			"and_cnd = <condition> [ <s> '&&' <s> <condition> ]+ (and_precedence)",//
-			"xor_cnd = <condition> [ <s> '^' <s> <condition> ]+ (xor_precedence)",//
+			"not_cnd = /!|(?<!\\/)\\bnot\\b(?!\\/)/ <s> <condition> (not_precedence)",//
+			"or_cnd = <condition> [ <s> /\\|{2}|(?<!\\/)\\bor\\b(?!\\/)/ <s> <condition> ]+",//
+			"and_cnd = <condition> [ <s> /&|(?<!\\/)\\band\\b(?!\\/)/ <s> <condition> ]+ (and_precedence)",//
+			"xor_cnd = <condition> [ <s> /^|(?<!\\/)\\bxor\\b(?!\\/)/ <s> <condition> ]+ (xor_precedence)",//
 	};
 	public static Grammar g = new Grammar(rules);
 	static {
