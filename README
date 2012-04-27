@@ -65,6 +65,9 @@ semantics with the following exceptions:
 
      /@(?:[\p{L}_$]|\\.)(?:[\p{L}_$\p{N}]|\\.)*+/
 
+   The possible parameters to one of these "attributes" are strings, path expressions,
+   other attributes, and numerals. Strings are delimited with single or double quotes.
+
 5. No functions are provided for use in predicates. Some @ expressions will be provided,
    but for the most part these must be written by the user.
 
