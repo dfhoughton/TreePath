@@ -75,47 +75,48 @@ public abstract class Forester<N> {
 	 * 
 	 * @param n
 	 * @param name
+	 * @param i
 	 * @return the nodes pertaining to a particular axis relative to the context
 	 *         node
 	 */
-	protected Collection<N> axis(N n, Axis a, NodeTest<N> t) {
+	protected Collection<N> axis(N n, Axis a, NodeTest<N> t, Index<N> i) {
 		switch (a) {
 		case child:
-			return children(n, t);
+			return children(n, t, i);
 		case ancestor:
-			return ancestors(n, t);
+			return ancestors(n, t, i);
 		case ancestorOrSelf:
-			List<N> list = ancestors(n, t);
-			if (t.passes(n))
+			List<N> list = ancestors(n, t, i);
+			if (t.passes(n, i))
 				list.add(n);
 			return list;
 		case descendant:
-			return descendants(n, t);
+			return descendants(n, t, i);
 		case descendantOrSelf:
-			list = new ArrayList<N>(descendants(n, t));
-			if (t.passes(n))
+			list = new ArrayList<N>(descendants(n, t, i));
+			if (t.passes(n, i))
 				list.add(n);
 			return list;
 		case following:
-			return following(n, t);
+			return following(n, t, i);
 		case followingSibling:
-			return followingSiblings(n, t);
+			return followingSiblings(n, t, i);
 		case preceding:
-			return preceding(n, t);
+			return preceding(n, t, i);
 		case precedingSibling:
-			return precedingSiblings(n, t);
+			return precedingSiblings(n, t, i);
 		case leaf:
-			return leaves(n, t);
+			return leaves(n, t, i);
 		case self:
-			if (t.passes(n)) {
+			if (t.passes(n, i)) {
 				list = new ArrayList<N>(1);
 				list.add(n);
 				return list;
 			}
 			return Collections.emptyList();
 		case parent:
-			N parent = parent(n);
-			if (t.passes(parent)) {
+			N parent = parent(n, i);
+			if (t.passes(parent, i)) {
 				list = new ArrayList<N>(1);
 				list.add(parent);
 				return list;
@@ -127,10 +128,11 @@ public abstract class Forester<N> {
 		}
 	}
 
-	public List<N> children(N n, NodeTest<N> t) {
-		List<N> children = children(n), list = new ArrayList<N>(children.size());
+	protected List<N> children(N n, NodeTest<N> t, Index<N> i) {
+		List<N> children = children(n, i), list = new ArrayList<N>(
+				children.size());
 		for (N c : children) {
-			if (t.passes(c))
+			if (t.passes(c, i))
 				list.add(c);
 		}
 		return list;
@@ -233,81 +235,81 @@ public abstract class Forester<N> {
 	 * @param i
 	 * @return the ith child of n
 	 */
-	public N child(N n, int i) {
-		List<N> children = children(n);
+	protected N child(N n, int i, Index<N> in) {
+		List<N> children = children(n, in);
 		if (children == null || children.isEmpty())
 			return null;
 		return children.get(i);
 	}
 
 	@Attribute("leaf")
-	public boolean isLeaf(N n) {
-		List<N> children = children(n);
+	protected boolean isLeaf(N n, Index<N> i) {
+		List<N> children = children(n, i);
 		if (children == null || children.isEmpty())
 			return true;
 		return false;
 	}
 
 	@Attribute("root")
-	public boolean isRoot(N n) {
-		return parent(n) == null;
+	protected boolean isRoot(N n, Index<N> i) {
+		return parent(n, i) == null;
 	}
 
-	public List<N> leaves(N n, NodeTest<N> t) {
-		if (isLeaf(n)) {
-			if (!t.passes(n))
+	protected List<N> leaves(N n, NodeTest<N> t, Index<N> i) {
+		if (isLeaf(n, i)) {
+			if (!t.passes(n, i))
 				return Collections.emptyList();
 			List<N> leaves = new ArrayList<N>(1);
 			leaves.add(n);
 			return leaves;
 		}
 		List<N> leaves = new ArrayList<N>();
-		for (N child : children(n))
-			leaves.addAll(leaves(child, t));
+		for (N child : children(n, i))
+			leaves.addAll(leaves(child, t, i));
 		return leaves;
 	}
 
-	public List<N> ancestors(N n, NodeTest<N> t) {
+	protected List<N> ancestors(N n, NodeTest<N> t, Index<N> i) {
 		LinkedList<N> ancestors = new LinkedList<N>();
 		N o = n;
-		while (!isRoot(o)) {
-			N parent = parent(o);
-			if (t.passes(parent))
+		while (!isRoot(o, i)) {
+			N parent = parent(o, i);
+			if (t.passes(parent, i))
 				ancestors.addFirst(parent);
 			o = parent;
 		}
 		return ancestors;
 	}
 
-	public Collection<N> descendants(N n, NodeTest<N> t) {
+	protected Collection<N> descendants(N n, NodeTest<N> t, Index<N> i) {
 		List<N> descendants = new LinkedList<N>();
-		for (N child : children(n)) {
-			if (!isLeaf(child))
-				descendants.addAll(descendants(child, t));
-			if (t.passes(child))
+		for (N child : children(n, i)) {
+			if (!isLeaf(child, i))
+				descendants.addAll(descendants(child, t, i));
+			if (t.passes(child, i))
 				descendants.add(child);
 		}
 		return descendants;
 	}
 
-	public List<N> precedingSiblings(N n, NodeTest<N> t) {
-		if (isRoot(n))
+	protected List<N> precedingSiblings(N n, NodeTest<N> t, Index<N> i) {
+		if (isRoot(n, i))
 			return Collections.emptyList();
-		List<N> siblings = children(parent(n));
+		List<N> siblings = children(parent(n, i), i);
 		List<N> precedingSiblings = new ArrayList<N>(siblings.size() - 1);
 		for (N sib : siblings) {
 			if (sib == n)
 				break;
-			if (t.passes(sib))
+			if (t.passes(sib, i))
 				precedingSiblings.add(sib);
 		}
 		return precedingSiblings;
 	}
 
-	public List<N> siblings(N n) {
-		if (isRoot(n))
+	protected List<N> siblings(N n, Index<N> i) {
+		if (isRoot(n, i))
 			return Collections.emptyList();
-		List<N> siblings = children(parent(n));
+		List<N> siblings = children(parent(n, i), i);
 		List<N> sibs = new ArrayList<N>(siblings.size() - 1);
 		for (N s : siblings) {
 			if (s != n)
@@ -316,14 +318,14 @@ public abstract class Forester<N> {
 		return sibs;
 	}
 
-	public List<N> followingSiblings(N n, NodeTest<N> t) {
-		if (isRoot(n))
+	protected List<N> followingSiblings(N n, NodeTest<N> t, Index<N> i) {
+		if (isRoot(n, i))
 			return Collections.emptyList();
-		List<N> siblings = children(parent(n));
+		List<N> siblings = children(parent(n, i), i);
 		List<N> followingSiblings = new ArrayList<N>(siblings.size() - 1);
 		boolean add = false;
 		for (N sib : siblings) {
-			if (add && t.passes(sib))
+			if (add && t.passes(sib, i))
 				followingSiblings.add(sib);
 			else
 				add = sib == n;
@@ -332,43 +334,43 @@ public abstract class Forester<N> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Collection<N> preceding(N n, NodeTest<N> t) {
-		if (isRoot(n))
+	protected Collection<N> preceding(N n, NodeTest<N> t, Index<N> i) {
+		if (isRoot(n, i))
 			return Collections.emptyList();
 		Collection<N> preceding = new LinkedList<N>();
 		Collections.emptyList();
-		List<N> ancestors = ancestors(n, (NodeTest<N>) TrueTest.test());
+		List<N> ancestors = ancestors(n, (NodeTest<N>) TrueTest.test(), i);
 		for (N a : ancestors.subList(1, ancestors.size())) {
-			for (N p : precedingSiblings(a, (NodeTest<N>) TrueTest.test())) {
-				preceding.addAll(descendants(p, t));
-				if (t.passes(p))
+			for (N p : precedingSiblings(a, (NodeTest<N>) TrueTest.test(), i)) {
+				preceding.addAll(descendants(p, t, i));
+				if (t.passes(p, i))
 					preceding.add(p);
 			}
 		}
-		for (N p : precedingSiblings(n, (NodeTest<N>) TrueTest.test())) {
-			preceding.addAll(descendants(p, t));
-			if (t.passes(p))
+		for (N p : precedingSiblings(n, (NodeTest<N>) TrueTest.test(), i)) {
+			preceding.addAll(descendants(p, t, i));
+			if (t.passes(p, i))
 				preceding.add(p);
 		}
 		return preceding;
 	}
 
 	@SuppressWarnings("unchecked")
-	public Collection<N> following(N n, NodeTest<N> t) {
-		if (isRoot(n))
+	protected Collection<N> following(N n, NodeTest<N> t, Index<N> i) {
+		if (isRoot(n, i))
 			return Collections.emptyList();
 		Collection<N> following = new LinkedList<N>();
-		List<N> ancestors = ancestors(n, (NodeTest<N>) TrueTest.test());
+		List<N> ancestors = ancestors(n, (NodeTest<N>) TrueTest.test(), i);
 		for (N a : ancestors.subList(1, ancestors.size())) {
-			for (N p : followingSiblings(a, (NodeTest<N>) TrueTest.test())) {
-				following.addAll(descendants(p, t));
-				if (t.passes(p))
+			for (N p : followingSiblings(a, (NodeTest<N>) TrueTest.test(), i)) {
+				following.addAll(descendants(p, t, i));
+				if (t.passes(p, i))
 					following.add(p);
 			}
 		}
-		for (N p : followingSiblings(n, (NodeTest<N>) TrueTest.test())) {
-			following.addAll(descendants(p, t));
-			if (t.passes(p))
+		for (N p : followingSiblings(n, (NodeTest<N>) TrueTest.test(), i)) {
+			following.addAll(descendants(p, t, i));
+			if (t.passes(p, i))
 				following.add(p);
 		}
 		return following;
@@ -379,10 +381,10 @@ public abstract class Forester<N> {
 	 * @return index of n among its parent's children; -1 if n is root
 	 */
 	@Attribute
-	public int index(N n) {
-		if (isRoot(n))
+	protected int index(N n, Index<N> in) {
+		if (isRoot(n, in))
 			return -1;
-		List<N> siblings = children(parent(n));
+		List<N> siblings = children(parent(n, in), in);
 		for (int i = 0, lim = siblings.size(); i < lim; i++) {
 			N o = siblings.get(i);
 			if (o == n)
@@ -393,51 +395,51 @@ public abstract class Forester<N> {
 
 	/**
 	 * @param n
+	 * @param i
+	 * @param t
 	 * @return the children of n
 	 */
-	public abstract List<N> children(N n);
+	protected abstract List<N> children(N n, Index<N> i);
 
 	/**
 	 * @param n
 	 * @param tag
 	 * @return whether the node bears the given tag
 	 */
-	public abstract boolean hasTag(N n, String tag);
+	protected abstract boolean hasTag(N n, String tag);
 
 	/**
 	 * @param n
 	 * @param p
 	 * @return whether the pattern matches the node's tag or tags
 	 */
-	public abstract boolean matchesTag(N n, Pattern p);
+	protected abstract boolean matchesTag(N n, Pattern p);
 
 	/**
 	 * @param n
+	 * @param i
 	 * @param t
 	 * @return the parent of n
 	 */
-	public abstract N parent(N n);
+	protected abstract N parent(N n, Index<N> i);
 
 	/**
 	 * @param n
 	 * @return the root of the tree containing n
 	 */
-	public N root(N n) {
-		N o = n;
-		while (o != null)
-			o = parent(o);
-		return o;
+	protected N root(N n, Index<N> i) {
+		return i.root;
 	}
 
 	/**
-	 * Creates an {@link Index} of the given tree. By default this method
-	 * returns <code>null</code>. It must be overridden by foresters that
-	 * require an index.
+	 * Creates an {@link Index} of the given tree. It must be overridden by
+	 * foresters that require more of an index than a reference back to the
+	 * forester and the tree root.
 	 * 
 	 * @param root
 	 * @return and index of the given tree
 	 */
-	public Index<N> treeIndex(N root) {
-		return null;
+	protected Index<N> treeIndex(N root) {
+		return new Index<N>(root, this);
 	}
 }

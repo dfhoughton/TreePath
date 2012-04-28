@@ -3,15 +3,20 @@ package dfh.treepath.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 
 import dfh.grammar.Grammar;
 import dfh.grammar.Match;
 import dfh.grammar.MatchTest;
+import dfh.treepath.Forester;
+import dfh.treepath.Index;
+import dfh.treepath.ParentIndex;
 
 /**
  * Parser for a simplified form of XML. Used to create trees for testing. Also
@@ -37,6 +42,13 @@ public class XMLToy {
 	};
 	public static final Grammar g = new Grammar(rules);
 
+	/**
+	 * A node in an {@link XMLToy} tree.
+	 * <p>
+	 * 
+	 * @author David F. Houghton - Apr 28, 2012
+	 * 
+	 */
 	public static class Element {
 		private static final MatchTest closestMT = new MatchTest() {
 			@Override
@@ -67,6 +79,45 @@ public class XMLToy {
 				for (int i = 0; i < children.length; i++)
 					children[i] = new Element(clist.get(i));
 			}
+		}
+	}
+	
+
+	/**
+	 * A {@link Forester} suitable for interpreting tree paths for trees
+	 * returned by {@link XMLToy#parse(String)}.
+	 * <p>
+	 * 
+	 * @author David F. Houghton - Apr 28, 2012
+	 */
+	public static class XMLToyForester extends Forester<Element> {
+
+		@Override
+		protected Index<Element> treeIndex(Element root) {
+			return new ParentIndex<Element>(root, this);
+		}
+
+		@Override
+		protected List<Element> children(Element n, Index<Element> i) {
+			List<Element> children = new ArrayList<Element>(n.children.length);
+			for (Element e : n.children)
+				children.add(e);
+			return children;
+		}
+
+		@Override
+		protected boolean hasTag(Element n, String tag) {
+			return n.tag.equals(tag);
+		}
+
+		@Override
+		protected boolean matchesTag(Element n, Pattern p) {
+			return p.matcher(n.tag).find();
+		}
+
+		@Override
+		protected Element parent(Element n, Index<Element> i) {
+			return ((ParentIndex<Element>) i).parent(n);
 		}
 	}
 

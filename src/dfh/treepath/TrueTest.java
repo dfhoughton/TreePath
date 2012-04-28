@@ -14,7 +14,7 @@ public class TrueTest<N> implements NodeTest<N> {
 	}
 
 	@Override
-	public boolean passes(N n) {
+	public boolean passes(N n, Index<N> i) {
 		return true;
 	}
 

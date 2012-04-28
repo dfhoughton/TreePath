@@ -28,9 +28,9 @@ public class Path<N> {
 		initialList.add(n);
 		Collection<N> selection = new LinkedHashSet<N>();
 		for (Selector<N>[] alternate : selectors) {
-			Collection<N> candidates = alternate[0].select(initialList);
+			Collection<N> candidates = alternate[0].select(initialList, index);
 			for (int i = 1; i < alternate.length; i++)
-				candidates = alternate[i].select(candidates);
+				candidates = alternate[i].select(candidates, index);
 			selection.addAll(candidates);
 		}
 		return selection;
