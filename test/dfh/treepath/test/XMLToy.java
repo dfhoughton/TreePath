@@ -14,6 +14,7 @@ import org.junit.Test;
 import dfh.grammar.Grammar;
 import dfh.grammar.Match;
 import dfh.grammar.MatchTest;
+import dfh.treepath.Attribute;
 import dfh.treepath.Forester;
 import dfh.treepath.Index;
 import dfh.treepath.ParentIndex;
@@ -81,7 +82,6 @@ public class XMLToy {
 			}
 		}
 	}
-	
 
 	/**
 	 * A {@link Forester} suitable for interpreting tree paths for trees
@@ -118,6 +118,20 @@ public class XMLToy {
 		@Override
 		protected Element parent(Element n, Index<Element> i) {
 			return ((ParentIndex<Element>) i).parent(n);
+		}
+
+		/**
+		 * A treepath attribute that returns the value of the specified XML
+		 * attribute for the given element.
+		 * 
+		 * @param e
+		 * @param i
+		 * @param name
+		 * @return
+		 */
+		@Attribute
+		public String attr(Element e, Index<Element> i, String name) {
+			return e.attributes.get(name);
 		}
 	}
 

@@ -252,7 +252,7 @@ public abstract class Forester<N> {
 
 	@Attribute("root")
 	protected boolean isRoot(N n, Index<N> i) {
-		return parent(n, i) == null;
+		return n == i.root;
 	}
 
 	protected List<N> leaves(N n, NodeTest<N> t, Index<N> i) {
