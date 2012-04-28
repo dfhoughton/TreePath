@@ -168,7 +168,7 @@ public abstract class Forester<N> {
 			for (int i = 0; i < selectors.length; i++) {
 				selectors[i] = makePath(paths.get(i));
 			}
-			return new Path<N>(selectors);
+			return new Path<N>(this, selectors);
 		} catch (GrammarException e) {
 			throw new PathException("failed to compile path " + path, e);
 		}
@@ -427,5 +427,17 @@ public abstract class Forester<N> {
 		while (o != null)
 			o = parent(o);
 		return o;
+	}
+
+	/**
+	 * Creates an {@link Index} of the given tree. By default this method
+	 * returns <code>null</code>. It must be overridden by foresters that
+	 * require an index.
+	 * 
+	 * @param root
+	 * @return and index of the given tree
+	 */
+	public Index<N> treeIndex(N root) {
+		return null;
 	}
 }

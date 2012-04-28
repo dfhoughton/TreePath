@@ -1,0 +1,12 @@
+/**
+ * Headers for TreePath pages.
+ */
+
+var hdrs = {
+	"home" : "/",
+	"TreePath" : "index.html",
+	"API" : "api/index.html",
+	"download" : "download.html",
+};
+
+var version = "1.0";

@@ -1,3 +1,11 @@
+/*
+ * dfh.treepath -- a library for querying arbitrary trees
+ * 
+ * Copyright (C) 2012 David F. Houghton
+ * 
+ * This software is licensed under the LGPL. Please see accompanying NOTICE file
+ * and lgpl.txt.
+ */
 package dfh.treepath;
 
 import java.util.ArrayList;
@@ -7,12 +15,15 @@ import java.util.List;
 
 public class Path<N> {
 	private final Selector<N>[][] selectors;
+	private final Forester<N> f;
 
-	Path(Selector<N>[][] selectors) {
+	Path(Forester<N> f, Selector<N>[][] selectors) {
+		this.f = f;
 		this.selectors = selectors;
 	}
 
 	public Collection<N> select(N n) {
+		Index<N> index = f.treeIndex(n);
 		List<N> initialList = new ArrayList<N>(1);
 		initialList.add(n);
 		Collection<N> selection = new LinkedHashSet<N>();
