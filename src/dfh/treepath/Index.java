@@ -11,8 +11,8 @@ package dfh.treepath;
  *            a type of tree node
  */
 public class Index<N> {
-	protected final N root;
-	protected final Forester<N> f;
+	public final N root;
+	public final Forester<N> f;
 
 	/**
 	 * Constructs an index for the tree with the specified root.
@@ -25,5 +25,15 @@ public class Index<N> {
 	public Index(N root, Forester<N> f) {
 		this.root = root;
 		this.f = f;
+	}
+
+	/**
+	 * Indicates whether the given node is the root.
+	 * 
+	 * @param n
+	 * @return whether the given node is the root of the tree
+	 */
+	public boolean isRoot(N n) {
+		return n == root;
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import dfh.grammar.Assertion;
+import dfh.grammar.Label.Type;
 import dfh.grammar.Match;
 
 /**
@@ -40,12 +41,22 @@ public class MatchPath extends Forester<Match> {
 	}
 
 	@Attribute
-	public boolean zeroWidth(Match m, Index<Match> i) {
+	public boolean zero(Match m, Index<Match> i) {
 		return m.zeroWidth();
 	}
 
 	@Attribute
 	public boolean assertion(Match m, Index<Match> i) {
 		return m.rule() instanceof Assertion;
+	}
+
+	@Attribute
+	public int length(Match m, Index<Match> i) {
+		return m.length();
+	}
+
+	@Attribute
+	public boolean explicit(Match m, Index<Match> i) {
+		return m.rule().label().t == Type.explicit;
 	}
 }

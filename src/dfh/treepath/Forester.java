@@ -164,22 +164,32 @@ public abstract class Forester<N> {
 				}
 				throw new PathException(b.toString());
 			}
-			List<Match> paths = n.closest(pathMt);
-			@SuppressWarnings("unchecked")
-			Selector<N>[][] selectors = new Selector[paths.size()][];
-			for (int i = 0; i < selectors.length; i++) {
-				selectors[i] = makePath(paths.get(i));
-			}
-			return new Path<N>(this, selectors);
+			return path(n);
 		} catch (GrammarException e) {
 			throw new PathException("failed to compile path " + path, e);
 		}
+	}
+
+	public Path<N> path(Match n) {
+		List<Match> paths = n.closest(pathMt);
+		@SuppressWarnings("unchecked")
+		Selector<N>[][] selectors = new Selector[paths.size()][];
+		for (int i = 0; i < selectors.length; i++) {
+			selectors[i] = makePath(paths.get(i));
+		}
+		return new Path<N>(this, selectors);
 	}
 
 	private static final MatchTest subsequentMT = new MatchTest() {
 		@Override
 		public boolean test(Match m) {
 			return m.hasLabel("segment");
+		}
+	};
+	private static final MatchTest anameMT = new MatchTest() {
+		@Override
+		public boolean test(Match m) {
+			return m.rule().label().id.equals("aname");
 		}
 	};
 
@@ -202,11 +212,25 @@ public abstract class Forester<N> {
 		case 1:
 			return first ? makeRootStep(step) : makeRelativeStep(step);
 		case 2:
-			return makeGlobalStep(step);
+			return slash.group().charAt(1) == '/' ? makeGlobalStep(step)
+					: makeClosestStep(step);
 		default:
 			throw new PathException("unexpected step separator in path: "
 					+ slash.group());
 		}
+	}
+
+	private Selector<N> makeClosestStep(Match step) {
+		step = step.children()[1];
+		Match tagMatch = step.children()[1], arguments = step.children()[2];
+		String s = tagMatch.group();
+		if ("*".equals(s))
+			return new ClosestWildcard<N>(arguments, this);
+		else if (s.charAt(0) == '~') {
+			s = cleanMatch(s);
+			return new ClosestMatching<N>(s, arguments, this);
+		} else
+			return new ClosestTag<N>(s, arguments, this);
 	}
 
 	/**
@@ -216,18 +240,91 @@ public abstract class Forester<N> {
 	 * @return
 	 */
 	private Selector<N> makeGlobalStep(Match step) {
-		// TODO Auto-generated method stub
-		return null;
+		step = step.children()[1];
+		Match tagMatch = step.children()[1], arguments = step.children()[2];
+		String s = tagMatch.group();
+		if ("*".equals(s))
+			return new AnywhereWildcard<N>(arguments, this);
+		else if (s.charAt(0) == '~') {
+			s = cleanMatch(s);
+			return new AnywhereMatching<N>(s, arguments, this);
+		} else
+			return new AnywhereTag<N>(s, arguments, this);
 	}
 
 	private Selector<N> makeRootStep(Match step) {
-		// TODO Auto-generated method stub
-		return null;
+		step = step.children()[1];
+		if (step.hasLabel("abbreviated")) {
+			if (step.length() == 1)
+				return new RootSelector<N>();
+			throw new PathException(
+					"/.. is ill-formed; the root node has no parent");
+		} else {
+			Match axisMatch = step.children()[0], tagMatch = step.children()[1], arguments = step
+					.children()[2];
+			String s = tagMatch.group();
+			if (axisMatch.length() == 0) {
+				if ("*".equals(s))
+					return new RootWildcard<N>(arguments, this);
+				else if (s.charAt(0) == '~') {
+					s = cleanMatch(s);
+					return new RootMatching<N>(s, arguments, this);
+				} else
+					return new RootTag<N>(s, arguments, this);
+			} else {
+				String aname = axisMatch.first(anameMT).group();
+				if ("*".equals(s))
+					return new RootAxisWildcard<N>(aname, arguments, this);
+				else if (s.charAt(0) == '~') {
+					s = cleanMatch(s);
+					return new RootAxisMatching<N>(aname, s, arguments, this);
+				} else
+					return new RootAxisTag<N>(aname, s, arguments, this);
+			}
+		}
+	}
+
+	/**
+	 * Converts a ~&lt;chars&gt;~ expression into a string that can be compiled
+	 * into a pattern.
+	 * 
+	 * @param s
+	 * @return
+	 */
+	private String cleanMatch(String s) {
+		s = s.substring(1, s.length() - 1).replaceAll("\\\\~", "~");
+		return s;
 	}
 
 	private Selector<N> makeRelativeStep(Match step) {
-		// TODO Auto-generated method stub
-		return null;
+		step = step.children()[1];
+		if (step.hasLabel("abbreviated")) {
+			if (step.length() == 1)
+				return new RootSelector<N>();
+			return new ParentSelector<N>();
+		} else {
+			Match axisMatch = step.children()[0], tagMatch = step.children()[1], arguments = step
+					.children()[2];
+			String s = tagMatch.group();
+			if (axisMatch.length() == 0) {
+				if ("*".equals(s))
+					return new ChildWildcard<N>(arguments, this);
+				else if (s.charAt(0) == '~') {
+					s = cleanMatch(s);
+					return new ChildMatching<N>(s, arguments, this);
+				} else
+					return new ChildTag<N>(s, arguments, this);
+			} else {
+				String aname = axisMatch.first(anameMT).group();
+				if ("*".equals(s))
+					return new AxisWildcard<N>(aname, arguments, this);
+				else if (s.charAt(0) == '~') {
+					s = cleanMatch(s);
+					return new AxisMatching<N>(aname, s, arguments, this);
+				} else
+					return new AxisTag<N>(aname, s, arguments, this);
+			}
+		}
 	}
 
 	/**
@@ -252,7 +349,7 @@ public abstract class Forester<N> {
 
 	@Attribute("root")
 	protected boolean isRoot(N n, Index<N> i) {
-		return n == i.root;
+		return i.isRoot(n);
 	}
 
 	protected List<N> leaves(N n, NodeTest<N> t, Index<N> i) {
@@ -290,6 +387,18 @@ public abstract class Forester<N> {
 				descendants.add(child);
 		}
 		return descendants;
+	}
+
+	protected Collection<N> closest(N n, NodeTest<N> t, Index<N> i) {
+		if (t.passes(n, i)) {
+			List<N> list = new ArrayList<N>(1);
+			list.add(n);
+			return list;
+		}
+		List<N> closest = new LinkedList<N>();
+		for (N child : children(n, i))
+			closest.addAll(closest(child, t, i));
+		return closest;
 	}
 
 	protected List<N> precedingSiblings(N n, NodeTest<N> t, Index<N> i) {
@@ -391,6 +500,11 @@ public abstract class Forester<N> {
 				return i;
 		}
 		return -1;
+	}
+
+	@Attribute("index-is")
+	public boolean indexIs(N n, Index<N> in, int i) {
+		return index(n, in) == i;
 	}
 
 	/**

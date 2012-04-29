@@ -1,0 +1,28 @@
+package dfh.treepath;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import dfh.grammar.Match;
+
+public class TreePathPredicate<N> extends Predicate<N> {
+
+	private final Path<N> path;
+
+	public TreePathPredicate(Match type, Forester<N> f) {
+		path = f.path(type);
+	}
+
+	@Override
+	public Collection<N> filter(Collection<N> c, Index<N> i) {
+		List<N> filtrate = new ArrayList<N>(c.size());
+		for (N n : c) {
+			Collection<N> c2 = path.select(n);
+			if (!c2.isEmpty())
+				filtrate.add(n);
+		}
+		return filtrate;
+	}
+
+}

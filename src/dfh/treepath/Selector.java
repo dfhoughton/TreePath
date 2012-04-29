@@ -8,5 +8,5 @@ interface Selector<N> {
 	 * @param i
 	 * @return the set of nodes passing this selector's condition
 	 */
-	Collection<N> select(Collection<N> n, Index<N> i);
+	Collection<N> select(N n, Index<N> i);
 }

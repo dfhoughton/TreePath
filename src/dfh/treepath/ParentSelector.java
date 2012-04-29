@@ -2,21 +2,24 @@ package dfh.treepath;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * {@link Selector} for the . expression.
+ * {@link Selector} for the .. expression.
  * <p>
  * 
  * @author David F. Houghton - Apr 29, 2012
  * 
  * @param <N>
  */
-public class SelfSelector<N> implements Selector<N> {
+public class ParentSelector<N> implements Selector<N> {
 	@Override
 	public Collection<N> select(N n, Index<N> i) {
+		if (i.isRoot(n))
+			return Collections.emptyList();
 		List<N> list = new ArrayList<N>(1);
-		list.add(n);
+		list.add(i.f.parent(n, i));
 		return list;
 	}
 }

@@ -58,8 +58,8 @@ public class PathGrammar {
 			"forward = <wildcard> | <specific> | <pattern>",//
 			"wildcard = '*'",//
 			"specific = /[\\p{L}_](?:[\\p{L}\\p{N}_]|\\\\.)*+/",//
-			"pattern = /~(?:[^~\\\\]|\\\\.)++~/ (compiles)",//
-			"aname = /@(?:[\\p{L}_$]|\\\\.)(?:[\\p{L}_$\\p{N}]|\\\\.)*+/",//
+			"pattern = /~(?:[^~\\\\]|\\\\~)++~/ (compiles)",//
+			"aname = /@(?:[\\p{L}_$]|\\\\.)(?:[\\p{L}_$\\p{N}]|-(?=[\\p{L}_\\p{N}])|\\\\.)*+/",//
 			"attribute = <aname> <args>?",//
 			"args = '(' <s> <arg> [ <s> ',' <s> <arg> ]* <s> ')'",//
 			"arg = <treepath> | <literal> | <num> | <attribute>",//
@@ -73,7 +73,7 @@ public class PathGrammar {
 			"int = /\\b(?:0|[1-9][0-9]*+)\\b/",//
 			"s = /\\s*+/",//
 			"condition = <term> | <not_cnd> | <or_cnd> | <and_cnd> | <xor_cnd> | <group>",//
-			"term = <attribute> | <path>",//
+			"term = <attribute> | <treepath>",//
 			"group = '(' <s> <condition> <s> ')'",//
 			"not_cnd = /!|(?<!\\/)\\bnot\\b(?!\\/)/ <s> <condition> (not_precedence)",//
 			"or_cnd = <condition> [ <s> /\\|{2}|(?<!\\/)\\bor\\b(?!\\/)/ <s> <condition> ]+",//
@@ -86,7 +86,9 @@ public class PathGrammar {
 			@Override
 			public boolean passes(CharSequence s) {
 				try {
-					Pattern.compile(s.subSequence(1, s.length() - 1).toString());
+					String p = s.subSequence(1, s.length() - 1).toString()
+							.replaceAll("\\\\~", "~");
+					Pattern.compile(p);
 					return true;
 				} catch (Exception e) {
 					return false;

@@ -60,13 +60,17 @@ semantics with the following exceptions:
    for which one would have to provide the relevant callbacks in the interpreting
    Forester class.
    An attribute name, the identifier after '@', can be anything. However, any 
-   character that violates the rules of Java identifiers must be escaped. The pattern
+   character that violates the rules of Java identifiers* must be escaped. The pattern
    for attributes is
 
-     /@(?:[\p{L}_$]|\\.)(?:[\p{L}_$\p{N}]|\\.)*+/
+     /@(?:[\p{L}_$]|\\.)(?:[\p{L}_$\p{N}]|-(?=[\p{L}_\p{N}])|\\.)*+/
 
    The possible parameters to one of these "attributes" are strings, path expressions,
    other attributes, and numerals. Strings are delimited with single or double quotes.
+   
+   * There is one modification to this rule: unescaped hyphens may be used word-medially
+   so long as they are followed by a regular word character. So @foo-bar is acceptable but
+   @foo--bar must be written as @foo\--bar.
 
 5. No functions are provided for use in predicates. Some @ expressions will be provided,
    but for the most part these must be written by the user.
