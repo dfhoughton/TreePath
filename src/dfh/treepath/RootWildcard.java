@@ -1,6 +1,8 @@
 package dfh.treepath;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import dfh.grammar.Match;
 
@@ -21,7 +23,9 @@ public class RootWildcard<N> extends TestSelector<N> {
 
 	@Override
 	protected Collection<N> candidates(N n, Index<N> i) {
-		return i.f.children(i.root, i);
+		List<N> list = new ArrayList<N>(1);
+		list.add(i.root);
+		return list;
 	}
 
 }

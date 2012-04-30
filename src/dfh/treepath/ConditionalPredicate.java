@@ -153,7 +153,7 @@ public class ConditionalPredicate<N> extends Predicate<N> {
 	}
 
 	private static <N> Expression<N> createExpression(Match type, Forester<N> f) {
-		type = type.children()[1];
+		type = type.children()[0];
 		String l = type.rule().label().id;
 		Expression<N> ex = null;
 		if (l.equals("term")) {

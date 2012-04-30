@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import dfh.treepath.Attribute;
 import dfh.treepath.Forester;
 import dfh.treepath.Index;
 import dfh.treepath.ParentIndex;
+import dfh.treepath.Path;
 
 /**
  * Parser for a simplified form of XML. Used to create trees for testing. Also
@@ -195,5 +197,37 @@ public class XMLToy {
 		assertEquals(2, e.children[1].children.length);
 		assertEquals("baz", e.children[1].children[0].tag);
 		assertEquals("bumpus", e.children[1].children[1].tag);
+	}
+
+	@Test
+	public void anywhereTag() {
+		Element root = parse("<a><b/><c><b/><d><b/><b/></d></c></a>");
+		Path<Element> p = new XMLToyForester().path("//b");
+		Collection<Element> bs = p.select(root);
+		assertEquals(4, bs.size());
+	}
+
+	@Test
+	public void rootTag() {
+		Element root = parse("<a><b/><c><b/><d><b/><b/></d></c></a>");
+		Path<Element> p = new XMLToyForester().path("/b");
+		Collection<Element> bs = p.select(root);
+		assertEquals(0, bs.size());
+	}
+
+	@Test
+	public void closestTag() {
+		Element root = parse("<a><b/><c><b><d><b/></d></b></c></a>");
+		Path<Element> p = new XMLToyForester().path("/>b");
+		Collection<Element> bs = p.select(root);
+		assertEquals(2, bs.size());
+	}
+	
+	@Test
+	public void attributeTest() {
+		Element root = parse("<a><b/><b foo='bar'/></a>");
+		Path<Element> p = new XMLToyForester().path("//b[@attr('foo')]");
+		Collection<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
 	}
 }

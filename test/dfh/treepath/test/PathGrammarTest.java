@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import dfh.grammar.Match;
 import dfh.grammar.Matcher;
+import dfh.grammar.Options;
 import dfh.treepath.PathGrammar;
 
 public class PathGrammarTest {
@@ -13,6 +14,12 @@ public class PathGrammarTest {
 	@Test
 	public void rootTest() {
 		Match m = PathGrammar.g.matches("/.").match();
+		assertNotNull(m);
+	}
+
+	@Test
+	public void rootTagTest() {
+		Match m = PathGrammar.g.matches("/b", new Options().keepRightmost(true).study(false)).match();
 		assertNotNull(m);
 	}
 
@@ -140,7 +147,7 @@ public class PathGrammarTest {
 		Match m = PathGrammar.g.matches("bar[@foo][@quux]").match();
 		assertNotNull(m);
 	}
-	
+
 	@Test
 	public void pattern() {
 		Match m = PathGrammar.g.matches("//~bar~//~quux~").match();

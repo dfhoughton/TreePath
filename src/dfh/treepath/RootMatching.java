@@ -1,6 +1,9 @@
 package dfh.treepath;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import dfh.grammar.Match;
@@ -31,7 +34,12 @@ public class RootMatching<N> extends TestSelector<N> {
 
 	@Override
 	protected Collection<N> candidates(N n, Index<N> i) {
-		return i.f.children(i.root, test, i);
+		if (test.passes(i.root, i)) {
+			List<N> list = new ArrayList<N>(1);
+			list.add(i.root);
+			return list;
+		}
+		return Collections.emptyList();
 	}
 
 }

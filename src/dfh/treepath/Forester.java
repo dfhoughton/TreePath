@@ -43,7 +43,6 @@ public abstract class Forester<N> {
 		}
 	}
 
-	protected static final Options opt = new Options().keepRightmost(true);
 	protected static final MatchTest pathMt = new MatchTest() {
 		@Override
 		public boolean test(Match m) {
@@ -146,7 +145,8 @@ public abstract class Forester<N> {
 		if (path == null)
 			throw new PathException("path expression cannot be null");
 		try {
-			Matcher m = PathGrammar.g.matches(path, opt);
+			Matcher m = PathGrammar.g.matches(path, new Options()
+					.keepRightmost(true).study(false));
 			Match n = m.match();
 			if (n == null) {
 				StringBuilder b = new StringBuilder("could not parse ");
@@ -170,7 +170,7 @@ public abstract class Forester<N> {
 		}
 	}
 
-	public Path<N> path(Match n) {
+	Path<N> path(Match n) {
 		List<Match> paths = n.closest(pathMt);
 		@SuppressWarnings("unchecked")
 		Selector<N>[][] selectors = new Selector[paths.size()][];
@@ -221,7 +221,7 @@ public abstract class Forester<N> {
 	}
 
 	private Selector<N> makeClosestStep(Match step) {
-		step = step.children()[1];
+		step = step.children()[0];
 		Match tagMatch = step.children()[1], arguments = step.children()[2];
 		String s = tagMatch.group();
 		if ("*".equals(s))
@@ -240,7 +240,7 @@ public abstract class Forester<N> {
 	 * @return
 	 */
 	private Selector<N> makeGlobalStep(Match step) {
-		step = step.children()[1];
+		step = step.children()[0];
 		Match tagMatch = step.children()[1], arguments = step.children()[2];
 		String s = tagMatch.group();
 		if ("*".equals(s))
@@ -253,7 +253,7 @@ public abstract class Forester<N> {
 	}
 
 	private Selector<N> makeRootStep(Match step) {
-		step = step.children()[1];
+		step = step.children()[0];
 		if (step.hasLabel("abbreviated")) {
 			if (step.length() == 1)
 				return new RootSelector<N>();
@@ -297,7 +297,7 @@ public abstract class Forester<N> {
 	}
 
 	private Selector<N> makeRelativeStep(Match step) {
-		step = step.children()[1];
+		step = step.children()[0];
 		if (step.hasLabel("abbreviated")) {
 			if (step.length() == 1)
 				return new RootSelector<N>();
