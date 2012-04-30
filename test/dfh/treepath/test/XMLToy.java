@@ -222,7 +222,7 @@ public class XMLToy {
 		Collection<Element> bs = p.select(root);
 		assertEquals(2, bs.size());
 	}
-	
+
 	@Test
 	public void attributeTest() {
 		Element root = parse("<a><b/><b foo='bar'/></a>");
@@ -230,4 +230,22 @@ public class XMLToy {
 		Collection<Element> bs = p.select(root);
 		assertEquals(1, bs.size());
 	}
+
+	@Test
+	public void anywhereTest1() {
+		Element root = parse("<a><c><d><b/></d></c><b/></a>");
+		Path<Element> p = new XMLToyForester().path("//c//b");
+		Collection<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
+	}
+
+	@Test
+	public void indexTest() {
+		Element root = parse("<a><b foo='1'/><b foo='2'/><b foo='3'/></a>");
+		Path<Element> p = new XMLToyForester().path("//b[1]");
+		Collection<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
+		assertEquals("2", bs.iterator().next().attributes.get("foo"));
+	}
+
 }

@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import dfh.grammar.GrammarException;
@@ -18,12 +20,15 @@ import dfh.grammar.Options;
 import dfh.treepath.PathGrammar.Axis;
 
 /**
+ * An expert on trees. A {@link Forester} answers questions about the variety of
+ * trees it knows provided these quests are asked in the form of tree path
+ * expressions.
  * <p>
  * 
  * @author David F. Houghton - Apr 18, 2012
  * 
  * @param <N>
- *            node type
+ *            the variety of node in the trees understood by the {@link Forester}
  */
 public abstract class Forester<N> {
 	Map<String, Method> attributes = new HashMap<String, Method>();
@@ -339,6 +344,15 @@ public abstract class Forester<N> {
 		return children.get(i);
 	}
 
+	/**
+	 * A boolean attribute that evaluates to true if the context node is a leaf.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param i
+	 *            tree index
+	 * @return whether n is a leaf
+	 */
 	@Attribute("leaf")
 	protected boolean isLeaf(N n, Index<N> i) {
 		List<N> children = children(n, i);
@@ -347,9 +361,80 @@ public abstract class Forester<N> {
 		return false;
 	}
 
+	/**
+	 * A boolean attribute that evalues to true if the context node is the tree
+	 * root.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param i
+	 *            tree index
+	 * @return whether n is the tree root
+	 */
 	@Attribute("root")
 	protected boolean isRoot(N n, Index<N> i) {
 		return i.isRoot(n);
+	}
+
+	/**
+	 * An attribute whose value is always <code>null</code>. This attribute
+	 * cannot be overridden.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param i
+	 *            tree index
+	 * @return <code>null</code>
+	 */
+	@Attribute("null")
+	protected final Object Null(N n, Index<N> i) {
+		return null;
+	}
+
+	/**
+	 * An attribute whose value is always <code>true</code>. This attribute
+	 * cannot be overridden.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param i
+	 *            tree index
+	 * @return <code>true</code>
+	 */
+	@Attribute("true")
+	protected final Boolean True(N n, Index<N> i) {
+		return Boolean.TRUE;
+	}
+
+	/**
+	 * An attribute whose value is always <code>false</code>. This attribute
+	 * cannot be overridden.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param i
+	 *            tree index
+	 * @return <code>false</code>
+	 */
+	@Attribute("false")
+	protected final Boolean False(N n, Index<N> i) {
+		return Boolean.FALSE;
+	}
+
+	/**
+	 * A boolean attribute that is true if the object parameter is not null.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param i
+	 *            tree index
+	 * @param o
+	 *            value to test
+	 * @return whether o isn't null
+	 */
+	@Attribute
+	protected final Boolean defined(N n, Index<N> i, Object o) {
+		return o == null ? false : true;
 	}
 
 	protected List<N> leaves(N n, NodeTest<N> t, Index<N> i) {
@@ -555,5 +640,16 @@ public abstract class Forester<N> {
 	 */
 	protected Index<N> treeIndex(N root) {
 		return new Index<N>(root, this);
+	}
+
+	/**
+	 * Returns an alphabetized collection of the attributes this
+	 * {@link Forester} can handle.
+	 * 
+	 * @return an alphabetized collection of the attributes this
+	 *         {@link Forester} can handle
+	 */
+	public Set<String> attributes() {
+		return new TreeSet<String>(attributes.keySet());
 	}
 }

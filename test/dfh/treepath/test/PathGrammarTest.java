@@ -19,7 +19,8 @@ public class PathGrammarTest {
 
 	@Test
 	public void rootTagTest() {
-		Match m = PathGrammar.g.matches("/b", new Options().keepRightmost(true).study(false)).match();
+		Match m = PathGrammar.g.matches("/b",
+				new Options().keepRightmost(true).study(false)).match();
 		assertNotNull(m);
 	}
 
@@ -151,6 +152,30 @@ public class PathGrammarTest {
 	@Test
 	public void pattern() {
 		Match m = PathGrammar.g.matches("//~bar~//~quux~").match();
+		assertNotNull(m);
+	}
+
+	@Test
+	public void attributeTest1() {
+		Match m = PathGrammar.g.matches("/foo[@a = 1]").match();
+		assertNotNull(m);
+	}
+
+	@Test
+	public void attributeTest2() {
+		Match m = PathGrammar.g.matches("/foo[@a = @true]").match();
+		assertNotNull(m);
+	}
+
+	@Test
+	public void attributeTest3() {
+		Match m = PathGrammar.g.matches("/foo[@a = 'bar']").match();
+		assertNotNull(m);
+	}
+
+	@Test
+	public void attributeTest4() {
+		Match m = PathGrammar.g.matches("/foo[@a = 1.5]").match();
 		assertNotNull(m);
 	}
 }

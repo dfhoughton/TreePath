@@ -62,18 +62,20 @@ public class PathGrammar {
 			"aname = /@(?:[\\p{L}_$]|\\\\.)(?:[\\p{L}_$\\p{N}]|-(?=[\\p{L}_\\p{N}])|\\\\.)*+/",//
 			"attribute = <aname> <args>?",//
 			"args = '(' <s> <arg> [ <s> ',' <s> <arg> ]* <s> ')'",//
-			"arg = <treepath> | <literal> | <num> | <attribute>",//
+			"arg = <treepath> | <literal> | <num> | <attribute> | <attribute_test>",//
 			"num = <signed_int> | <float>",//
 			"signed_int = /[+-]?+/ <int>",//
 			"float = /[+-]?+/ <int>?+ /\\.\\d++/ [ /e[+-]?+/i <int> ]?+",//
 			"literal = <squote> | <dquote>",//
 			"squote = /'(?:[^']|\\\\.)++'/",//
 			"dquote = /\"(?:[^\"]|\\\\.)++\"/",//
-			"predicate = '[' <s> [ <int> | <treepath> | <condition> ] <s> ']'",//
+			"predicate = '[' <s> [ <int> | <treepath> | <attribute_test> | <condition> ] <s> ']'",//
 			"int = /\\b(?:0|[1-9][0-9]*+)\\b/",//
 			"s = /\\s*+/",//
 			"condition = <term> | <not_cnd> | <or_cnd> | <and_cnd> | <xor_cnd> | <group>",//
-			"term = <attribute> | <treepath>",//
+			"term = <attribute> | <attribute_test> | <treepath>",//
+			"attribute_test = <attribute> <s> '=' <s> <value>",//
+			"value = <literal> | <num> | <attribute>",//
 			"group = '(' <s> <condition> <s> ')'",//
 			"not_cnd = /!|(?<!\\/)\\bnot\\b(?!\\/)/ <s> <condition> (not_precedence)",//
 			"or_cnd = <condition> [ <s> /\\|{2}|(?<!\\/)\\bor\\b(?!\\/)/ <s> <condition> ]+",//

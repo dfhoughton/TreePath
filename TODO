@@ -1,0 +1,21 @@
+Roadmap of planned changes.
+
+key:
+  . item awaiting attention
+  - deprecated item
+  * item completed
+
+Periodically I'll clear out this list, moving completed and deprecated items to a sort of
+historical holding pen at the end.
+
+TODO
+====
+
+. implement syntax for attribute value tests: //foo[@bar = 1]
+. make everything serializable
+
+RELICS
+======
+
+Things swept out of TODO list:
+
