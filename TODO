@@ -26,7 +26,7 @@ TODO
   collection being filtered
 . let Forester ignore nodes matching particular NodeTests
 . allow colons in attribute and tag names without escaping
-. make Path.select(N) return a list rather than a collection for convenience
+* make Path.select(N) return a list rather than a collection for convenience
 . create != operator
 
 RELICS
