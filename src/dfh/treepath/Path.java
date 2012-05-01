@@ -8,10 +8,20 @@
  */
 package dfh.treepath;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
+/**
+ * A compiled tree path expression.
+ * <p>
+ * 
+ * @author David F. Houghton - May 1, 2012
+ * 
+ * @param <N>
+ */
 public class Path<N> {
 	private final Selector<N>[][] selectors;
 	private final Forester<N> f;
@@ -21,10 +31,21 @@ public class Path<N> {
 		this.selectors = selectors;
 	}
 
-	public Collection<N> select(N root) {
+	/**
+	 * Selects nodes in the tree that match the path. If it is not a relative
+	 * path and the nodes in the tree do not know their own parents, this match
+	 * will fail unless the context node given is the root node.
+	 * 
+	 * @param root
+	 *            a node in the tree; if this is not the root node and the
+	 *            tree's nodes do not know their own parents -- see
+	 *            {@link ParentIndex} -- this will be the de-facto root node
+	 * @return the nodes matching the path in the order of their discovery
+	 */
+	public List<N> select(N root) {
 		Index<N> i = f.treeIndex(root);
 		if (f.isRoot(root, null, i))
-			return select(root, i);
+			return new ArrayList<N>(select(root, i));
 		throw new PathException(
 				"select can only be called with the root node of a tree");
 	}

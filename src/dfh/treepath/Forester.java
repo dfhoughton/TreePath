@@ -24,6 +24,8 @@ import dfh.treepath.PathGrammar.Axis;
  * trees it knows provided these quests are asked in the form of tree path
  * expressions.
  * <p>
+ * Foresters are path factories. Their chief method if interest is
+ * {@link #path(String)}.
  * 
  * @author David F. Houghton - Apr 18, 2012
  * 
