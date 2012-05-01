@@ -19,7 +19,7 @@ class AttributeTestExpression<N> implements Expression<N> {
 	private final Object v;
 
 	enum ComparisonOperator {
-		eq, lt, gt, el, eg, id
+		eq, lt, gt, el, eg, id, ne
 	}
 
 	enum VType {
@@ -57,6 +57,8 @@ class AttributeTestExpression<N> implements Expression<N> {
 			c = ComparisonOperator.el;
 		else if ("==".equals(s))
 			c = ComparisonOperator.id;
+		else if ("!=".equals(s))
+			c = ComparisonOperator.ne;
 		else
 			throw new PathException("unknown comparison operator " + s);
 	}
@@ -67,12 +69,9 @@ class AttributeTestExpression<N> implements Expression<N> {
 		if (c == ComparisonOperator.id)
 			return v == rv;
 		if (rv == null) {
-			if (v == null)
-				return true;
-			else
-				return false;
-		} else if (v == null) {
 			return false;
+		} else if (v == null) {
+			return c == ComparisonOperator.ne ? true : false;
 		}
 		int comparison = 0;
 		switch (vt) {
@@ -121,6 +120,8 @@ class AttributeTestExpression<N> implements Expression<N> {
 			return comparison > 0;
 		case lt:
 			return comparison < 0;
+		case ne:
+			return comparison != 0;
 		default:
 			throw new PathException("unexpected comparison operator " + c);
 		}

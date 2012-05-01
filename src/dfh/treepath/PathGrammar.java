@@ -57,9 +57,9 @@ public class PathGrammar {
 			"abbreviated = '.' | '..'",//
 			"forward = <wildcard> | <specific> | <pattern>",//
 			"wildcard = '*'",//
-			"specific = /[\\p{L}_](?:[\\p{L}\\p{N}_]|\\\\.)*+/",//
+			"specific = /[\\p{L}_](?:[\\p{L}\\p{N}_]|[-:](?=[\\p{L}_\\p{N}])|\\\\.)*+/",//
 			"pattern = /~(?:[^~\\\\]|\\\\~)++~/ (compiles)",//
-			"aname = /@(?:[\\p{L}_$]|\\\\.)(?:[\\p{L}_$\\p{N}]|-(?=[\\p{L}_\\p{N}])|\\\\.)*+/",//
+			"aname = /@(?:[\\p{L}_$]|\\\\.)(?:[\\p{L}_$\\p{N}]|[-:](?=[\\p{L}_\\p{N}])|\\\\.)*+/",//
 			"attribute = <aname> <args>?",//
 			"args = '(' <s> <arg> [ <s> ',' <s> <arg> ]* <s> ')'",//
 			"arg = <treepath> | <literal> | <num> | <attribute>",//
@@ -75,7 +75,7 @@ public class PathGrammar {
 			"condition = <term> | <not_cnd> | <or_cnd> | <and_cnd> | <xor_cnd> | <group>",//
 			"term = <attribute> | <attribute_test> | <treepath>",//
 			"attribute_test = <attribute> <s> <cmp> <s> <value>",//
-			"cmp = /[<>=]=?/",//
+			"cmp = /[<>=]=?|!=/",//
 			"value = <literal> | <num> | <attribute>",//
 			"group = '(' <s> <condition> <s> ')'",//
 			"not_cnd = /!|(?<!\\/)\\bnot\\b(?!\\/)/ <s> <condition> (not_precedence)",//

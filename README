@@ -16,7 +16,7 @@ Syntax
 ------
 
 In general, TreePath syntax and semantics will be identical to XPath syntax and
-semantics with the following exceptions:
+semantics with the following exceptions:*
 
 1. In addition to / and // there is a /> path separator. The latter means "closest". 
    To illustrate, consider the trees
@@ -111,6 +111,9 @@ semantics with the following exceptions:
    operands is true.
    The usual rules of precedence obtain, so !A || B ^ C & D is equivalent to (!A) || (B ^ (C & D)).
    Operands in a logical expression must be attributes or paths.
+
+* This description of the semantics of tree path expressions has rapidly grown out-of-date. Hopefully
+things will settle down in the near future and I'll document the syntax properly.
 
 License
 -------

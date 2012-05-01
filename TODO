@@ -20,8 +20,8 @@ TODO
   the attribute is evaluated and the latter is the node that generated the
   collection being filtered
 . let Forester ignore nodes matching particular NodeTests
-. allow colons in attribute and tag names without escaping
-. create != operator
+* allow colons in attribute and tag names without escaping
+* create != operator
 
 RELICS
 ======

@@ -35,7 +35,7 @@ public class XMLToy {
 			"element = <s> [ <simple> | <container> ] <s>",//
 			"simple = '<' <tag> <attributes> <s> '/>'",//
 			"container = '<' <tag> <attributes> '>' <element>*+ '</' 2 '>'",//
-			"tag = /\\w++/",//
+			"tag = /\\w(\\w|:\\w)*+/",//
 			"attributes = [ <s> <attribute> ]*+",//
 			"attribute = <tag> '=' <quoted>",//
 			"quoted = <dquote> | <squote>",//
@@ -299,5 +299,22 @@ public class XMLToy {
 		Collection<Element> bs = p.select(root);
 		assertEquals(1, bs.size());
 		assertEquals("corge", bs.iterator().next().attributes.get("quux"));
+	}
+
+	@Test
+	public void neTest() {
+		Element root = parse("<a><b/><b foo='1'/><b foo='2'/></a>");
+		Path<Element> p = new XMLToyForester().path("//b[@attr('foo') != '1']");
+		Collection<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
+	}
+
+	@Test
+	public void colonTest() {
+		Element root = parse("<a:b><b:b/><b:b fo:o='1'/><b:b fo:o='2'/></a:b>");
+		Path<Element> p = new XMLToyForester()
+				.path("//b:b[@attr('fo:o') != '1']");
+		Collection<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
 	}
 }
