@@ -1,6 +1,7 @@
 package dfh.treepath;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -41,22 +42,22 @@ public class MatchPath extends Forester<Match> {
 	}
 
 	@Attribute
-	public boolean zero(Match m, Index<Match> i) {
+	public boolean zero(Match m, Collection<Match> c, Index<Match> i) {
 		return m.zeroWidth();
 	}
 
 	@Attribute
-	public boolean assertion(Match m, Index<Match> i) {
+	public boolean assertion(Match m, Collection<Match> c, Index<Match> i) {
 		return m.rule() instanceof Assertion;
 	}
 
 	@Attribute
-	public int length(Match m, Index<Match> i) {
+	public int length(Match m, Collection<Match> c, Index<Match> i) {
 		return m.length();
 	}
 
 	@Attribute
-	public boolean explicit(Match m, Index<Match> i) {
+	public boolean explicit(Match m, Collection<Match> c, Index<Match> i) {
 		return m.rule().label().t == Type.explicit;
 	}
 }

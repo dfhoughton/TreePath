@@ -14,11 +14,11 @@ import dfh.treepath.PathGrammar.Axis;
  * 
  * @param <N>
  */
-public class AnywhereMatching<N> extends TestSelector<N> {
+class AnywhereMatching<N> extends TestSelector<N> {
 
 	private final NodeTest<N> test;
 
-	public AnywhereMatching(String pattern, Match arguments, Forester<N> f) {
+	AnywhereMatching(String pattern, Match arguments, Forester<N> f) {
 		super(arguments, f);
 		final Pattern p = Pattern.compile(pattern);
 		test = new NodeTest<N>() {

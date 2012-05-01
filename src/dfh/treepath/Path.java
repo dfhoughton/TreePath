@@ -23,7 +23,7 @@ public class Path<N> {
 
 	public Collection<N> select(N root) {
 		Index<N> i = f.treeIndex(root);
-		if (f.isRoot(root, i))
+		if (f.isRoot(root, null, i))
 			return select(root, i);
 		throw new PathException(
 				"select can only be called with the root node of a tree");

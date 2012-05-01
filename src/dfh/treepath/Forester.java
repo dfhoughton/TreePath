@@ -28,7 +28,8 @@ import dfh.treepath.PathGrammar.Axis;
  * @author David F. Houghton - Apr 18, 2012
  * 
  * @param <N>
- *            the variety of node in the trees understood by the {@link Forester}
+ *            the variety of node in the trees understood by the
+ *            {@link Forester}
  */
 public abstract class Forester<N> {
 	Map<String, Method> attributes = new HashMap<String, Method>();
@@ -349,12 +350,15 @@ public abstract class Forester<N> {
 	 * 
 	 * @param n
 	 *            context node
+	 * @param c
+	 *            collection of which context node is a member; required for
+	 *            method signature but ignored
 	 * @param i
 	 *            tree index
 	 * @return whether n is a leaf
 	 */
 	@Attribute("leaf")
-	protected boolean isLeaf(N n, Index<N> i) {
+	protected boolean isLeaf(N n, Collection<N> c, Index<N> i) {
 		List<N> children = children(n, i);
 		if (children == null || children.isEmpty())
 			return true;
@@ -367,12 +371,15 @@ public abstract class Forester<N> {
 	 * 
 	 * @param n
 	 *            context node
+	 * @param c
+	 *            collection of which context node is a member; required for
+	 *            method signature but ignored
 	 * @param i
 	 *            tree index
 	 * @return whether n is the tree root
 	 */
 	@Attribute("root")
-	protected boolean isRoot(N n, Index<N> i) {
+	protected boolean isRoot(N n, Collection<N> c, Index<N> i) {
 		return i.isRoot(n);
 	}
 
@@ -381,13 +388,16 @@ public abstract class Forester<N> {
 	 * cannot be overridden.
 	 * 
 	 * @param n
-	 *            context node
+	 *            context node; required for method signature but ignored
+	 * @param c
+	 *            collection of which context node is a member; required for
+	 *            method signature but ignored
 	 * @param i
-	 *            tree index
+	 *            tree index; required for method signature but ignored
 	 * @return <code>null</code>
 	 */
 	@Attribute("null")
-	protected final Object Null(N n, Index<N> i) {
+	protected final Object Null(N n, Collection<N> c, Index<N> i) {
 		return null;
 	}
 
@@ -396,13 +406,16 @@ public abstract class Forester<N> {
 	 * cannot be overridden.
 	 * 
 	 * @param n
-	 *            context node
+	 *            context node; required for method signature but ignored
+	 * @param c
+	 *            collection of which context node is a member; required for
+	 *            method signature but ignored
 	 * @param i
-	 *            tree index
+	 *            tree index; required for method signature but ignored
 	 * @return <code>true</code>
 	 */
 	@Attribute("true")
-	protected final Boolean True(N n, Index<N> i) {
+	protected final Boolean True(N n, Collection<N> c, Index<N> i) {
 		return Boolean.TRUE;
 	}
 
@@ -411,13 +424,16 @@ public abstract class Forester<N> {
 	 * cannot be overridden.
 	 * 
 	 * @param n
-	 *            context node
+	 *            context node; required for method signature but ignored
+	 * @param c
+	 *            collection of which context node is a member; required for
+	 *            method signature but ignored
 	 * @param i
 	 *            tree index
 	 * @return <code>false</code>
 	 */
 	@Attribute("false")
-	protected final Boolean False(N n, Index<N> i) {
+	protected final Boolean False(N n, Collection<N> c, Index<N> i) {
 		return Boolean.FALSE;
 	}
 
@@ -425,7 +441,10 @@ public abstract class Forester<N> {
 	 * A boolean attribute that is true if the object parameter is not null.
 	 * 
 	 * @param n
-	 *            context node
+	 *            context node; required for method signature but ignored
+	 * @param c
+	 *            collection of which context node is a member; required for
+	 *            method signature but ignored
 	 * @param i
 	 *            tree index
 	 * @param o
@@ -433,12 +452,29 @@ public abstract class Forester<N> {
 	 * @return whether o isn't null
 	 */
 	@Attribute
-	protected final Boolean defined(N n, Index<N> i, Object o) {
+	protected final Boolean defined(N n, Collection<N> c, Index<N> i, Object o) {
 		return o == null ? false : true;
 	}
 
+	/**
+	 * An attribute that returns the context node itself.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param c
+	 *            collection of which context node is a member; required for
+	 *            method signature but ignored
+	 * @param i
+	 *            tree index; required for method signature but ignored
+	 * @return the context node n
+	 */
+	@Attribute("this")
+	protected final N This(N n, Collection<N> c, Index<N> i) {
+		return n;
+	}
+
 	protected List<N> leaves(N n, NodeTest<N> t, Index<N> i) {
-		if (isLeaf(n, i)) {
+		if (isLeaf(n, null, i)) {
 			if (!t.passes(n, i))
 				return Collections.emptyList();
 			List<N> leaves = new ArrayList<N>(1);
@@ -454,7 +490,7 @@ public abstract class Forester<N> {
 	protected List<N> ancestors(N n, NodeTest<N> t, Index<N> i) {
 		LinkedList<N> ancestors = new LinkedList<N>();
 		N o = n;
-		while (!isRoot(o, i)) {
+		while (!isRoot(o, null, i)) {
 			N parent = parent(o, i);
 			if (t.passes(parent, i))
 				ancestors.addFirst(parent);
@@ -466,7 +502,7 @@ public abstract class Forester<N> {
 	protected Collection<N> descendants(N n, NodeTest<N> t, Index<N> i) {
 		List<N> descendants = new LinkedList<N>();
 		for (N child : children(n, i)) {
-			if (!isLeaf(child, i))
+			if (!isLeaf(child, null, i))
 				descendants.addAll(descendants(child, t, i));
 			if (t.passes(child, i))
 				descendants.add(child);
@@ -487,7 +523,7 @@ public abstract class Forester<N> {
 	}
 
 	protected List<N> precedingSiblings(N n, NodeTest<N> t, Index<N> i) {
-		if (isRoot(n, i))
+		if (isRoot(n, null, i))
 			return Collections.emptyList();
 		List<N> siblings = children(parent(n, i), i);
 		List<N> precedingSiblings = new ArrayList<N>(siblings.size() - 1);
@@ -501,7 +537,7 @@ public abstract class Forester<N> {
 	}
 
 	protected List<N> siblings(N n, Index<N> i) {
-		if (isRoot(n, i))
+		if (isRoot(n, null, i))
 			return Collections.emptyList();
 		List<N> siblings = children(parent(n, i), i);
 		List<N> sibs = new ArrayList<N>(siblings.size() - 1);
@@ -513,7 +549,7 @@ public abstract class Forester<N> {
 	}
 
 	protected List<N> followingSiblings(N n, NodeTest<N> t, Index<N> i) {
-		if (isRoot(n, i))
+		if (isRoot(n, null, i))
 			return Collections.emptyList();
 		List<N> siblings = children(parent(n, i), i);
 		List<N> followingSiblings = new ArrayList<N>(siblings.size() - 1);
@@ -529,7 +565,7 @@ public abstract class Forester<N> {
 
 	@SuppressWarnings("unchecked")
 	protected Collection<N> preceding(N n, NodeTest<N> t, Index<N> i) {
-		if (isRoot(n, i))
+		if (isRoot(n, null, i))
 			return Collections.emptyList();
 		Collection<N> preceding = new LinkedList<N>();
 		Collections.emptyList();
@@ -551,7 +587,7 @@ public abstract class Forester<N> {
 
 	@SuppressWarnings("unchecked")
 	protected Collection<N> following(N n, NodeTest<N> t, Index<N> i) {
-		if (isRoot(n, i))
+		if (isRoot(n, null, i))
 			return Collections.emptyList();
 		Collection<N> following = new LinkedList<N>();
 		List<N> ancestors = ancestors(n, (NodeTest<N>) TrueTest.test(), i);
@@ -575,8 +611,8 @@ public abstract class Forester<N> {
 	 * @return index of n among its parent's children; -1 if n is root
 	 */
 	@Attribute
-	protected int index(N n, Index<N> in) {
-		if (isRoot(n, in))
+	protected int index(N n, Collection<N> c, Index<N> in) {
+		if (isRoot(n, null, in))
 			return -1;
 		List<N> siblings = children(parent(n, in), in);
 		for (int i = 0, lim = siblings.size(); i < lim; i++) {
@@ -585,11 +621,6 @@ public abstract class Forester<N> {
 				return i;
 		}
 		return -1;
-	}
-
-	@Attribute("index-is")
-	public boolean indexIs(N n, Index<N> in, int i) {
-		return index(n, in) == i;
 	}
 
 	/**

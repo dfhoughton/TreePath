@@ -17,11 +17,11 @@ import dfh.grammar.Match;
  * 
  * @param <N>
  */
-public class RootMatching<N> extends TestSelector<N> {
+class RootMatching<N> extends TestSelector<N> {
 
 	private final NodeTest<N> test;
 
-	public RootMatching(String pattern, Match arguments, Forester<N> f) {
+	RootMatching(String pattern, Match arguments, Forester<N> f) {
 		super(arguments, f);
 		final Pattern p = Pattern.compile(pattern);
 		test = new NodeTest<N>() {

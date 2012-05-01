@@ -1,6 +1,7 @@
 package dfh.treepath;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
 
 import dfh.grammar.Match;
@@ -20,7 +21,7 @@ import dfh.grammar.MatchTest;
  * 
  * @param <N>
  */
-public class CompiledAttribute<N> {
+class CompiledAttribute<N> {
 	private final Method a;
 	private final Object[] args;
 	private static final MatchTest argTest = new MatchTest() {
@@ -30,7 +31,7 @@ public class CompiledAttribute<N> {
 		}
 	};
 
-	public CompiledAttribute(Match m, Forester<N> f) {
+	CompiledAttribute(Match m, Forester<N> f) {
 		String s = m.first("aname").group();
 		s = s.substring(1);
 		a = f.attributes.get(s);
@@ -38,48 +39,62 @@ public class CompiledAttribute<N> {
 		args = new Object[argList.size()];
 		int index = 0;
 		for (Match arg : argList) {
-			arg = arg.children()[0];
-			String type = arg.rule().label().id;
-			Object o = null;
-			if (type.equals("treepath")) {
-				o = f.path(arg);
-			} else if (type.equals("attribute")) {
-				o = new CompiledAttribute<N>(arg, f);
-			} else if (type.equals("literal")) {
-				String literal = arg.group();
-				literal = literal.substring(1, literal.length() - 1);
-				literal = literal.replaceAll("\\\\(.)", "$1");
-				o = literal;
-			} else if (type.equals("num")) {
-				arg = arg.children()[0];
-				String subtype = arg.rule().label().id;
-				if (subtype.equals("signed_int")) {
-					o = new Integer(arg.group());
-				} else if (subtype.equals("float")) {
-					o = new Double(arg.group());
-				} else {
-					throw new PathException("unknown num subtype: " + subtype
-							+ " in attribute " + m.group());
-				}
-			} else {
-				throw new PathException("unknown attribute argument type "
-						+ type + " in attribute " + m.group());
-			}
+			Match am = arg.children()[0];
+			Object o = parseArgument(m, f, am);
 			args[index++] = o;
 		}
 	}
 
+	/**
+	 * Converts various matches into the appropriate argument type.
+	 * 
+	 * @param master
+	 * @param f
+	 * @param arg
+	 * @return
+	 */
+	static <N> Object parseArgument(Match master, Forester<N> f, Match arg) {
+		String type = arg.rule().label().id;
+		Object o = null;
+		if (type.equals("treepath")) {
+			o = f.path(arg);
+		} else if (type.equals("attribute")) {
+			o = new CompiledAttribute<N>(arg, f);
+		} else if (type.equals("literal")) {
+			String literal = arg.group();
+			literal = literal.substring(1, literal.length() - 1);
+			literal = literal.replaceAll("\\\\(.)", "$1");
+			o = literal;
+		} else if (type.equals("num")) {
+			arg = arg.children()[0];
+			String subtype = arg.rule().label().id;
+			if (subtype.equals("signed_int")) {
+				o = new Integer(arg.group());
+			} else if (subtype.equals("float")) {
+				o = new Double(arg.group());
+			} else {
+				throw new PathException("unknown num subtype: " + subtype
+						+ " in attribute " + master.group());
+			}
+		} else {
+			throw new PathException("unknown attribute argument type " + type
+					+ " in attribute " + master.group());
+		}
+		return o;
+	}
+
 	@SuppressWarnings("unchecked")
-	public Object apply(N n, Index<N> i) {
-		Object[] ops = new Object[args.length + 2];
+	Object apply(N n, Collection<N> c, Index<N> i) {
+		Object[] ops = new Object[args.length + 3];
 		ops[0] = n;
-		ops[1] = i;
-		int index = 2;
+		ops[1] = c;
+		ops[2] = i;
+		int index = 3;
 		for (int j = 0; j < args.length; j++, index++) {
 			Object o = args[j];
 			if (o instanceof CompiledAttribute<?>) {
 				CompiledAttribute<N> ca = (CompiledAttribute<N>) o;
-				ops[index] = ca.apply(n, i);
+				ops[index] = ca.apply(n, c, i);
 			} else if (o instanceof Path<?>) {
 				Path<N> p = (Path<N>) o;
 				ops[index] = p.select(n, i);

@@ -12,11 +12,11 @@ import dfh.grammar.Match;
  * 
  * @param <N>
  */
-public class ChildTag<N> extends TestSelector<N> {
+class ChildTag<N> extends TestSelector<N> {
 
 	private final NodeTest<N> test;
 
-	public ChildTag(final String tag, Match arguments, Forester<N> f) {
+	ChildTag(final String tag, Match arguments, Forester<N> f) {
 		super(arguments, f);
 		test = new NodeTest<N>() {
 			@Override

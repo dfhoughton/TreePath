@@ -6,16 +6,16 @@ import java.util.List;
 
 import dfh.grammar.Match;
 
-public class TreePathPredicate<N> extends Predicate<N> {
+class TreePathPredicate<N> extends Predicate<N> {
 
 	private final Path<N> path;
 
-	public TreePathPredicate(Match type, Forester<N> f) {
+	TreePathPredicate(Match type, Forester<N> f) {
 		path = f.path(type);
 	}
 
 	@Override
-	public Collection<N> filter(Collection<N> c, Index<N> i) {
+	Collection<N> filter(Collection<N> c, Index<N> i) {
 		List<N> filtrate = new ArrayList<N>(c.size());
 		for (N n : c) {
 			Collection<N> c2 = path.select(n);

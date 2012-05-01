@@ -12,7 +12,7 @@ import dfh.grammar.Match;
  * 
  * @param <N>
  */
-public class ClosestWildcard<N> extends WildcardSelector<N> {
+ class ClosestWildcard<N> extends WildcardSelector<N> {
 
 	public ClosestWildcard(Match arguments, Forester<N> f) {
 		super(arguments, f);

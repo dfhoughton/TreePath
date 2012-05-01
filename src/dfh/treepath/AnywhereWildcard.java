@@ -13,9 +13,9 @@ import dfh.treepath.PathGrammar.Axis;
  * 
  * @param <N>
  */
-public class AnywhereWildcard<N> extends WildcardSelector<N> {
+ class AnywhereWildcard<N> extends WildcardSelector<N> {
 
-	public AnywhereWildcard(Match arguments, Forester<N> f) {
+	 AnywhereWildcard(Match arguments, Forester<N> f) {
 		super(arguments, f);
 	}
 

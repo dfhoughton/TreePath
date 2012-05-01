@@ -12,7 +12,7 @@ import java.util.List;
  * 
  * @param <N>
  */
-public class SelfSelector<N> implements Selector<N> {
+class SelfSelector<N> implements Selector<N> {
 	@Override
 	public Collection<N> select(N n, Index<N> i) {
 		List<N> list = new ArrayList<N>(1);

@@ -13,11 +13,11 @@ import dfh.grammar.Match;
  * 
  * @param <N>
  */
-public class ClosestMatching<N> extends TestSelector<N> {
+class ClosestMatching<N> extends TestSelector<N> {
 
 	private final NodeTest<N> test;
 
-	public ClosestMatching(String pattern, Match arguments, Forester<N> f) {
+	ClosestMatching(String pattern, Match arguments, Forester<N> f) {
 		super(arguments, f);
 		final Pattern p = Pattern.compile(pattern);
 		test = new NodeTest<N>() {

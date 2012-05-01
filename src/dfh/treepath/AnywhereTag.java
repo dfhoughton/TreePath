@@ -13,11 +13,11 @@ import dfh.treepath.PathGrammar.Axis;
  * 
  * @param <N>
  */
-public class AnywhereTag<N> extends TestSelector<N> {
+class AnywhereTag<N> extends TestSelector<N> {
 
 	private final NodeTest<N> test;
 
-	public AnywhereTag(final String tag, Match arguments, Forester<N> f) {
+	AnywhereTag(final String tag, Match arguments, Forester<N> f) {
 		super(arguments, f);
 		test = new NodeTest<N>() {
 			@Override

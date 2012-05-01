@@ -15,16 +15,16 @@ import java.util.List;
  * 
  * @param <N>
  */
-public class IndexPredicate<N> extends Predicate<N> {
+class IndexPredicate<N> extends Predicate<N> {
 
 	private int index;
 
-	public IndexPredicate(int index) {
+	IndexPredicate(int index) {
 		this.index = index;
 	}
 
 	@Override
-	public Collection<N> filter(Collection<N> c, Index<N> i) {
+	Collection<N> filter(Collection<N> c, Index<N> i) {
 		if (index >= c.size())
 			return Collections.emptyList();
 		List<N> filtrate = new ArrayList<N>(1);

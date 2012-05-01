@@ -13,12 +13,11 @@ import dfh.grammar.Match;
  * 
  * @param <N>
  */
-public class AxisTag<N> extends AxisSelector<N> {
+class AxisTag<N> extends AxisSelector<N> {
 
 	protected final NodeTest<N> test;
 
-	public AxisTag(String axisName, final String tag, Match arguments,
-			Forester<N> f) {
+	AxisTag(String axisName, final String tag, Match arguments, Forester<N> f) {
 		super(axisName, arguments, f);
 		test = new NodeTest<N>() {
 			@Override

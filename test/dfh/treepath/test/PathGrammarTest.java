@@ -178,4 +178,15 @@ public class PathGrammarTest {
 		Match m = PathGrammar.g.matches("/foo[@a = 1.5]").match();
 		assertNotNull(m);
 	}
+
+	@Test
+	public void attributeTest5() {
+		Match m = PathGrammar.g.matches("/foo[@a >= -1.5]").match();
+		assertNotNull(m);
+	}
+	@Test
+	public void attributeTest6() {
+		Match m = PathGrammar.g.matches("//b[@attr('foo') = 'bar']").match();
+		assertNotNull(m);
+	}
 }

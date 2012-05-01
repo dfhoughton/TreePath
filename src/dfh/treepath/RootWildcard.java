@@ -15,9 +15,9 @@ import dfh.grammar.Match;
  * 
  * @param <N>
  */
-public class RootWildcard<N> extends TestSelector<N> {
+class RootWildcard<N> extends TestSelector<N> {
 
-	public RootWildcard(Match arguments, Forester<N> f) {
+	RootWildcard(Match arguments, Forester<N> f) {
 		super(arguments, f);
 	}
 

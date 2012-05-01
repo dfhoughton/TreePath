@@ -13,9 +13,9 @@ import dfh.grammar.Match;
  * 
  * @param <N>
  */
-public class RootAxisWildcard<N> extends AxisSelector<N> {
+class RootAxisWildcard<N> extends AxisSelector<N> {
 
-	public RootAxisWildcard(String axisName, Match arguments, Forester<N> f) {
+	RootAxisWildcard(String axisName, Match arguments, Forester<N> f) {
 		super(axisName, arguments, f);
 	}
 

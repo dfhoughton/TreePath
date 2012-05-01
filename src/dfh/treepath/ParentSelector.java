@@ -13,7 +13,7 @@ import java.util.List;
  * 
  * @param <N>
  */
-public class ParentSelector<N> implements Selector<N> {
+class ParentSelector<N> implements Selector<N> {
 	@Override
 	public Collection<N> select(N n, Index<N> i) {
 		if (i.isRoot(n))

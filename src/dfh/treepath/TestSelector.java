@@ -6,7 +6,7 @@ import java.util.List;
 import dfh.grammar.Match;
 import dfh.grammar.MatchTest;
 
-public abstract class TestSelector<N> implements Selector<N> {
+abstract class TestSelector<N> implements Selector<N> {
 	static final MatchTest argMT = new MatchTest() {
 		@Override
 		public boolean test(Match m) {
@@ -16,7 +16,7 @@ public abstract class TestSelector<N> implements Selector<N> {
 	protected final Predicate<N>[] predicates;
 
 	@SuppressWarnings("unchecked")
-	public TestSelector(Match arguments, Forester<N> f) {
+	TestSelector(Match arguments, Forester<N> f) {
 		List<Match> argList = arguments.closest(argMT);
 		predicates = new Predicate[argList.size()];
 		for (int i = 0; i < predicates.length; i++) {

@@ -12,7 +12,7 @@ import dfh.grammar.Match;
  * 
  * @param <N>
  */
-public class ChildWildcard<N> extends WildcardSelector<N> {
+ class ChildWildcard<N> extends WildcardSelector<N> {
 
 	public ChildWildcard(Match arguments, Forester<N> f) {
 		super(arguments, f);

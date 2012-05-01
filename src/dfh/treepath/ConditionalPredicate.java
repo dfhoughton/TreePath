@@ -7,9 +7,9 @@ import java.util.List;
 import dfh.grammar.Match;
 import dfh.grammar.MatchTest;
 
-public class ConditionalPredicate<N> extends Predicate<N> {
-	private interface Expression<N> {
-		abstract boolean test(N n, Index<N> i);
+class ConditionalPredicate<N> extends Predicate<N> {
+	interface Expression<N> {
+		abstract boolean test(N n, Collection<N> c, Index<N> i);
 	}
 
 	private static class PathExpression<N> implements Expression<N> {
@@ -20,7 +20,7 @@ public class ConditionalPredicate<N> extends Predicate<N> {
 		}
 
 		@Override
-		public boolean test(N n, Index<N> i) {
+		public boolean test(N n, Collection<N> c, Index<N> i) {
 			return !path.select(n, i).isEmpty();
 		}
 
@@ -35,8 +35,8 @@ public class ConditionalPredicate<N> extends Predicate<N> {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public boolean test(N n, Index<N> i) {
-			Object o = a.apply(n, i);
+		public boolean test(N n, Collection<N> c, Index<N> i) {
+			Object o = a.apply(n, c, i);
 			if (o == null)
 				return false;
 			if (o instanceof Boolean)
@@ -59,8 +59,8 @@ public class ConditionalPredicate<N> extends Predicate<N> {
 		}
 
 		@Override
-		public boolean test(N n, Index<N> i) {
-			return !e.test(n, i);
+		public boolean test(N n, Collection<N> c, Index<N> i) {
+			return !e.test(n, c, i);
 		}
 	}
 
@@ -78,9 +78,9 @@ public class ConditionalPredicate<N> extends Predicate<N> {
 		}
 
 		@Override
-		public boolean test(N n, Index<N> i) {
+		public boolean test(N n, Collection<N> c, Index<N> i) {
 			for (Expression<N> e : expressions) {
-				if (!e.test(n, i))
+				if (!e.test(n, c, i))
 					return false;
 			}
 			return true;
@@ -102,9 +102,9 @@ public class ConditionalPredicate<N> extends Predicate<N> {
 		}
 
 		@Override
-		public boolean test(N n, Index<N> i) {
+		public boolean test(N n, Collection<N> c, Index<N> i) {
 			for (Expression<N> e : expressions) {
-				if (e.test(n, i))
+				if (e.test(n, c, i))
 					return true;
 			}
 			return false;
@@ -126,10 +126,10 @@ public class ConditionalPredicate<N> extends Predicate<N> {
 		}
 
 		@Override
-		public boolean test(N n, Index<N> i) {
+		public boolean test(N n, Collection<N> c, Index<N> i) {
 			int count = 0;
 			for (Expression<N> e : expressions) {
-				if (!e.test(n, i))
+				if (!e.test(n, c, i))
 					count++;
 				if (count > 1)
 					return false;
@@ -148,7 +148,7 @@ public class ConditionalPredicate<N> extends Predicate<N> {
 		}
 	};
 
-	public ConditionalPredicate(Match type, Forester<N> f) {
+	ConditionalPredicate(Match type, Forester<N> f) {
 		e = createExpression(type, f);
 	}
 
@@ -157,10 +157,15 @@ public class ConditionalPredicate<N> extends Predicate<N> {
 		String l = type.rule().label().id;
 		Expression<N> ex = null;
 		if (l.equals("term")) {
-			if (type.children()[0].hasLabel("attribute"))
+			Match t = type.children()[0];
+			if (t.hasLabel("attribute"))
 				ex = new AttributeExpression<N>(type.children()[0], f);
-			else
-				ex = new PathExpression<N>(type.children()[0], f);
+			else if (t.hasLabel("attribute_test")) {
+				Match am = t.children()[0], cm = t.children()[2], vm = t
+						.children()[4];
+				ex = new AttributeTestExpression<N>(am, vm, cm, f);
+			} else
+				ex = new PathExpression<N>(t, f);
 		} else {
 			List<Match> terms = type.closest(conditionMT);
 			if (l.equals("not_cnd")) {
@@ -179,10 +184,10 @@ public class ConditionalPredicate<N> extends Predicate<N> {
 	}
 
 	@Override
-	public Collection<N> filter(Collection<N> c, Index<N> i) {
+	Collection<N> filter(Collection<N> c, Index<N> i) {
 		List<N> filtrate = new ArrayList<N>(c.size());
 		for (N n : c) {
-			if (e.test(n, i))
+			if (e.test(n, c, i))
 				filtrate.add(n);
 		}
 		return filtrate;

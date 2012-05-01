@@ -12,9 +12,9 @@ import dfh.grammar.Match;
  * 
  * @param <N>
  */
-public class AxisWildcard<N> extends AxisSelector<N> {
+class AxisWildcard<N> extends AxisSelector<N> {
 
-	public AxisWildcard(String axisName, Match arguments, Forester<N> f) {
+	AxisWildcard(String axisName, Match arguments, Forester<N> f) {
 		super(axisName, arguments, f);
 	}
 

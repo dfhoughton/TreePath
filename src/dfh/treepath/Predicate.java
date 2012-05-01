@@ -13,16 +13,18 @@ import dfh.grammar.Match;
  * 
  * @param <N>
  */
-public abstract class Predicate<N> {
+abstract class Predicate<N> {
 
-	public static <N> Predicate<N> build(Match m, Forester<N> f) {
+	static <N> Predicate<N> build(Match m, Forester<N> f) {
 		Match type = m.children()[2].children()[0];
 		if (type.hasLabel("int"))
 			return new IndexPredicate<N>(Integer.parseInt(type.group()));
 		if (type.hasLabel("treepath"))
 			return new TreePathPredicate<N>(type, f);
+		if (type.hasLabel("attribute_test"))
+			return new AttributeTestPredicate<N>(type, f);
 		return new ConditionalPredicate<N>(type, f);
 	}
 
-	public abstract Collection<N> filter(Collection<N> c, Index<N> i);
+	abstract Collection<N> filter(Collection<N> c, Index<N> i);
 }

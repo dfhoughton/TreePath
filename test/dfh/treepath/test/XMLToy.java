@@ -132,7 +132,8 @@ public class XMLToy {
 		 * @return
 		 */
 		@Attribute
-		public String attr(Element e, Index<Element> i, String name) {
+		public String attr(Element e, Collection<Element> c, Index<Element> i,
+				String name) {
 			return e.attributes.get(name);
 		}
 	}
@@ -248,4 +249,21 @@ public class XMLToy {
 		assertEquals("2", bs.iterator().next().attributes.get("foo"));
 	}
 
+	@Test
+	public void attributeTestTest1() {
+		Element root = parse("<a><b/><b foo='bar'/></a>");
+		Path<Element> p = new XMLToyForester()
+				.path("//b[@attr('foo') = 'bar']");
+		Collection<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
+	}
+
+	@Test
+	public void attributeTestTest2() {
+		Element root = parse("<a><b/><b foo='bar'/></a>");
+		Path<Element> p = new XMLToyForester()
+				.path("//b[@attr('foo') < 'quux']");
+		Collection<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
+	}
 }

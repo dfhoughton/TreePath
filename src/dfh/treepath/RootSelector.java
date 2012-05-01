@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class RootSelector<N> implements Selector<N> {
+class RootSelector<N> implements Selector<N> {
 
 	@Override
 	public Collection<N> select(N n, Index<N> i) {

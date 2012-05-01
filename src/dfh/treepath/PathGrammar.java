@@ -62,7 +62,7 @@ public class PathGrammar {
 			"aname = /@(?:[\\p{L}_$]|\\\\.)(?:[\\p{L}_$\\p{N}]|-(?=[\\p{L}_\\p{N}])|\\\\.)*+/",//
 			"attribute = <aname> <args>?",//
 			"args = '(' <s> <arg> [ <s> ',' <s> <arg> ]* <s> ')'",//
-			"arg = <treepath> | <literal> | <num> | <attribute> | <attribute_test>",//
+			"arg = <treepath> | <literal> | <num> | <attribute>",//
 			"num = <signed_int> | <float>",//
 			"signed_int = /[+-]?+/ <int>",//
 			"float = /[+-]?+/ <int>?+ /\\.\\d++/ [ /e[+-]?+/i <int> ]?+",//
@@ -74,7 +74,8 @@ public class PathGrammar {
 			"s = /\\s*+/",//
 			"condition = <term> | <not_cnd> | <or_cnd> | <and_cnd> | <xor_cnd> | <group>",//
 			"term = <attribute> | <attribute_test> | <treepath>",//
-			"attribute_test = <attribute> <s> '=' <s> <value>",//
+			"attribute_test = <attribute> <s> <cmp> <s> <value>",//
+			"cmp = /[<>=]=?/",//
 			"value = <literal> | <num> | <attribute>",//
 			"group = '(' <s> <condition> <s> ')'",//
 			"not_cnd = /!|(?<!\\/)\\bnot\\b(?!\\/)/ <s> <condition> (not_precedence)",//

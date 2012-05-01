@@ -15,12 +15,12 @@ import dfh.grammar.Match;
  * 
  * @param <N>
  */
-public abstract class WildcardSelector<N> implements Selector<N> {
+abstract class WildcardSelector<N> implements Selector<N> {
 
 	protected NodeTest<N> test;
 
 	@SuppressWarnings("unchecked")
-	public WildcardSelector(Match arguments, Forester<N> f) {
+	WildcardSelector(Match arguments, Forester<N> f) {
 		List<Match> argList = arguments.closest(TestSelector.argMT);
 		final Predicate<N>[] predicates = new Predicate[argList.size()];
 		for (int i = 0; i < predicates.length; i++) {

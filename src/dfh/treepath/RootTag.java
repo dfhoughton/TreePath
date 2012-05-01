@@ -16,11 +16,11 @@ import dfh.grammar.Match;
  * 
  * @param <N>
  */
-public class RootTag<N> extends TestSelector<N> {
+class RootTag<N> extends TestSelector<N> {
 
 	private final NodeTest<N> test;
 
-	public RootTag(final String tag, Match arguments, Forester<N> f) {
+	RootTag(final String tag, Match arguments, Forester<N> f) {
 		super(arguments, f);
 		test = new NodeTest<N>() {
 			@Override
