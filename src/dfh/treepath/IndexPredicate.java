@@ -25,13 +25,16 @@ class IndexPredicate<N> extends Predicate<N> {
 
 	@Override
 	Collection<N> filter(Collection<N> c, Index<N> i) {
-		if (index >= c.size())
+		int in = index;
+		if (in < 0)
+			in = c.size() + in;
+		if (in < 0 || in >= c.size())
 			return Collections.emptyList();
 		List<N> filtrate = new ArrayList<N>(1);
 		int j = 0;
 		for (Iterator<N> k = c.iterator(); k.hasNext();) {
 			N n = k.next();
-			if (j++ == index) {
+			if (j++ == in) {
 				filtrate.add(n);
 				break;
 			}

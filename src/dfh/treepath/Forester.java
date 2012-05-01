@@ -195,7 +195,7 @@ public abstract class Forester<N> {
 	private static final MatchTest anameMT = new MatchTest() {
 		@Override
 		public boolean test(Match m) {
-			return m.rule().label().id.equals("aname");
+			return m.rule().label().id.equals("axis_name");
 		}
 	};
 

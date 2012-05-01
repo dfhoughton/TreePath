@@ -17,7 +17,7 @@ abstract class Predicate<N> {
 
 	static <N> Predicate<N> build(Match m, Forester<N> f) {
 		Match type = m.children()[2].children()[0];
-		if (type.hasLabel("int"))
+		if (type.hasLabel("signed_int"))
 			return new IndexPredicate<N>(Integer.parseInt(type.group()));
 		if (type.hasLabel("treepath"))
 			return new TreePathPredicate<N>(type, f);

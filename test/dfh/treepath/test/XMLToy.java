@@ -71,13 +71,14 @@ public class XMLToy {
 				String key = a.first("tag").group();
 				String value = a.first("quoted").group();
 				value = value.substring(1, value.length() - 1);
+				value = value.replaceAll("\\\\(.)", "$1");
 				attributes.put(key, value);
 			}
-			if (e.children()[1].children()[0].hasLabel("simple")) {
+			Match m = e.children()[1].children()[0];
+			if (m.hasLabel("simple")) {
 				children = new Element[0];
 			} else {
-				List<Match> clist = e.children()[1].children()[0].children()[4]
-						.closest(closestMT);
+				List<Match> clist = m.children()[4].closest(closestMT);
 				children = new Element[clist.size()];
 				for (int i = 0; i < children.length; i++)
 					children[i] = new Element(clist.get(i));
@@ -151,6 +152,8 @@ public class XMLToy {
 		return new Element(root);
 	}
 
+	// tests to confirm functionality of XMLToy
+
 	@Test
 	public void simpleRoot() {
 		Element e = parse("<foo/>");
@@ -199,6 +202,8 @@ public class XMLToy {
 		assertEquals("baz", e.children[1].children[0].tag);
 		assertEquals("bumpus", e.children[1].children[1].tag);
 	}
+
+	// tests to confirm functionality of tree path
 
 	@Test
 	public void anywhereTag() {
@@ -265,5 +270,34 @@ public class XMLToy {
 				.path("//b[@attr('foo') < 'quux']");
 		Collection<Element> bs = p.select(root);
 		assertEquals(1, bs.size());
+	}
+
+	@Test
+	public void axisTest1() {
+		Element root = parse("<a><b/><c><b/><d><b/></d></c><b foo='bar'/><b/><c><b/></c></a>");
+		Path<Element> p = new XMLToyForester()
+				.path("//b[@attr('foo') = 'bar']/preceding::b");
+		Collection<Element> bs = p.select(root);
+		assertEquals(3, bs.size());
+	}
+
+	@Test
+	public void axisTest2() {
+		Element root = parse("<a><b/><c><b quux='corge'/><d><b/></d></c><b foo='bar'/><b/><c><b/></c></a>");
+		Path<Element> p = new XMLToyForester()
+				.path("//b[@attr('foo') = 'bar']/preceding::b[1]");
+		Collection<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
+		assertEquals("corge", bs.iterator().next().attributes.get("quux"));
+	}
+
+	@Test
+	public void axisTest3() {
+		Element root = parse("<a><b/><c><b quux='corge'/><d><b/></d></c><b foo='bar'/><b/><c><b/></c></a>");
+		Path<Element> p = new XMLToyForester()
+				.path("//b[@attr('foo') = 'bar']/preceding::b[-2]");
+		Collection<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
+		assertEquals("corge", bs.iterator().next().attributes.get("quux"));
 	}
 }

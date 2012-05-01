@@ -69,7 +69,7 @@ public class PathGrammar {
 			"literal = <squote> | <dquote>",//
 			"squote = /'(?:[^']|\\\\.)++'/",//
 			"dquote = /\"(?:[^\"]|\\\\.)++\"/",//
-			"predicate = '[' <s> [ <int> | <treepath> | <attribute_test> | <condition> ] <s> ']'",//
+			"predicate = '[' <s> [ <signed_int> | <treepath> | <attribute_test> | <condition> ] <s> ']'",//
 			"int = /\\b(?:0|[1-9][0-9]*+)\\b/",//
 			"s = /\\s*+/",//
 			"condition = <term> | <not_cnd> | <or_cnd> | <and_cnd> | <xor_cnd> | <group>",//
