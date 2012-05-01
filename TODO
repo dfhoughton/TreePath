@@ -11,22 +11,16 @@ historical holding pen at the end.
 TODO
 ====
 
-* implement syntax for attribute value tests: //foo[@bar = 1]
 . make everything serializable
 . make attribute tests symmetric
 . test method signatures of attributes during construction
-* make context collection available to attributes
-* add identity comparison
 . make attribute tests available as arguments to attributes
 . create extension class with basic attributes copied from XPath
-* make most classes only package-accessible to simplify API
-* allow negative indexing
 . differentiate @self and @this; the former is the node relative to which
   the attribute is evaluated and the latter is the node that generated the
   collection being filtered
 . let Forester ignore nodes matching particular NodeTests
 . allow colons in attribute and tag names without escaping
-* make Path.select(N) return a list rather than a collection for convenience
 . create != operator
 
 RELICS
@@ -34,3 +28,9 @@ RELICS
 
 Things swept out of TODO list:
 
+* implement syntax for attribute value tests: //foo[@bar = 1]
+* make context collection available to attributes
+* add identity comparison
+* make most classes only package-accessible to simplify API
+* allow negative indexing
+* make Path.select(N) return a list rather than a collection for convenience
