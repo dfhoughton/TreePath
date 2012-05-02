@@ -54,6 +54,8 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	protected static final MatchTest pathMt = new MatchTest() {
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public boolean test(Match m) {
 			return m.rule().label().id.equals("path");
@@ -191,12 +193,16 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	private static final MatchTest subsequentMT = new MatchTest() {
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public boolean test(Match m) {
 			return m.hasLabel("segment");
 		}
 	};
 	private static final MatchTest anameMT = new MatchTest() {
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public boolean test(Match m) {
 			return m.rule().label().id.equals("axis_name");

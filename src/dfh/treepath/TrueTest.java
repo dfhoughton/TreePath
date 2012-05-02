@@ -1,6 +1,7 @@
 package dfh.treepath;
 
 public class TrueTest<N> implements NodeTest<N> {
+	private static final long serialVersionUID = 1L;
 
 	private TrueTest() {
 	}

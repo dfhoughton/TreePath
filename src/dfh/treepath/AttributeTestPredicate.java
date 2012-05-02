@@ -16,7 +16,7 @@ import dfh.grammar.Match;
  * @param <N>
  */
 class AttributeTestPredicate<N> extends Predicate<N> {
-
+	private static final long serialVersionUID = 1L;
 	private final AttributeTestExpression<N> a;
 
 	AttributeTestPredicate(Match m, Forester<N> f) {

@@ -16,6 +16,7 @@ import dfh.grammar.Match;
  * @param <N>
  */
 class RootWildcard<N> extends TestSelector<N> {
+	private static final long serialVersionUID = 1L;
 
 	RootWildcard(Match arguments, Forester<N> f) {
 		super(arguments, f);

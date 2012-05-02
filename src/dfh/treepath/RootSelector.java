@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 class RootSelector<N> implements Selector<N> {
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public Collection<N> select(N n, Index<N> i) {

@@ -16,6 +16,7 @@ import dfh.grammar.Match;
  * @param <N>
  */
 abstract class WildcardSelector<N> implements Selector<N> {
+	private static final long serialVersionUID = 1L;
 
 	protected NodeTest<N> test;
 
@@ -30,6 +31,8 @@ abstract class WildcardSelector<N> implements Selector<N> {
 						"index predicates cannot be used with the wildcard character");
 		}
 		test = new NodeTest<N>() {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public boolean passes(N n, Index<N> i) {
 				Collection<N> list = new ArrayList<N>(1);

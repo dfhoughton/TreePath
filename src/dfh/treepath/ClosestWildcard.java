@@ -12,7 +12,8 @@ import dfh.grammar.Match;
  * 
  * @param <N>
  */
- class ClosestWildcard<N> extends WildcardSelector<N> {
+class ClosestWildcard<N> extends WildcardSelector<N> {
+	private static final long serialVersionUID = 1L;
 
 	public ClosestWildcard(Match arguments, Forester<N> f) {
 		super(arguments, f);

@@ -25,6 +25,8 @@ class CompiledAttribute<N> {
 	private final Method a;
 	private final Object[] args;
 	private static final MatchTest argTest = new MatchTest() {
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public boolean test(Match m) {
 			return m.rule().label().id.equals("arg");

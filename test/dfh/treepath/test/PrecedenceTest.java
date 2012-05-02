@@ -40,6 +40,8 @@ public class PrecedenceTest {
 		};
 		g = new Grammar(rules);
 		final MatchTest t = new MatchTest() {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public boolean test(Match m) {
 				return m.rule().label().id.equals("cnd");

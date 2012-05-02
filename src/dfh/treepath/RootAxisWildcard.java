@@ -14,6 +14,7 @@ import dfh.grammar.Match;
  * @param <N>
  */
 class RootAxisWildcard<N> extends AxisSelector<N> {
+	private static final long serialVersionUID = 1L;
 
 	RootAxisWildcard(String axisName, Match arguments, Forester<N> f) {
 		super(axisName, arguments, f);

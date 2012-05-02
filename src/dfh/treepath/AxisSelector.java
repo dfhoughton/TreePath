@@ -4,6 +4,7 @@ import dfh.grammar.Match;
 import dfh.treepath.PathGrammar.Axis;
 
 abstract class AxisSelector<N> extends TestSelector<N> {
+	private static final long serialVersionUID = 1L;
 
 	protected final Axis axis;
 

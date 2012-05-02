@@ -14,6 +14,8 @@ import java.util.List;
  * @param <N>
  */
 class ParentSelector<N> implements Selector<N> {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public Collection<N> select(N n, Index<N> i) {
 		if (i.isRoot(n))

@@ -7,6 +7,7 @@ import java.util.List;
 import dfh.grammar.Match;
 
 class TreePathPredicate<N> extends Predicate<N> {
+	private static final long serialVersionUID = 1L;
 
 	private final Path<N> path;
 

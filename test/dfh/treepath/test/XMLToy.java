@@ -54,9 +54,11 @@ public class XMLToy {
 	 */
 	public static class Element {
 		private static final MatchTest closestMT = new MatchTest() {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public boolean test(Match m) {
-				return m.hasLabel("element");
+				return m.rule().label().id.equals("element");
 			}
 		};
 		public final String tag;
@@ -94,6 +96,7 @@ public class XMLToy {
 	 * @author David F. Houghton - Apr 28, 2012
 	 */
 	public static class XMLToyForester extends Forester<Element> {
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		protected Index<Element> treeIndex(Element root) {

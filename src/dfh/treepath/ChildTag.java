@@ -13,12 +13,15 @@ import dfh.grammar.Match;
  * @param <N>
  */
 class ChildTag<N> extends TestSelector<N> {
+	private static final long serialVersionUID = 1L;
 
 	private final NodeTest<N> test;
 
 	ChildTag(final String tag, Match arguments, Forester<N> f) {
 		super(arguments, f);
 		test = new NodeTest<N>() {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public boolean passes(N n, Index<N> i) {
 				return i.f.hasTag(n, tag);

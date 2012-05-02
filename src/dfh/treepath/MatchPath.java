@@ -17,6 +17,7 @@ import dfh.grammar.Match;
  * 
  */
 public class MatchPath extends Forester<Match> {
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected List<Match> children(Match n, Index<Match> i) {

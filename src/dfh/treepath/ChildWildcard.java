@@ -12,7 +12,8 @@ import dfh.grammar.Match;
  * 
  * @param <N>
  */
- class ChildWildcard<N> extends WildcardSelector<N> {
+class ChildWildcard<N> extends WildcardSelector<N> {
+	private static final long serialVersionUID = 1L;
 
 	public ChildWildcard(Match arguments, Forester<N> f) {
 		super(arguments, f);

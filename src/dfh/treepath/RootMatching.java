@@ -18,6 +18,7 @@ import dfh.grammar.Match;
  * @param <N>
  */
 class RootMatching<N> extends TestSelector<N> {
+	private static final long serialVersionUID = 1L;
 
 	private final NodeTest<N> test;
 
@@ -25,6 +26,8 @@ class RootMatching<N> extends TestSelector<N> {
 		super(arguments, f);
 		final Pattern p = Pattern.compile(pattern);
 		test = new NodeTest<N>() {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public boolean passes(N n, Index<N> i) {
 				return i.f.matchesTag(n, p);

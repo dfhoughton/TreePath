@@ -13,6 +13,8 @@ import java.util.List;
  * @param <N>
  */
 class SelfSelector<N> implements Selector<N> {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public Collection<N> select(N n, Index<N> i) {
 		List<N> list = new ArrayList<N>(1);

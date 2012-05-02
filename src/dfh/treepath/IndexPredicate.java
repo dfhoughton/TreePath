@@ -16,7 +16,7 @@ import java.util.List;
  * @param <N>
  */
 class IndexPredicate<N> extends Predicate<N> {
-
+	private static final long serialVersionUID = 1L;
 	private int index;
 
 	IndexPredicate(int index) {

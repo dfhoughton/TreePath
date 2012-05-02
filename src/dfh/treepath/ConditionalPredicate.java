@@ -151,6 +151,8 @@ class ConditionalPredicate<N> extends Predicate<N> {
 	private final Expression<N> e;
 
 	private static final MatchTest conditionMT = new MatchTest() {
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public boolean test(Match m) {
 			return m.rule().label().id.equals("condition");

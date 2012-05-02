@@ -7,7 +7,10 @@ import dfh.grammar.Match;
 import dfh.grammar.MatchTest;
 
 abstract class TestSelector<N> implements Selector<N> {
+	private static final long serialVersionUID = 1L;
 	static final MatchTest argMT = new MatchTest() {
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public boolean test(Match m) {
 			return m.rule().label().id.equals("predicate");
