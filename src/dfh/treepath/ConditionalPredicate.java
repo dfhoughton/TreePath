@@ -1,5 +1,6 @@
 package dfh.treepath;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -8,11 +9,14 @@ import dfh.grammar.Match;
 import dfh.grammar.MatchTest;
 
 class ConditionalPredicate<N> extends Predicate<N> {
-	interface Expression<N> {
+	private static final long serialVersionUID = 1L;
+
+	interface Expression<N> extends Serializable {
 		abstract boolean test(N n, Collection<N> c, Index<N> i);
 	}
 
 	private static class PathExpression<N> implements Expression<N> {
+		private static final long serialVersionUID = 1L;
 		private final Path<N> path;
 
 		PathExpression(Match m, Forester<N> f) {
@@ -27,6 +31,7 @@ class ConditionalPredicate<N> extends Predicate<N> {
 	}
 
 	private static class AttributeExpression<N> implements Expression<N> {
+		private static final long serialVersionUID = 1L;
 		private final CompiledAttribute<N> a;
 
 		AttributeExpression(Match m, Forester<N> f) {
@@ -52,6 +57,7 @@ class ConditionalPredicate<N> extends Predicate<N> {
 	}
 
 	private static class NotExpression<N> implements Expression<N> {
+		private static final long serialVersionUID = 1L;
 		Expression<N> e;
 
 		NotExpression(Match m, Forester<N> f) {
@@ -65,6 +71,7 @@ class ConditionalPredicate<N> extends Predicate<N> {
 	}
 
 	private static class AndExpression<N> implements Expression<N> {
+		private static final long serialVersionUID = 1L;
 
 		private final Expression<N>[] expressions;
 
@@ -89,6 +96,7 @@ class ConditionalPredicate<N> extends Predicate<N> {
 	}
 
 	private static class OrExpression<N> implements Expression<N> {
+		private static final long serialVersionUID = 1L;
 
 		private final Expression<N>[] expressions;
 
@@ -113,6 +121,7 @@ class ConditionalPredicate<N> extends Predicate<N> {
 	}
 
 	private static class XorExpression<N> implements Expression<N> {
+		private static final long serialVersionUID = 1L;
 
 		private final Expression<N>[] expressions;
 

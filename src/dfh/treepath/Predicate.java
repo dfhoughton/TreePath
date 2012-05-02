@@ -1,5 +1,6 @@
 package dfh.treepath;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import dfh.grammar.Match;
@@ -13,7 +14,9 @@ import dfh.grammar.Match;
  * 
  * @param <N>
  */
-abstract class Predicate<N> {
+abstract class Predicate<N> implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	static <N> Predicate<N> build(Match m, Forester<N> f) {
 		Match type = m.children()[2].children()[0];

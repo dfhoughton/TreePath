@@ -1,5 +1,6 @@
 package dfh.treepath;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +34,8 @@ import dfh.treepath.PathGrammar.Axis;
  *            the variety of node in the trees understood by the
  *            {@link Forester}
  */
-public abstract class Forester<N> {
+public abstract class Forester<N> implements Serializable {
+	private static final long serialVersionUID = 1L;
 	Map<String, Method> attributes = new HashMap<String, Method>();
 
 	/**

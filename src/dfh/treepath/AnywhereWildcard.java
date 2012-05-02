@@ -13,9 +13,10 @@ import dfh.treepath.PathGrammar.Axis;
  * 
  * @param <N>
  */
- class AnywhereWildcard<N> extends WildcardSelector<N> {
+class AnywhereWildcard<N> extends WildcardSelector<N> {
+	private static final long serialVersionUID = 1L;
 
-	 AnywhereWildcard(Match arguments, Forester<N> f) {
+	AnywhereWildcard(Match arguments, Forester<N> f) {
 		super(arguments, f);
 	}
 

@@ -15,6 +15,7 @@ import dfh.treepath.ConditionalPredicate.Expression;
  * @param <N>
  */
 class AttributeTestExpression<N> implements Expression<N> {
+	private static final long serialVersionUID = 1L;
 	private final CompiledAttribute<N> a;
 	private final Object v;
 

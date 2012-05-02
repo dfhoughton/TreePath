@@ -8,6 +8,7 @@
  */
 package dfh.treepath;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -22,7 +23,8 @@ import java.util.Set;
  * 
  * @param <N>
  */
-public class Path<N> {
+public class Path<N> implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private final Selector<N>[][] selectors;
 	private final Forester<N> f;
 

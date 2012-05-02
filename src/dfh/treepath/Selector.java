@@ -1,8 +1,9 @@
 package dfh.treepath;
 
+import java.io.Serializable;
 import java.util.Collection;
 
-interface Selector<N> {
+interface Selector<N> extends Serializable {
 	/**
 	 * @param n
 	 * @param i
