@@ -23,6 +23,7 @@ TODO
 * allow colons in attribute and tag names without escaping
 * create != operator
 . add @log attribute for debugging
+. add tests to ensure foresters are reusable
 
 RELICS
 ======
