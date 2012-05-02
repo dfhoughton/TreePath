@@ -12,7 +12,7 @@ TODO
 ====
 
 . make everything serializable
-. make attribute tests symmetric
+* make attribute tests symmetric
 . test method signatures of attributes during construction
 . make attribute tests available as arguments to attributes
 . create extension class with basic attributes copied from XPath

@@ -20,8 +20,7 @@ class AttributeTestPredicate<N> extends Predicate<N> {
 	private final AttributeTestExpression<N> a;
 
 	AttributeTestPredicate(Match m, Forester<N> f) {
-		a = new AttributeTestExpression<N>(m.children()[0],
-				m.children()[4].children()[0], m.children()[2], f);
+		a = new AttributeTestExpression<N>(m, f);
 	}
 
 	@Override

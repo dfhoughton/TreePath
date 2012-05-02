@@ -28,8 +28,22 @@ class AttributeTestExpression<N> implements Expression<N> {
 
 	private final AttributeTestExpression.ComparisonOperator c;
 	private final AttributeTestExpression.VType vt;
+	private final boolean swapped;
 
-	AttributeTestExpression(Match am, Match vm, Match cm, Forester<N> f) {
+	AttributeTestExpression(Match master, Forester<N> f) {
+		master = master.children()[0];
+		Match left = master.children()[0], cm = master.children()[2], right = master
+				.children()[4], am, vm;
+		if (left.rule().label().id.equals("attribute")) {
+			am = left;
+			vm = right;
+			swapped = false;
+		} else {
+			am = right;
+			vm = left;
+			swapped = true;
+		}
+		vm = vm.children()[0];
 		a = new CompiledAttribute<N>(am, f);
 		v = CompiledAttribute.parseArgument(vm, f, vm);
 		if (v instanceof Integer)
@@ -48,13 +62,13 @@ class AttributeTestExpression<N> implements Expression<N> {
 		if ("=".equals(s))
 			c = ComparisonOperator.eq;
 		else if (">".equals(s))
-			c = ComparisonOperator.gt;
+			c = swapped ? ComparisonOperator.lt : ComparisonOperator.gt;
 		else if ("<".equals(s))
-			c = ComparisonOperator.lt;
+			c = swapped ? ComparisonOperator.gt : ComparisonOperator.lt;
 		else if (">=".equals(s))
-			c = ComparisonOperator.eg;
+			c = swapped ? ComparisonOperator.el : ComparisonOperator.eg;
 		else if ("<=".equals(s))
-			c = ComparisonOperator.el;
+			c = swapped ? ComparisonOperator.eg : ComparisonOperator.el;
 		else if ("==".equals(s))
 			c = ComparisonOperator.id;
 		else if ("!=".equals(s))

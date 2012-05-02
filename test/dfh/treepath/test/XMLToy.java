@@ -264,10 +264,28 @@ public class XMLToy {
 	}
 
 	@Test
+	public void attributeTestTest1_2() {
+		Element root = parse("<a><b/><b foo='bar'/></a>");
+		Path<Element> p = new XMLToyForester()
+				.path("//b['bar' = @attr('foo')]");
+		Collection<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
+	}
+
+	@Test
 	public void attributeTestTest2() {
 		Element root = parse("<a><b/><b foo='bar'/></a>");
 		Path<Element> p = new XMLToyForester()
 				.path("//b[@attr('foo') < 'quux']");
+		Collection<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
+	}
+
+	@Test
+	public void attributeTestTest2_2() {
+		Element root = parse("<a><b/><b foo='bar'/></a>");
+		Path<Element> p = new XMLToyForester()
+				.path("//b['quux' > @attr('foo')]");
 		Collection<Element> bs = p.select(root);
 		assertEquals(1, bs.size());
 	}
@@ -305,6 +323,14 @@ public class XMLToy {
 	public void neTest() {
 		Element root = parse("<a><b/><b foo='1'/><b foo='2'/></a>");
 		Path<Element> p = new XMLToyForester().path("//b[@attr('foo') != '1']");
+		Collection<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
+	}
+
+	@Test
+	public void neTest2() {
+		Element root = parse("<a><b/><b foo='1'/><b foo='2'/></a>");
+		Path<Element> p = new XMLToyForester().path("//b['1' != @attr('foo')]");
 		Collection<Element> bs = p.select(root);
 		assertEquals(1, bs.size());
 	}

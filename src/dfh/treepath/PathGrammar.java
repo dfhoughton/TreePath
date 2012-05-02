@@ -74,7 +74,7 @@ public class PathGrammar {
 			"s = /\\s*+/",//
 			"condition = <term> | <not_cnd> | <or_cnd> | <and_cnd> | <xor_cnd> | <group>",//
 			"term = <attribute> | <attribute_test> | <treepath>",//
-			"attribute_test = <attribute> <s> <cmp> <s> <value>",//
+			"attribute_test = <attribute> <s> <cmp> <s> <value> | <value> <s> <cmp> <s> <attribute>",//
 			"cmp = /[<>=]=?|!=/",//
 			"value = <literal> | <num> | <attribute>",//
 			"group = '(' <s> <condition> <s> ')'",//
