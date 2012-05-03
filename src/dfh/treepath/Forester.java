@@ -1,11 +1,14 @@
 package dfh.treepath;
 
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,19 +40,32 @@ import dfh.treepath.PathGrammar.Axis;
 public abstract class Forester<N> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	Map<String, Method> attributes = new HashMap<String, Method>();
+	/**
+	 * A place for the log attribute to send its logging.
+	 */
+	private PrintStream loggingStream = System.err;
 
 	/**
 	 * Initializes the map from attributes to methods.
 	 */
 	public Forester() {
-		for (Method m : this.getClass().getMethods()) {
-			Attribute a = m.getAnnotation(Attribute.class);
-			if (a != null) {
-				String name = a.value();
-				if (name.length() == 0)
-					name = m.getName();
-				attributes.put(name, m);
+		Class<?> cz = getClass();
+		while (Forester.class.isAssignableFrom(cz)) {
+			for (Method m : cz.getDeclaredMethods()) {
+				int mods = m.getModifiers();
+				if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
+					Attribute a = m.getAnnotation(Attribute.class);
+					if (a != null) {
+						String name = a.value();
+						if (name.length() == 0)
+							name = m.getName();
+						if (attributes.containsKey(name))
+							continue;
+						attributes.put(name, m);
+					}
+				}
 			}
+			cz = cz.getSuperclass();
 		}
 	}
 
@@ -692,5 +708,45 @@ public abstract class Forester<N> implements Serializable {
 	 */
 	public Set<String> attributes() {
 		return new TreeSet<String>(attributes.keySet());
+	}
+
+	/**
+	 * @return the {@link PrintStream} used by the
+	 *         {@link #log(Object, Collection, Index, Object)} attribute
+	 */
+	public PrintStream getLoggingStream() {
+		return loggingStream;
+	}
+
+	/**
+	 * @param loggingStream
+	 *            the {@link PrintStream} used by the
+	 *            {@link #log(Object, Collection, Index, Object)} attribute
+	 */
+	public void setLoggingStream(PrintStream loggingStream) {
+		this.loggingStream = loggingStream;
+	}
+
+	/**
+	 * A debugging attribute. It performs no filtering but can be used to output
+	 * messages to a debugging stream.
+	 * 
+	 * @param n
+	 *            context node; ignored by this attribute but required in the
+	 *            method signature
+	 * @param c
+	 *            context node collection; ignored by this attribute but
+	 *            required in the method signature
+	 * @param i
+	 *            tree index; ignored by this attribute but required in the
+	 *            method signature
+	 * @param msg
+	 *            object printed out as a message
+	 * @return
+	 */
+	@Attribute
+	protected final Boolean log(N n, Collection<N> c, Index<N> i, Object msg) {
+		loggingStream.println(msg.toString());
+		return Boolean.TRUE;
 	}
 }

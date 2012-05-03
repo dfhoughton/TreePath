@@ -169,9 +169,9 @@ class ConditionalPredicate<N> extends Predicate<N> {
 		Expression<N> ex = null;
 		if (l.equals("term")) {
 			Match t = type.children()[0];
-			if (t.hasLabel("attribute"))
+			if (t.rule().label().id.equals("attribute"))
 				ex = new AttributeExpression<N>(type.children()[0], f);
-			else if (t.hasLabel("attribute_test")) {
+			else if (t.rule().label().id.equals("attribute_test")) {
 				ex = new AttributeTestExpression<N>(t, f);
 			} else
 				ex = new PathExpression<N>(t, f);

@@ -3,6 +3,8 @@ package dfh.treepath.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -345,5 +347,20 @@ public class XMLToy {
 				.path("//b:b[@attr('fo:o') != '1']");
 		Collection<Element> bs = p.select(root);
 		assertEquals(1, bs.size());
+	}
+
+	@Test
+	public void logTest() {
+		Element root = parse("<a><b foo='1'/><b foo='2'/><b foo='3'/></a>");
+		Forester<Element> f = new XMLToyForester();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream stream = new PrintStream(baos);
+		f.setLoggingStream(stream);
+		Path<Element> p = f.path("//b[@log(@attr('foo'))]");
+		Collection<Element> bs = p.select(root);
+		assertEquals(3, bs.size());
+		stream.close();
+		String log = new String(baos.toByteArray());
+		assertEquals("1\n2\n3\n", log);
 	}
 }

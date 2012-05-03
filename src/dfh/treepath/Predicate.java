@@ -20,11 +20,11 @@ abstract class Predicate<N> implements Serializable {
 
 	static <N> Predicate<N> build(Match m, Forester<N> f) {
 		Match type = m.children()[2].children()[0];
-		if (type.hasLabel("signed_int"))
+		if (type.rule().label().id.equals("signed_int"))
 			return new IndexPredicate<N>(Integer.parseInt(type.group()));
-		if (type.hasLabel("treepath"))
+		if (type.rule().label().id.equals("treepath"))
 			return new TreePathPredicate<N>(type, f);
-		if (type.hasLabel("attribute_test"))
+		if (type.rule().label().id.equals("attribute_test"))
 			return new AttributeTestPredicate<N>(type, f);
 		return new ConditionalPredicate<N>(type, f);
 	}
