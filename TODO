@@ -24,6 +24,9 @@ TODO
 * create != operator
 . add @log attribute for debugging
 . add tests to ensure foresters are reusable
+. fix siblings method
+. add same generation method
+. add kids method so that all nodes are passed by the ignore list
 
 RELICS
 ======

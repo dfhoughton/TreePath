@@ -40,6 +40,7 @@ import dfh.treepath.PathGrammar.Axis;
 public abstract class Forester<N> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	Map<String, Method> attributes = new HashMap<String, Method>();
+	NodeTest<N>[] ignore;
 	/**
 	 * A place for the log attribute to send its logging.
 	 */
@@ -48,7 +49,8 @@ public abstract class Forester<N> implements Serializable {
 	/**
 	 * Initializes the map from attributes to methods.
 	 */
-	public Forester() {
+	public Forester(NodeTest<N>... ignorable) {
+		ignore(ignorable);
 		Class<?> cz = getClass();
 		while (Forester.class.isAssignableFrom(cz)) {
 			for (Method m : cz.getDeclaredMethods()) {
@@ -67,6 +69,27 @@ public abstract class Forester<N> implements Serializable {
 			}
 			cz = cz.getSuperclass();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public void ignore(NodeTest<N>... ignorable) {
+		if (ignorable.length > 0) {
+			Set<NodeTest<N>> set = new HashSet<NodeTest<N>>();
+			for (NodeTest<N> t: ignorable)
+				set.add(t);
+			ignore = set.toArray(new NodeTest[set.size()]);
+		} else
+			ignore = new NodeTest[0];
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void ignoreMore(NodeTest<N>... ignorable) {
+		Set<NodeTest<N>> set = new HashSet<NodeTest<N>>();
+		for (NodeTest<N> t: ignore)
+			set.add(t);
+		for (NodeTest<N> t: ignorable)
+			set.add(t);
+		ignore = set.toArray(new NodeTest[set.size()]);
 	}
 
 	protected static final MatchTest pathMt = new MatchTest() {
