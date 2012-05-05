@@ -145,6 +145,10 @@ public abstract class Forester<N> implements Serializable {
 			return preceding(n, t, i);
 		case precedingSibling:
 			return precedingSiblings(n, t, i);
+		case sibling:
+			return siblings(n, t, i);
+		case siblingOrSelf:
+			return siblingsOrSelf(n, t, i);
 		case leaf:
 			return leaves(n, t, i);
 		case self:
@@ -166,6 +170,32 @@ public abstract class Forester<N> implements Serializable {
 			throw new PathException(Forester.class
 					+ " not written to handle axis " + a);
 		}
+	}
+
+	protected Collection<N> siblings(N n, NodeTest<N> t, Index<N> i) {
+		List<N> siblings = siblings(parent(n, i), i);
+		if (siblings.isEmpty())
+			return siblings;
+		List<N> list = new ArrayList<N>(siblings.size());
+		for (N s : siblings)
+			if (t.passes(s, i))
+				list.add(s);
+		return list;
+	}
+
+	protected Collection<N> siblingsOrSelf(N n, NodeTest<N> t, Index<N> i) {
+		if (i.isRoot(n)) {
+			List<N> list = new ArrayList<N>(1);
+			if (t.passes(n, i))
+				list.add(n);
+			return list;
+		}
+		List<N> siblings = kids(parent(n, i), i);
+		List<N> list = new ArrayList<N>(siblings.size());
+		for (N s : siblings)
+			if (t.passes(s, i))
+				list.add(s);
+		return list;
 	}
 
 	protected List<N> children(N n, NodeTest<N> t, Index<N> i) {
@@ -616,6 +646,12 @@ public abstract class Forester<N> implements Serializable {
 				sibs.add(s);
 		}
 		return sibs;
+	}
+
+	protected List<N> siblingsOrSelf(N n, Index<N> i) {
+		if (isRoot(n, null, i))
+			return Collections.emptyList();
+		return kids(parent(n, i), i);
 	}
 
 	protected List<N> followingSiblings(N n, NodeTest<N> t, Index<N> i) {

@@ -506,7 +506,8 @@ public class XMLToy {
 	@Test
 	public void axisTestDescendantOrSelf() {
 		Element root = parse("<a><b><c><d/></c></b></a>");
-		Path<Element> p = new XMLToyForester().path("//a/descendant-or-self::*");
+		Path<Element> p = new XMLToyForester()
+				.path("//a/descendant-or-self::*");
 		List<Element> l = p.select(root);
 		assertEquals(4, l.size());
 	}
@@ -522,7 +523,8 @@ public class XMLToy {
 	@Test
 	public void axisTestFollowingSibling() {
 		Element root = parse("<a><b><c id='foo'/><d/></b><e/></a>");
-		Path<Element> p = new XMLToyForester().path("id(foo)/following-sibling::*");
+		Path<Element> p = new XMLToyForester()
+				.path("id(foo)/following-sibling::*");
 		List<Element> l = p.select(root);
 		assertEquals(1, l.size());
 	}
@@ -538,9 +540,27 @@ public class XMLToy {
 	@Test
 	public void axisTestPrecedingSibling() {
 		Element root = parse("<a><e/><b><d/><c id='foo'/><d/></b><e/></a>");
-		Path<Element> p = new XMLToyForester().path("id(foo)/preceding-sibling::*");
+		Path<Element> p = new XMLToyForester()
+				.path("id(foo)/preceding-sibling::*");
 		List<Element> l = p.select(root);
 		assertEquals(1, l.size());
+	}
+
+	@Test
+	public void axisTestSibling() {
+		Element root = parse("<a><e/><b><d/><c id='foo'/><d/></b><e/></a>");
+		Path<Element> p = new XMLToyForester().path("id(foo)/sibling::*");
+		List<Element> l = p.select(root);
+		assertEquals(2, l.size());
+	}
+
+	@Test
+	public void axisTestSiblingOrSelf() {
+		Element root = parse("<a><e/><b><d/><c id='foo'/><d/></b><e/></a>");
+		Path<Element> p = new XMLToyForester()
+				.path("id(foo)/sibling-or-self::*");
+		List<Element> l = p.select(root);
+		assertEquals(3, l.size());
 	}
 
 	@Test
