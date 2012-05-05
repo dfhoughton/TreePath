@@ -75,21 +75,11 @@ public abstract class Forester<N> implements Serializable {
 	public void ignore(NodeTest<N>... ignorable) {
 		if (ignorable.length > 0) {
 			Set<NodeTest<N>> set = new HashSet<NodeTest<N>>();
-			for (NodeTest<N> t: ignorable)
+			for (NodeTest<N> t : ignorable)
 				set.add(t);
 			ignore = set.toArray(new NodeTest[set.size()]);
 		} else
 			ignore = new NodeTest[0];
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void ignoreMore(NodeTest<N>... ignorable) {
-		Set<NodeTest<N>> set = new HashSet<NodeTest<N>>();
-		for (NodeTest<N> t: ignore)
-			set.add(t);
-		for (NodeTest<N> t: ignorable)
-			set.add(t);
-		ignore = set.toArray(new NodeTest[set.size()]);
 	}
 
 	protected static final MatchTest pathMt = new MatchTest() {
@@ -179,8 +169,10 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	protected List<N> children(N n, NodeTest<N> t, Index<N> i) {
-		List<N> children = children(n, i), list = new ArrayList<N>(
-				children.size());
+		List<N> children = kids(n, i);
+		if (children.isEmpty())
+			return children;
+		List<N> list = new ArrayList<N>(children.size());
 		for (N c : children) {
 			if (t.passes(c, i))
 				list.add(c);
@@ -408,8 +400,8 @@ public abstract class Forester<N> implements Serializable {
 	 */
 	@Attribute("leaf")
 	protected boolean isLeaf(N n, Collection<N> c, Index<N> i) {
-		List<N> children = children(n, i);
-		if (children == null || children.isEmpty())
+		List<N> children = kids(n, i);
+		if (children.isEmpty())
 			return true;
 		return false;
 	}
@@ -523,7 +515,8 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	protected List<N> leaves(N n, NodeTest<N> t, Index<N> i) {
-		if (isLeaf(n, null, i)) {
+		List<N> children = kids(n, i);
+		if (children.isEmpty()) {
 			if (!t.passes(n, i))
 				return Collections.emptyList();
 			List<N> leaves = new ArrayList<N>(1);
@@ -531,7 +524,7 @@ public abstract class Forester<N> implements Serializable {
 			return leaves;
 		}
 		List<N> leaves = new ArrayList<N>();
-		for (N child : children(n, i))
+		for (N child : children)
 			leaves.addAll(leaves(child, t, i));
 		return leaves;
 	}
@@ -549,8 +542,11 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	protected Collection<N> descendants(N n, NodeTest<N> t, Index<N> i) {
+		List<N> children = kids(n, i);
+		if (children.isEmpty())
+			return children;
 		List<N> descendants = new LinkedList<N>();
-		for (N child : children(n, i)) {
+		for (N child : children) {
 			if (!isLeaf(child, null, i))
 				descendants.addAll(descendants(child, t, i));
 			if (t.passes(child, i))
@@ -565,8 +561,11 @@ public abstract class Forester<N> implements Serializable {
 			list.add(n);
 			return list;
 		}
+		List<N> children = kids(n, i);
+		if (children.isEmpty())
+			return children;
 		List<N> closest = new LinkedList<N>();
-		for (N child : children(n, i))
+		for (N child : children)
 			closest.addAll(closest(child, t, i));
 		return closest;
 	}
@@ -574,7 +573,9 @@ public abstract class Forester<N> implements Serializable {
 	protected List<N> precedingSiblings(N n, NodeTest<N> t, Index<N> i) {
 		if (isRoot(n, null, i))
 			return Collections.emptyList();
-		List<N> siblings = children(parent(n, i), i);
+		List<N> siblings = kids(parent(n, i), i);
+		if (siblings.size() == 1)
+			return Collections.emptyList();
 		List<N> precedingSiblings = new ArrayList<N>(siblings.size() - 1);
 		for (N sib : siblings) {
 			if (sib == n)
@@ -588,7 +589,9 @@ public abstract class Forester<N> implements Serializable {
 	protected List<N> siblings(N n, Index<N> i) {
 		if (isRoot(n, null, i))
 			return Collections.emptyList();
-		List<N> siblings = children(parent(n, i), i);
+		List<N> siblings = kids(parent(n, i), i);
+		if (siblings.size() == 1)
+			return Collections.emptyList();
 		List<N> sibs = new ArrayList<N>(siblings.size() - 1);
 		for (N s : siblings) {
 			if (s != n)
@@ -600,7 +603,9 @@ public abstract class Forester<N> implements Serializable {
 	protected List<N> followingSiblings(N n, NodeTest<N> t, Index<N> i) {
 		if (isRoot(n, null, i))
 			return Collections.emptyList();
-		List<N> siblings = children(parent(n, i), i);
+		List<N> siblings = kids(parent(n, i), i);
+		if (siblings.size() == 1)
+			return Collections.emptyList();
 		List<N> followingSiblings = new ArrayList<N>(siblings.size() - 1);
 		boolean add = false;
 		for (N sib : siblings) {
@@ -663,7 +668,7 @@ public abstract class Forester<N> implements Serializable {
 	protected int index(N n, Collection<N> c, Index<N> in) {
 		if (isRoot(n, null, in))
 			return -1;
-		List<N> siblings = children(parent(n, in), in);
+		List<N> siblings = kids(parent(n, in), in);
 		for (int i = 0, lim = siblings.size(); i < lim; i++) {
 			N o = siblings.get(i);
 			if (o == n)
@@ -679,6 +684,30 @@ public abstract class Forester<N> implements Serializable {
 	 * @return the children of n
 	 */
 	protected abstract List<N> children(N n, Index<N> i);
+
+	/**
+	 * Like {@link #children(Object, Index)}, but it tests the nodes against the
+	 * node tests in {@link #ignore}.
+	 * 
+	 * @param n
+	 * @param i
+	 * @return
+	 */
+	protected final List<N> kids(N n, Index<N> i) {
+		List<N> children = children(n, i);
+		if (children == null)
+			return Collections.emptyList();
+		if (ignore.length == 0 || children.isEmpty())
+			return children;
+		List<N> kids = new ArrayList<N>(children.size());
+		OUTER: for (N c : children) {
+			for (NodeTest<N> t : ignore)
+				if (t.passes(c, i))
+					continue OUTER;
+			kids.add(c);
+		}
+		return kids;
+	}
 
 	/**
 	 * @param n

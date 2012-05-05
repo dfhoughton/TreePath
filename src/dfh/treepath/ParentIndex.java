@@ -31,7 +31,7 @@ public class ParentIndex<N> extends Index<N> {
 	}
 
 	private void addChildren(N n) {
-		for (N c : f.children(n, this)) {
+		for (N c : f.kids(n, this)) {
 			index.put(c, n);
 			addChildren(c);
 		}

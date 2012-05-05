@@ -19,14 +19,14 @@ TODO
 . differentiate @self and @this; the former is the node relative to which
   the attribute is evaluated and the latter is the node that generated the
   collection being filtered
-. let Forester ignore nodes matching particular NodeTests
+* let Forester ignore nodes matching particular NodeTests
 * allow colons in attribute and tag names without escaping
 * create != operator
 * add @log attribute for debugging
 . add tests to ensure foresters are reusable
-. fix siblings method
+* fix siblings method
 . add same generation method
-. add kids method so that all nodes are passed by the ignore list
+* add kids method so that all nodes are passed by the ignore list
 . add a unit test for every attribute declared
 . add id() and @id
 . create axis tests

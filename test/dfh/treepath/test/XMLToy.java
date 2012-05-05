@@ -20,6 +20,7 @@ import dfh.grammar.MatchTest;
 import dfh.treepath.Attribute;
 import dfh.treepath.Forester;
 import dfh.treepath.Index;
+import dfh.treepath.NodeTest;
 import dfh.treepath.ParentIndex;
 import dfh.treepath.Path;
 
@@ -99,6 +100,10 @@ public class XMLToy {
 	 */
 	public static class XMLToyForester extends Forester<Element> {
 		private static final long serialVersionUID = 1L;
+
+		public XMLToyForester(NodeTest<Element>... nodeTest) {
+			super(nodeTest);
+		}
 
 		@Override
 		protected Index<Element> treeIndex(Element root) {
@@ -221,7 +226,8 @@ public class XMLToy {
 	@Test
 	public void rootTag() {
 		Element root = parse("<a><b/><c><b/><d><b/><b/></d></c></a>");
-		Path<Element> p = new XMLToyForester().path("/b");
+		Forester<Element> f = new XMLToyForester();
+		Path<Element> p = f.path("/b");
 		Collection<Element> bs = p.select(root);
 		assertEquals(0, bs.size());
 	}
@@ -362,5 +368,20 @@ public class XMLToy {
 		stream.close();
 		String log = new String(baos.toByteArray());
 		assertEquals("1\n2\n3\n", log);
+	}
+
+	@Test
+	public void ignoreTest1() {
+		Element root = parse("<a><b/><c/></a>");
+		@SuppressWarnings({ "unchecked", "serial" })
+		Forester<Element> f = new XMLToyForester(new NodeTest<Element>() {
+			@Override
+			public boolean passes(Element n, Index<Element> i) {
+				return n.tag.equals("c");
+			}
+		});
+		Path<Element> p = f.path("/*");
+		Collection<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
 	}
 }
