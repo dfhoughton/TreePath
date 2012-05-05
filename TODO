@@ -19,7 +19,7 @@ TODO
 . add same generation method
 . add a unit test for every attribute declared
 * add id() and @id
-. create axis tests
+* create axis tests
 
 RELICS
 ======

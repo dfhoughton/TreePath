@@ -255,7 +255,7 @@ public abstract class Forester<N> implements Serializable {
 		Match slash, step;
 		if (first) {
 			if (fs.children()[0].rule().label().id.equals("id"))
-				return new IdSelector(fs);
+				return new IdSelector<N>(fs);
 			fs = fs.children()[0];
 		}
 		slash = fs.children()[0];

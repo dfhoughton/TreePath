@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
@@ -88,6 +89,28 @@ public class XMLToy {
 				for (int i = 0; i < children.length; i++)
 					children[i] = new Element(clist.get(i));
 			}
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder b = new StringBuilder();
+			b.append('<').append(tag);
+			b.append(' ');
+			for (Entry<String, String> e : attributes.entrySet()) {
+				b.append(e.getKey());
+				b.append("=\"");
+				b.append(e.getValue());
+				b.append('"');
+			}
+			if (children.length == 0)
+				b.append("/>");
+			else {
+				b.append('>');
+				for (Element c : children)
+					b.append(c);
+				b.append("</").append(tag).append('>');
+			}
+			return b.toString();
 		}
 	}
 
@@ -447,4 +470,103 @@ public class XMLToy {
 		l = p.select(root);
 		assertEquals(2, l.size());
 	}
+
+	@Test
+	public void axisTestChild() {
+		Element root = parse("<a><b/><c/><d/></a>");
+		Path<Element> p = new XMLToyForester().path("/a/child::*");
+		List<Element> l = p.select(root);
+		assertEquals(3, l.size());
+	}
+
+	@Test
+	public void axisTestAncestor() {
+		Element root = parse("<a><b><c><d/></c></b></a>");
+		Path<Element> p = new XMLToyForester().path("//d/ancestor::*");
+		List<Element> l = p.select(root);
+		assertEquals(3, l.size());
+	}
+
+	@Test
+	public void axisTestAncestorOrSelf() {
+		Element root = parse("<a><b><c><d/></c></b></a>");
+		Path<Element> p = new XMLToyForester().path("//d/ancestor-or-self::*");
+		List<Element> l = p.select(root);
+		assertEquals(4, l.size());
+	}
+
+	@Test
+	public void axisTestDescendant() {
+		Element root = parse("<a><b><c><d/></c></b></a>");
+		Path<Element> p = new XMLToyForester().path("//a/descendant::*");
+		List<Element> l = p.select(root);
+		assertEquals(3, l.size());
+	}
+
+	@Test
+	public void axisTestDescendantOrSelf() {
+		Element root = parse("<a><b><c><d/></c></b></a>");
+		Path<Element> p = new XMLToyForester().path("//a/descendant-or-self::*");
+		List<Element> l = p.select(root);
+		assertEquals(4, l.size());
+	}
+
+	@Test
+	public void axisTestFollowing() {
+		Element root = parse("<a><b><c id='foo'/><d/></b><e/></a>");
+		Path<Element> p = new XMLToyForester().path("id(foo)/following::*");
+		List<Element> l = p.select(root);
+		assertEquals(2, l.size());
+	}
+
+	@Test
+	public void axisTestFollowingSibling() {
+		Element root = parse("<a><b><c id='foo'/><d/></b><e/></a>");
+		Path<Element> p = new XMLToyForester().path("id(foo)/following-sibling::*");
+		List<Element> l = p.select(root);
+		assertEquals(1, l.size());
+	}
+
+	@Test
+	public void axisTestPreceding() {
+		Element root = parse("<a><e/><b><d/><c id='foo'/><d/></b><e/></a>");
+		Path<Element> p = new XMLToyForester().path("id(foo)/preceding::*");
+		List<Element> l = p.select(root);
+		assertEquals(2, l.size());
+	}
+
+	@Test
+	public void axisTestPrecedingSibling() {
+		Element root = parse("<a><e/><b><d/><c id='foo'/><d/></b><e/></a>");
+		Path<Element> p = new XMLToyForester().path("id(foo)/preceding-sibling::*");
+		List<Element> l = p.select(root);
+		assertEquals(1, l.size());
+	}
+
+	@Test
+	public void axisTestLeaf() {
+		Element root = parse("<a><e/><b><d/><c id='foo'/><d/></b><e/></a>");
+		Path<Element> p = new XMLToyForester().path("/./leaf::*");
+		List<Element> l = p.select(root);
+		assertEquals(5, l.size());
+	}
+
+	@Test
+	public void axisTestSelf() {
+		Element root = parse("<a><e/><b><d/><c id='foo'/><d/></b><e/></a>");
+		Path<Element> p = new XMLToyForester().path("/./self::*");
+		List<Element> l = p.select(root);
+		assertEquals(1, l.size());
+		assertEquals("a", l.get(0).tag);
+	}
+
+	@Test
+	public void axisTestParent() {
+		Element root = parse("<a><e/><b><d/><c id='foo'/><d/></b><e/></a>");
+		Path<Element> p = new XMLToyForester().path("id(foo)/parent::*");
+		List<Element> l = p.select(root);
+		assertEquals(1, l.size());
+		assertEquals("b", l.get(0).tag);
+	}
+
 }
