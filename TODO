@@ -23,7 +23,7 @@ TODO
 * allow colons in attribute and tag names without escaping
 * create != operator
 * add @log attribute for debugging
-. add tests to ensure foresters are reusable
+* add tests to ensure foresters are reusable
 * fix siblings method
 . add same generation method
 * add kids method so that all nodes are passed by the ignore list

@@ -384,4 +384,35 @@ public class XMLToy {
 		Collection<Element> bs = p.select(root);
 		assertEquals(1, bs.size());
 	}
+	
+	@Test
+	public void reuseTest() {
+		Element root = parse("<root><a><b/><c><a/></c></a><b><b><a><c/></a></b></b></root>");
+		Forester<Element> f = new XMLToyForester();
+		Path<Element> p = f.path("//root");
+		Collection<Element> c = p.select(root);
+		assertEquals(1, c.size());
+		p = f.path("//a");
+		c = p.select(root);
+		assertEquals(3, c.size());
+		p = f.path("//b");
+		c = p.select(root);
+		assertEquals(3, c.size());
+		p = f.path("//c");
+		c = p.select(root);
+		assertEquals(2, c.size());
+		root = parse("<root><c><b><a/></b></c></root>");
+		p = f.path("//root");
+		c = p.select(root);
+		assertEquals(1, c.size());
+		p = f.path("//a");
+		c = p.select(root);
+		assertEquals(1, c.size());
+		p = f.path("//b");
+		c = p.select(root);
+		assertEquals(1, c.size());
+		p = f.path("//c");
+		c = p.select(root);
+		assertEquals(1, c.size());
+	}
 }
