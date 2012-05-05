@@ -16,10 +16,7 @@ TODO
 . differentiate @self and @this; the former is the node relative to which
   the attribute is evaluated and the latter is the node that generated the
   collection being filtered
-. add same generation method
 . add a unit test for every attribute declared
-* add id() and @id
-* create axis tests
 
 RELICS
 ======
@@ -42,3 +39,6 @@ Things swept out of TODO list:
 * add tests to ensure foresters are reusable
 * fix siblings method
 * add kids method so that all nodes are passed by the ignore list
+* add id() and @id
+* create axis tests
+* add same generation method
