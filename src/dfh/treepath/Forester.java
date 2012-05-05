@@ -223,7 +223,7 @@ public abstract class Forester<N> implements Serializable {
 		return new Path<N>(this, selectors);
 	}
 
-	private static final MatchTest subsequentMT = new MatchTest() {
+	private static final MatchTest segmentMT = new MatchTest() {
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -241,7 +241,7 @@ public abstract class Forester<N> implements Serializable {
 	};
 
 	private Selector<N>[] makePath(Match match) {
-		List<Match> subsequentSteps = match.closest(subsequentMT);
+		List<Match> subsequentSteps = match.closest(segmentMT);
 		@SuppressWarnings("unchecked")
 		Selector<N>[] path = new Selector[subsequentSteps.size()];
 		int i = 0;
@@ -252,7 +252,14 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	private Selector<N> makeStep(Match fs, boolean first) {
-		Match slash = fs.children()[0], step = fs.children()[1];
+		Match slash, step;
+		if (first) {
+			if (fs.children()[0].rule().label().id.equals("id"))
+				return new IdSelector(fs);
+			fs = fs.children()[0];
+		}
+		slash = fs.children()[0];
+		step = fs.children()[1];
 		switch (slash.length()) {
 		case 0:
 			return makeRelativeStep(step);
@@ -422,6 +429,17 @@ public abstract class Forester<N> implements Serializable {
 	@Attribute("root")
 	protected boolean isRoot(N n, Collection<N> c, Index<N> i) {
 		return i.isRoot(n);
+	}
+
+	/**
+	 * @param n
+	 * @param c
+	 * @param i
+	 * @return the identifying string, if any, of this node
+	 */
+	@Attribute
+	protected String id(N n, Collection<N> c, Index<N> i) {
+		return i.id(n);
 	}
 
 	/**
@@ -741,13 +759,13 @@ public abstract class Forester<N> implements Serializable {
 
 	/**
 	 * Creates an {@link Index} of the given tree. It must be overridden by
-	 * foresters that require more of an index than a reference back to the
-	 * forester and the tree root.
+	 * foresters that require more of an index than a map from identifiers to
+	 * nodes and references back to the forester and the tree root.
 	 * 
 	 * @param root
 	 * @return and index of the given tree
 	 */
-	protected Index<N> treeIndex(N root) {
+	public Index<N> index(N root) {
 		return new Index<N>(root, this);
 	}
 

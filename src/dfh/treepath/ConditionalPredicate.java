@@ -25,7 +25,7 @@ class ConditionalPredicate<N> extends Predicate<N> {
 
 		@Override
 		public boolean test(N n, Collection<N> c, Index<N> i) {
-			return !path.select(n, i).isEmpty();
+			return !path.sel(n, i).isEmpty();
 		}
 
 	}

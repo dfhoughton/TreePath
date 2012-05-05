@@ -99,7 +99,7 @@ class CompiledAttribute<N> {
 				ops[index] = ca.apply(n, c, i);
 			} else if (o instanceof Path<?>) {
 				Path<N> p = (Path<N>) o;
-				ops[index] = p.select(n, i);
+				ops[index] = p.sel(n, i);
 			} else {
 				ops[index] = o;
 			}

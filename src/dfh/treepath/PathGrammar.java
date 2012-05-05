@@ -47,7 +47,8 @@ public class PathGrammar {
 			//
 			"treepath = <path> [ '|' <path> ]*",//
 			"path = <first_step> <subsequent_step>*+",//
-			"first_step = [{segment} <separator>?+ <step> ]",//
+			"first_step = [{segment} <id> | <separator>?+ <step> ]",//
+			"id = 'id(' /(?:[^)\\\\]|\\\\.)++/ ')'",//
 			"subsequent_step = [{segment} <separator> <step> ]",//
 			"separator = /\\/[\\/>]?/",//
 			"step = <full> | <abbreviated>",//

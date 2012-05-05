@@ -18,7 +18,7 @@ TODO
   collection being filtered
 . add same generation method
 . add a unit test for every attribute declared
-. add id() and @id
+* add id() and @id
 . create axis tests
 
 RELICS

@@ -13,7 +13,7 @@ import java.util.HashMap;
  *            a type of tree node
  */
 public class ParentIndex<N> extends Index<N> {
-	private final HashMap<N, N> index;
+	private final HashMap<N, N> parentIndex;
 
 	/**
 	 * Constructs a {@link ParentIndex} for the given tree.
@@ -26,15 +26,11 @@ public class ParentIndex<N> extends Index<N> {
 	 */
 	public ParentIndex(N n, Forester<N> f) {
 		super(n, f);
-		index = new HashMap<N, N>();
-		addChildren(n);
+		parentIndex = new HashMap<N, N>();
 	}
 
-	private void addChildren(N n) {
-		for (N c : f.kids(n, this)) {
-			index.put(c, n);
-			addChildren(c);
-		}
+	protected void index(N n, N c) {
+		parentIndex.put(c, n);
 	}
 
 	/**
@@ -45,6 +41,6 @@ public class ParentIndex<N> extends Index<N> {
 	 * @return the parent of n
 	 */
 	public N parent(N n) {
-		return index.get(n);
+		return parentIndex.get(n);
 	}
 }

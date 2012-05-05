@@ -91,7 +91,7 @@ public class XMLToy {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		protected Index<Element> treeIndex(Element root) {
+		protected Index<Element> index(Element root) {
 			return new ParentIndex<Element>(root, this);
 		}
 

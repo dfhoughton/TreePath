@@ -106,8 +106,13 @@ public class XMLToy {
 		}
 
 		@Override
-		protected Index<Element> treeIndex(Element root) {
-			return new ParentIndex<Element>(root, this);
+		public Index<Element> index(Element root) {
+			return new ParentIndex<Element>(root, this) {
+				@Override
+				public String id(Element e) {
+					return e.attributes.get("id");
+				}
+			};
 		}
 
 		@Override
@@ -384,7 +389,7 @@ public class XMLToy {
 		Collection<Element> bs = p.select(root);
 		assertEquals(1, bs.size());
 	}
-	
+
 	@Test
 	public void reuseTest() {
 		Element root = parse("<root><a><b/><c><a/></c></a><b><b><a><c/></a></b></b></root>");
@@ -414,5 +419,32 @@ public class XMLToy {
 		p = f.path("//c");
 		c = p.select(root);
 		assertEquals(1, c.size());
+	}
+
+	@Test
+	public void idAttributeTest() {
+		Element root = parse("<a><b id='foo'><c/><c/><c/></b><b id='bar'><c/></b></a>");
+		Forester<Element> f = new XMLToyForester();
+		Path<Element> p = f.path("//b[@id = 'foo']/*");
+		List<Element> l = p.select(root);
+		assertEquals(3, l.size());
+		p = f.path("//b[@id = 'bar']/*");
+		l = p.select(root);
+		assertEquals(1, l.size());
+	}
+
+	@Test
+	public void idTest() {
+		Element root = parse("<a><b id='foo'><c/><c/><c/></b><b id='bar'><c/></b><b id='(foo)'><c/><c/></b></a>");
+		Forester<Element> f = new XMLToyForester();
+		Path<Element> p = f.path("id(foo)/*");
+		List<Element> l = p.select(root);
+		assertEquals(3, l.size());
+		p = f.path("id(bar)/*");
+		l = p.select(root);
+		assertEquals(1, l.size());
+		p = f.path("id(\\(foo\\))/*");
+		l = p.select(root);
+		assertEquals(2, l.size());
 	}
 }
