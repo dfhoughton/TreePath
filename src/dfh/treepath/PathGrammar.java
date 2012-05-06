@@ -63,7 +63,7 @@ public class PathGrammar {
 			"aname = /@(?:[\\p{L}_$]|\\\\.)(?:[\\p{L}_$\\p{N}]|[-:](?=[\\p{L}_\\p{N}])|\\\\.)*+/",//
 			"attribute = <aname> <args>?",//
 			"args = '(' <s> <arg> [ <s> ',' <s> <arg> ]* <s> ')'",//
-			"arg = <treepath> | <literal> | <num> | <attribute>",//
+			"arg = <treepath> | <literal> | <num> | <attribute> | <attribute_test>",//
 			"num = <signed_int> | <float>",//
 			"signed_int = /[+-]?+/ <int>",//
 			"float = /[+-]?+/ <int>?+ /\\.\\d++/ [ /e[+-]?+/i <int> ]?+",//

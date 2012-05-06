@@ -61,4 +61,18 @@ public class AttributeTests {
 		l = p.select(root);
 		assertEquals(1, l.size());
 	}
+	
+	@Test
+	public void attributeTestValueTest() {
+		Element root = parse("<a><b id='foo'/></a>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("//b[@log(@id = 'foo')]");
+		p.select(root);
+		out.close();
+		String output = baos.toString().trim();
+		assertEquals("true", output);
+	}
+
 }

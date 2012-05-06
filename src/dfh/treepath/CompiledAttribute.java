@@ -63,6 +63,8 @@ class CompiledAttribute<N> {
 			o = f.path(arg);
 		} else if (type.equals("attribute")) {
 			o = new CompiledAttribute<N>(arg, f);
+		} else if (type.equals("attribute_test")) {
+			o = new AttributeTestExpression<N>(arg, f);
 		} else if (type.equals("literal")) {
 			String literal = arg.group();
 			literal = literal.substring(1, literal.length() - 1);
@@ -98,6 +100,9 @@ class CompiledAttribute<N> {
 			if (o instanceof CompiledAttribute<?>) {
 				CompiledAttribute<N> ca = (CompiledAttribute<N>) o;
 				ops[index] = ca.apply(n, c, i);
+			} else if (o instanceof AttributeTestExpression<?>) {
+				AttributeTestExpression<N> ate = (AttributeTestExpression<N>) o;
+				ops[index] = ate.test(n, c, i);
 			} else if (o instanceof Path<?>) {
 				Path<N> p = (Path<N>) o;
 				ops[index] = p.sel(n, i);

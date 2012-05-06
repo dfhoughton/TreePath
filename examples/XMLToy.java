@@ -3,6 +3,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import dfh.grammar.Grammar;
@@ -78,6 +79,28 @@ public class XMLToy {
 					children[i] = new Element(clist.get(i));
 			}
 		}
+
+		@Override
+		public String toString() {
+			StringBuilder b = new StringBuilder();
+			b.append('<').append(tag);
+			b.append(' ');
+			for (Entry<String, String> e : attributes.entrySet()) {
+				b.append(e.getKey());
+				b.append("=\"");
+				b.append(e.getValue());
+				b.append('"');
+			}
+			if (children.length == 0)
+				b.append("/>");
+			else {
+				b.append('>');
+				for (Element c : children)
+					b.append(c);
+				b.append("</").append(tag).append('>');
+			}
+			return b.toString();
+		}
 	}
 
 	/**
@@ -87,11 +110,12 @@ public class XMLToy {
 	 * 
 	 * @author David F. Houghton - Apr 28, 2012
 	 */
+	@SuppressWarnings("unchecked")
 	public static class XMLToyForester extends Forester<Element> {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		protected Index<Element> index(Element root) {
+		public Index<Element> index(Element root) {
 			return new ParentIndex<Element>(root, this);
 		}
 

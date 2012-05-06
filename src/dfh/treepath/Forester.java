@@ -55,7 +55,7 @@ public abstract class Forester<N> implements Serializable {
 		while (Forester.class.isAssignableFrom(cz)) {
 			for (Method m : cz.getDeclaredMethods()) {
 				int mods = m.getModifiers();
-				if (Modifier.isPublic(mods) || Modifier.isProtected(mods)) {
+				if (!Modifier.isPrivate(mods)) {
 					Attribute a = m.getAnnotation(Attribute.class);
 					if (a != null) {
 						String name = a.value();
