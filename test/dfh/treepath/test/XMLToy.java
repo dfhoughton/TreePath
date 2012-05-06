@@ -589,4 +589,18 @@ public class XMLToy {
 		assertEquals("b", l.get(0).tag);
 	}
 
+	@Test
+	public void attributeTestPredicate1() {
+		Element root = parse("<a><e/><b><d/><c id='foo'/><d/></b><e/></a>");
+		Path<Element> p = new XMLToyForester().path("//*[not @id = 'foo']");
+		List<Element> l = p.select(root);
+		assertEquals(6, l.size());
+	}
+	@Test
+	public void attributeTestPredicate2() {
+		Element root = parse("<a><e/><b><d/><c id='foo'/><d/></b><e/></a>");
+		Path<Element> p = new XMLToyForester().path("//*[not (@id = 'foo')]");
+		List<Element> l = p.select(root);
+		assertEquals(6, l.size());
+	}
 }

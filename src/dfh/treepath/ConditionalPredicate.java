@@ -164,29 +164,33 @@ class ConditionalPredicate<N> extends Predicate<N> {
 	}
 
 	private static <N> Expression<N> createExpression(Match type, Forester<N> f) {
-		type = type.children()[0];
-		String l = type.rule().label().id;
 		Expression<N> ex = null;
-		if (l.equals("term")) {
-			Match t = type.children()[0];
-			if (t.rule().label().id.equals("attribute"))
-				ex = new AttributeExpression<N>(type.children()[0], f);
-			else if (t.rule().label().id.equals("attribute_test")) {
-				ex = new AttributeTestExpression<N>(t, f);
-			} else
-				ex = new PathExpression<N>(t, f);
-		} else {
-			List<Match> terms = type.closest(conditionMT);
-			if (l.equals("not_cnd")) {
-				ex = new NotExpression<N>(terms.get(0), f);
-			} else if (l.equals("and_cnd")) {
-				ex = new AndExpression<N>(terms, f);
-			} else if (l.equals("or_cnd")) {
-				ex = new OrExpression<N>(terms, f);
-			} else if (l.equals("xor_cnd")) {
-				ex = new XorExpression<N>(terms, f);
+		while (ex == null) {
+			type = type.children()[0];
+			String l = type.rule().label().id;
+			if (l.equals("term")) {
+				Match t = type.children()[0];
+				if (t.rule().label().id.equals("attribute"))
+					ex = new AttributeExpression<N>(type.children()[0], f);
+				else if (t.rule().label().id.equals("attribute_test")) {
+					ex = new AttributeTestExpression<N>(t, f);
+				} else
+					ex = new PathExpression<N>(t, f);
 			} else {
-				throw new PathException("unknown condition type: " + l);
+				List<Match> terms = type.closest(conditionMT);
+				if (l.equals("not_cnd")) {
+					ex = new NotExpression<N>(terms.get(0), f);
+				} else if (l.equals("and_cnd")) {
+					ex = new AndExpression<N>(terms, f);
+				} else if (l.equals("or_cnd")) {
+					ex = new OrExpression<N>(terms, f);
+				} else if (l.equals("xor_cnd")) {
+					ex = new XorExpression<N>(terms, f);
+				} else if (l.equals("group")) {
+					type = type.children()[2];
+				} else {
+					throw new PathException("unknown condition type: " + l);
+				}
 			}
 		}
 		return ex;
