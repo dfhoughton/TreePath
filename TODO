@@ -17,6 +17,7 @@ TODO
   the attribute is evaluated and the latter is the node that generated the
   collection being filtered
 . add a unit test for every attribute declared
+. let foresters provide attribute values for nodes
 
 RELICS
 ======

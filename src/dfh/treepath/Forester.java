@@ -855,4 +855,38 @@ public abstract class Forester<N> implements Serializable {
 		loggingStream.println(msg.toString());
 		return Boolean.TRUE;
 	}
+
+	public Object attribute(N node, String name, Object... parameters) {
+		return attribute(node, name, null, null, parameters);
+	}
+
+	public Object attribute(N node, String name, Collection<N> c, Index<N> i,
+			Object... parameters) {
+		if (node == null)
+			throw new PathException(
+					"attributes cannot be evaluated on null nodes");
+		Method m = attributes.get(name);
+		if (m == null)
+			throw new PathException("unknown attribute: " + name);
+		if (i == null)
+			i = index(node);
+		if (c == null) {
+			c = new ArrayList<N>(1);
+			c.add(node);
+		}
+		try {
+			List<Object> parameterList = new ArrayList<Object>(
+					parameters.length + 3);
+			parameterList.add(node);
+			parameterList.add(c);
+			parameterList.add(i);
+			for (Object o : parameters)
+				parameterList.add(o);
+			return m.invoke(this, parameterList.toArray());
+		} catch (Exception e) {
+			throw new PathException("could not evaluate attribute " + name
+					+ " with node, index, collection, and parameters provided",
+					e);
+		}
+	}
 }
