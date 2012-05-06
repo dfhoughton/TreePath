@@ -24,6 +24,7 @@ import dfh.grammar.MatchTest;
 class CompiledAttribute<N> {
 	private final Method a;
 	private final Object[] args;
+	private final String name;
 	private static final MatchTest argTest = new MatchTest() {
 		private static final long serialVersionUID = 1L;
 
@@ -35,8 +36,8 @@ class CompiledAttribute<N> {
 
 	CompiledAttribute(Match m, Forester<N> f) {
 		String s = m.first("aname").group();
-		s = s.substring(1);
-		a = f.attributes.get(s);
+		name = s.substring(1);
+		a = f.attributes.get(name);
 		List<Match> argList = m.children()[1].closest(argTest);
 		args = new Object[argList.size()];
 		int index = 0;
@@ -107,7 +108,8 @@ class CompiledAttribute<N> {
 		try {
 			return a.invoke(i.f, ops);
 		} catch (Exception e) {
-			throw new PathException(e);
+			throw new PathException("attribute '" + name
+					+ "' failed during application; check arguments", e);
 		}
 	}
 }

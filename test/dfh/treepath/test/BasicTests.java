@@ -2,12 +2,14 @@ package dfh.treepath.test;
 
 import static dfh.treepath.test.XMLToy.parse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
 
+import dfh.treepath.Attribute;
 import dfh.treepath.Forester;
 import dfh.treepath.Index;
 import dfh.treepath.NodeTest;
@@ -135,5 +137,35 @@ public class BasicTests {
 		p = f.path("id(\\(foo\\))/*");
 		l = p.select(root);
 		assertEquals(2, l.size());
+	}
+
+	@SuppressWarnings("serial")
+	@Test
+	public void extensionTest() {
+		Element root = parse("<a><b foo='bar' bar='foo'/><b foo='foo'/></a>");
+		Forester<Element> f = new XMLToyForester() {
+			@SuppressWarnings("unused")
+			@Attribute("foobar")
+			public Boolean fooBar(Element n, Collection<Element> c,
+					Index<Element> i) {
+				return n.attributes.containsKey("foo")
+						&& n.attributes.containsKey("bar");
+			}
+		};
+		Path<Element> p = f.path("//*[@foobar]");
+		List<Element> l = p.select(root);
+		assertEquals(1, l.size());
+	}
+
+	@Test
+	public void attributeValueTest() {
+		Element root = parse("<a><b foo='bar' bar='foo'/><b foo='foo'/></a>");
+		Forester<Element> f = new XMLToyForester();
+		Path<Element> p = f.path("//*[@attr('foo')]");
+		List<Element> l = p.select(root);
+		assertEquals(2, l.size());
+		Object o = f.attribute(l.get(0), "attr", "foo");
+		assertTrue(o instanceof String);
+		assertEquals("bar", o.toString());
 	}
 }
