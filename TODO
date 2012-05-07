@@ -14,7 +14,7 @@ TODO
 . create extension class with basic attributes copied from XPath
 . create @uid for debugging
 . perhaps create memoization function
-. create unit tests to complete testing of boolean combinations of attribute tests
+* create unit tests to complete testing of boolean combinations of attribute tests
 . allow use of native comparison methods when available
 
 RELICS

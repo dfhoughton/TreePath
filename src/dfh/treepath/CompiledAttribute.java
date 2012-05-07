@@ -6,6 +6,7 @@ import java.util.List;
 
 import dfh.grammar.Match;
 import dfh.grammar.MatchTest;
+import dfh.treepath.ConditionalPredicate.Expression;
 
 /**
  * A compiled attribute, as opposed to the annotation {@link Attribute}. A
@@ -65,6 +66,8 @@ class CompiledAttribute<N> {
 			o = new CompiledAttribute<N>(arg, f);
 		} else if (type.equals("attribute_test")) {
 			o = new AttributeTestExpression<N>(arg, f);
+		} else if (type.equals("condition")) {
+			o = ConditionalPredicate.createExpression(arg, f);
 		} else if (type.equals("literal")) {
 			String literal = arg.group();
 			literal = literal.substring(1, literal.length() - 1);
@@ -106,6 +109,8 @@ class CompiledAttribute<N> {
 			} else if (o instanceof Path<?>) {
 				Path<N> p = (Path<N>) o;
 				ops[index] = p.sel(n, i);
+			} else if (o instanceof Expression<?>) {
+				ops[index] = ((Expression<N>) o).test(n, c, i);
 			} else {
 				ops[index] = o;
 			}

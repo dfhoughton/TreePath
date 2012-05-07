@@ -138,7 +138,7 @@ class ConditionalPredicate<N> extends Predicate<N> {
 		public boolean test(N n, Collection<N> c, Index<N> i) {
 			int count = 0;
 			for (Expression<N> e : expressions) {
-				if (!e.test(n, c, i))
+				if (e.test(n, c, i))
 					count++;
 				if (count > 1)
 					return false;
@@ -163,7 +163,7 @@ class ConditionalPredicate<N> extends Predicate<N> {
 		e = createExpression(type, f);
 	}
 
-	private static <N> Expression<N> createExpression(Match type, Forester<N> f) {
+	static <N> Expression<N> createExpression(Match type, Forester<N> f) {
 		Expression<N> ex = null;
 		while (ex == null) {
 			type = type.children()[0];

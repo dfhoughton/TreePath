@@ -3,6 +3,8 @@ package dfh.treepath.test;
 import static dfh.treepath.test.XMLToy.parse;
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.List;
 
@@ -87,5 +89,303 @@ public class AttributeTestTests {
 		Path<Element> p = f.path("//*[not (@id = 'foo')]");
 		List<Element> l = p.select(root);
 		assertEquals(6, l.size());
+	}
+
+	@Test
+	public void attributeTestAnd1() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@true and @true)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
+	@Test
+	public void attributeTestAnd2() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@true and @false)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("false", s);
+	}
+
+	@Test
+	public void attributeTestAnd3() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@false and @true)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("false", s);
+	}
+
+	@Test
+	public void attributeTestAnd4() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@false and @false)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("false", s);
+	}
+
+	@Test
+	public void attributeTestOr1() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@true or @true)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
+	@Test
+	public void attributeTestOr2() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@true or @false)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
+	@Test
+	public void attributeTestOr3() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@false or @true)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
+	@Test
+	public void attributeTestOr4() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@false or @false)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("false", s);
+	}
+
+	@Test
+	public void attributeTestXOr1() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@true xor @true)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("false", s);
+	}
+
+	@Test
+	public void attributeTestXOr2() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@true xor @false)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
+	@Test
+	public void attributeTestXOr3() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@false xor @true)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
+	@Test
+	public void attributeTestXOr4() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@false xor @false)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("false", s);
+	}
+
+	@Test
+	public void attributeTestXOr5() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@false xor @false xor @true)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
+	@Test
+	public void attributeTestXOr6() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@false^@false^@true)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+	@Test
+	public void attributeTestXOr7() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@false ^ @false ^ @true)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
+	@Test
+	public void attributeTestNot1() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(not @true)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("false", s);
+	}
+
+	@Test
+	public void attributeTestNot2() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(not @false)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
+	@Test
+	public void precedence1() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@true and @false or @false)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("false", s);
+	}
+
+	@Test
+	public void precedence2() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@false or @false xor @true)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
+	@Test
+	public void precedence3() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@true and @false xor @true)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
+	@Test
+	public void precedence4() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@true and @false xor @false)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("false", s);
+	}
+
+	@Test
+	public void precedence5() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@false and @true xor @true)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
+	@Test
+	public void precedence6() {
+		Element root = parse("<a />");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/*[@log(@false and (@true xor @true))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("false", s);
 	}
 }
