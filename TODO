@@ -12,9 +12,7 @@ TODO
 ====
 
 . create extension class with basic attributes copied from XPath
-. create @uid for debugging
 . perhaps create memoization function
-* create unit tests to complete testing of boolean combinations of attribute tests
 . allow use of native comparison methods when available
 
 RELICS
@@ -47,3 +45,5 @@ Things swept out of TODO list:
   collection being filtered
 * add a unit test for every attribute declared
 * let foresters provide attribute values for nodes
+* create unit tests to complete testing of boolean combinations of attribute tests
+* create @uid for debugging
