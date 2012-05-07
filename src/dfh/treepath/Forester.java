@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -422,7 +423,7 @@ public abstract class Forester<N> implements Serializable {
 		step = step.children()[0];
 		if (step.hasLabel("abbreviated")) {
 			if (step.length() == 1)
-				return new RootSelector<N>();
+				return new SelfSelector<N>();
 			return new ParentSelector<N>();
 		} else {
 			Match axisMatch = step.children()[0], tagMatch = step.children()[1], arguments = step
@@ -479,6 +480,69 @@ public abstract class Forester<N> implements Serializable {
 		if (children.isEmpty())
 			return true;
 		return false;
+	}
+
+	/**
+	 * An attribute for selecting a member from a collection of nodes returned
+	 * by a path. E.g., @pick(foo//bar, 1). The index is zero-based.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param c
+	 *            collection of which context node is a member; required for
+	 *            method signature but ignored
+	 * @param i
+	 *            tree index
+	 * @param from
+	 *            a collection of candidates selected by some path
+	 * @param index
+	 *            the index in the collection selected from corresponding to the
+	 *            node selected
+	 * @return the node selected, or <code>null</code> if there is no
+	 *         appropriate node
+	 */
+	@Attribute
+	protected N pick(N n, Collection<N> c, Index<N> i, Collection<N> from,
+			int index) {
+		int j = index;
+		if (from.isEmpty())
+			return null;
+		if (index < 0)
+			j = from.size() + index;
+		if (j < 0)
+			return null;
+		if (j >= from.size())
+			return null;
+		if (from instanceof List<?>)
+			return ((List<N>) from).get(j);
+		int in = 0;
+		for (Iterator<N> it = from.iterator(); it.hasNext();) {
+			N next = it.next();
+			if (in++ == j)
+				return next;
+		}
+		return null;
+	}
+
+	/**
+	 * An attribute for selecting a member from a collection of nodes returned
+	 * by a path. E.g., @size(foo//bar).
+	 * 
+	 * @param n
+	 *            context node
+	 * @param c
+	 *            collection of which context node is a member; required for
+	 *            method signature but ignored
+	 * @param i
+	 *            tree index
+	 * @param path
+	 *            a path used to select a candidate set; the path is evaluated
+	 *            relative to the context node
+	 * @return the number of nodes selected by the path
+	 */
+	@Attribute
+	protected int size(N n, Collection<N> c, Index<N> i, Collection<N> from) {
+		return from.size();
 	}
 
 	/**

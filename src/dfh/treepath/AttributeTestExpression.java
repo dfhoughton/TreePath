@@ -1,6 +1,7 @@
 package dfh.treepath;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import dfh.grammar.Match;
 import dfh.treepath.ConditionalPredicate.Expression;
@@ -24,7 +25,30 @@ class AttributeTestExpression<N> implements Expression<N> {
 	}
 
 	enum VType {
-		i, f, a, l
+		/**
+		 * integer
+		 */
+		i,
+		/**
+		 * float
+		 */
+		f,
+		/**
+		 * attribute
+		 */
+		a,
+		/**
+		 * attribute test
+		 */
+		at,
+		/**
+		 * path
+		 */
+		p,
+		/**
+		 * literal
+		 */
+		l
 	}
 
 	private final AttributeTestExpression.ComparisonOperator c;
@@ -78,11 +102,29 @@ class AttributeTestExpression<N> implements Expression<N> {
 			throw new PathException("unknown comparison operator " + s);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean test(N n, Collection<N> context, Index<N> i) {
 		Object rv = a.apply(n, context, i);
-		if (c == ComparisonOperator.id)
-			return v == rv;
+		if (c == ComparisonOperator.id) {
+			Object o = v;
+			if (vt == VType.a) {
+				o = ((CompiledAttribute<N>) o).apply(n, context, i);
+				if (rv instanceof Collection<?> && o instanceof Collection<?>) {
+					Collection<N> c1 = (Collection<N>) rv, c2 = (Collection<N>) o;
+					if (c1.size() == c2.size()) {
+						for (Iterator<N> i1 = c1.iterator(), i2 = c2.iterator(); i1.hasNext();) {
+							N n1 = i1.next(), n2 = i2.next();
+							if (n1 != n2)
+								return false;
+						}
+						return true;
+					}
+					return false;
+				}
+			}
+			return o == rv;
+		}
 		if (rv == null) {
 			return false;
 		} else if (v == null) {
@@ -91,13 +133,26 @@ class AttributeTestExpression<N> implements Expression<N> {
 		int comparison = 0;
 		switch (vt) {
 		case a:
-			if (v.equals(rv))
+			Object o = ((CompiledAttribute<N>) v).apply(n, context, i);
+			if (o.equals(rv))
 				comparison = 0;
-			else if (v instanceof Number && rv instanceof Number)
+			else if (o instanceof Number && rv instanceof Number)
 				comparison = Double.compare(((Number) rv).doubleValue(),
-						((Number) v).doubleValue());
-			else
-				comparison = rv.toString().compareTo(v.toString());
+						((Number) o).doubleValue());
+			else if (o instanceof Collection<?> && rv instanceof Collection<?>) {
+				Collection<N> c1 = (Collection<N>) rv, c2 = (Collection<N>) o;
+				if (c1.size() == c2.size()) {
+					for (Iterator<N> i1 = c1.iterator(), i2 = c2.iterator(); i1.hasNext();) {
+						N n1 = i1.next(), n2 = i2.next();
+						if (n1 != n2)
+							return c == ComparisonOperator.ne ? true : false;
+					}
+					return c == ComparisonOperator.eq ? true : false;
+				} else {
+					return c == ComparisonOperator.ne ? true : false;
+				}
+			} else
+				comparison = rv.toString().compareTo(o.toString());
 			break;
 		case f:
 			if (rv instanceof Number)

@@ -11,15 +11,11 @@ historical holding pen at the end.
 TODO
 ====
 
-* make attribute tests available as arguments to attributes
 . create extension class with basic attributes copied from XPath
-. differentiate @self and @this; the former is the node relative to which
-  the attribute is evaluated and the latter is the node that generated the
-  collection being filtered
-. add a unit test for every attribute declared
-* let foresters provide attribute values for nodes
 . create @uid for debugging
 . perhaps create memoization function
+. create unit tests to complete testing of boolean combinations of attribute tests
+. allow use of native comparison methods when available
 
 RELICS
 ======
@@ -45,3 +41,9 @@ Things swept out of TODO list:
 * add id() and @id
 * create axis tests
 * add same generation method
+* make attribute tests available as arguments to attributes
+- differentiate @self and @this; the former is the node relative to which
+  the attribute is evaluated and the latter is the node that generated the
+  collection being filtered
+* add a unit test for every attribute declared
+* let foresters provide attribute values for nodes

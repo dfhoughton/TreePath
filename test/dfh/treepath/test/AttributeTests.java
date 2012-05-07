@@ -146,4 +146,92 @@ public class AttributeTests {
 					"attribute @foo does not return any value"));
 		}
 	}
+
+	@Test
+	public void definedTest() {
+		Element root = parse("<a><b/><b foo='bar' /></a>");
+		Path<Element> p = f.path("//b[@defined(@attr('foo'))]");
+		List<Element> l = p.select(root);
+		assertEquals(1, l.size());
+	}
+
+	@Test
+	public void falseTest() {
+		Element root = parse("<a><b/><b foo='bar' /></a>");
+		Path<Element> p = f.path("//b[@false]");
+		List<Element> l = p.select(root);
+		assertEquals(0, l.size());
+	}
+
+	@Test
+	public void idTest() {
+		Element root = parse("<a><b/><b id='bar' /></a>");
+		Path<Element> p = f.path("//b[@id = 'bar']");
+		List<Element> l = p.select(root);
+		assertEquals(1, l.size());
+	}
+
+	@Test
+	public void indexTest() {
+		Element root = parse("<a><b/><b id='bar' /></a>");
+		Path<Element> p = f.path("//b[@id = 'bar' and @index = 1]");
+		List<Element> l = p.select(root);
+		assertEquals(1, l.size());
+	}
+
+	@Test
+	public void rootTest() {
+		Element root = parse("<a><b/><b id='bar' /></a>");
+		Path<Element> p = f.path("//a[@root]");
+		List<Element> l = p.select(root);
+		assertEquals(1, l.size());
+	}
+
+	@Test
+	public void sizeTest() {
+		Element root = parse("<a><b/><b><c/></b><b><c/><c/></b></a>");
+		Path<Element> p = f.path("//b[@size(./*) = 1]");
+		List<Element> l = p.select(root);
+		assertEquals(1, l.size());
+	}
+
+	@Test
+	public void pickTest() {
+		Element root = parse("<a><b/><b><c/></b><b><c/><c/></b></a>");
+		Path<Element> p = f.path("//b[@pick(*, 1) = '<c />']");
+		List<Element> l = p.select(root);
+		assertEquals(1, l.size());
+	}
+
+	@Test
+	public void leafTest() {
+		Element root = parse("<a><b/><b><c/></b><b></b></a>");
+		Path<Element> p = f.path("//b[@leaf]");
+		List<Element> l = p.select(root);
+		assertEquals(2, l.size());
+	}
+
+	@Test
+	public void nullTest() {
+		Element root = parse("<a><b/><b><c/></b><b><c/><c/></b></a>");
+		Path<Element> p = f.path("//b[@pick(*, 1) == @null]");
+		List<Element> l = p.select(root);
+		assertEquals(2, l.size());
+	}
+
+	@Test
+	public void thisTest() {
+		Element root = parse("<a><b/><b id='bar' /></a>");
+		Path<Element> p = f.path("//a[@this == @pick(/., 0)]");
+		List<Element> l = p.select(root);
+		assertEquals(1, l.size());
+	}
+
+	@Test
+	public void trueTest() {
+		Element root = parse("<a><b/><b foo='bar' /></a>");
+		Path<Element> p = f.path("//b[@true]");
+		List<Element> l = p.select(root);
+		assertEquals(2, l.size());
+	}
 }
