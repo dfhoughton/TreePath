@@ -47,15 +47,15 @@ public class PathGrammar {
 			//
 			"treepath = <path> [ '|' <path> ]*",//
 			"path = <first_step> <subsequent_step>*+",//
-			"first_step = [{segment} <id> | <separator>?+ <step> ]",//
+			"first_step = [{segment} <separator>?+ <step> ]",//
 			"id = 'id(' /(?:[^)\\\\]|\\\\.)++/ ')'",//
 			"subsequent_step = [{segment} <separator> <step> ]",//
 			"separator = /\\/[\\/>]?/",//
-			"step = <full> | <abbreviated>",//
-			"full = <axis>?+ <forward> <predicate>*+",//
+			"step = [ <full> | <abbreviated> ] <predicate>*+",//
+			"full = <axis>?+ <forward>",//
 			"axis = not after [ '//' | '/>' ] <axis_name> '::'", //
 			"axis_name = /(?>s(?>ibling(?>-or-self)?+|elf)|p(?>receding(?>-sibling)?+|arent)|leaf|following(?>-sibling)?+|descendant(?>-or-self)?+|child|ancestor(?>-or-self)?+)/",//
-			"abbreviated = '.' | '..'",//
+			"abbreviated = not after [ '//' | '/>' ] [ '.' | '..' | <id> ]",//
 			"forward = <wildcard> | <specific> | <pattern>",//
 			"wildcard = '*'",//
 			"specific = /[\\p{L}_](?:[\\p{L}\\p{N}_]|[-:](?=[\\p{L}_\\p{N}])|\\\\.)*+/",//

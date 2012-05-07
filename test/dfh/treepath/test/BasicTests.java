@@ -43,6 +43,16 @@ public class BasicTests {
 		Collection<Element> bs = p.select(root);
 		assertEquals(0, bs.size());
 	}
+	
+	@Test
+	public void rootSelf() {
+		Element root = parse("<a><b/></a>");
+		Forester<Element> f = new XMLToyForester();
+		Path<Element> p = f.path("/.");
+		List<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
+		assertEquals("a", bs.get(0).tag);
+	}
 
 	@Test
 	public void closestTag() {

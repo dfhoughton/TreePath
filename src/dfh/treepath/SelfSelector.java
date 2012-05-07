@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import dfh.grammar.Match;
+
 /**
  * {@link Selector} for the . expression.
  * <p>
@@ -12,11 +14,15 @@ import java.util.List;
  * 
  * @param <N>
  */
-class SelfSelector<N> implements Selector<N> {
+class SelfSelector<N> extends TestSelector<N> {
 	private static final long serialVersionUID = 1L;
 
+	public SelfSelector(Match predicates, Forester<N> f) {
+		super(predicates, f);
+	}
+
 	@Override
-	public Collection<N> select(N n, Index<N> i) {
+	protected Collection<N> candidates(N n, Index<N> i) {
 		List<N> list = new ArrayList<N>(1);
 		list.add(n);
 		return list;

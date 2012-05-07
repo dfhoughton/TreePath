@@ -322,11 +322,6 @@ public abstract class Forester<N> implements Serializable {
 
 	private Selector<N> makeStep(Match fs, boolean first) {
 		Match slash, step;
-		if (first) {
-			if (fs.children()[0].rule().label().id.equals("id"))
-				return new IdSelector<N>(fs);
-			fs = fs.children()[0];
-		}
 		slash = fs.children()[0];
 		step = fs.children()[1];
 		switch (slash.length()) {
@@ -344,16 +339,16 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	private Selector<N> makeClosestStep(Match step) {
-		step = step.children()[0];
-		Match tagMatch = step.children()[1], arguments = step.children()[2];
+		Match predicates = step.children()[1];
+		Match tagMatch = step.children()[0].children()[0].children()[1];
 		String s = tagMatch.group();
 		if ("*".equals(s))
-			return new ClosestWildcard<N>(arguments, this);
+			return new ClosestWildcard<N>(predicates, this);
 		else if (s.charAt(0) == '~') {
 			s = cleanMatch(s);
-			return new ClosestMatching<N>(s, arguments, this);
+			return new ClosestMatching<N>(s, predicates, this);
 		} else
-			return new ClosestTag<N>(s, arguments, this);
+			return new ClosestTag<N>(s, predicates, this);
 	}
 
 	/**
@@ -363,46 +358,51 @@ public abstract class Forester<N> implements Serializable {
 	 * @return
 	 */
 	private Selector<N> makeGlobalStep(Match step) {
-		step = step.children()[0];
-		Match tagMatch = step.children()[1], arguments = step.children()[2];
+		Match tagMatch = step.children()[0], predicates = step.children()[1];
 		String s = tagMatch.group();
 		if ("*".equals(s))
-			return new AnywhereWildcard<N>(arguments, this);
+			return new AnywhereWildcard<N>(predicates, this);
 		else if (s.charAt(0) == '~') {
 			s = cleanMatch(s);
-			return new AnywhereMatching<N>(s, arguments, this);
+			return new AnywhereMatching<N>(s, predicates, this);
 		} else
-			return new AnywhereTag<N>(s, arguments, this);
+			return new AnywhereTag<N>(s, predicates, this);
 	}
 
 	private Selector<N> makeRootStep(Match step) {
-		step = step.children()[0];
-		if (step.hasLabel("abbreviated")) {
-			if (step.length() == 1)
-				return new RootSelector<N>();
-			throw new PathException(
-					"/.. is ill-formed; the root node has no parent");
+		Match predicates = step.children()[1];
+		step = step.children()[0].children()[0];
+		if (step.rule().label().id.equals("abbreviated")) {
+			step = step.children()[1];
+			switch (step.length()) {
+			case 1:
+				return new RootSelector<N>(predicates, this);
+			case 2:
+				new PathException(
+						"/.. is ill-formed; the root node has no parent");
+			default:
+				return new IdSelector<N>(step, predicates);
+			}
 		} else {
-			Match axisMatch = step.children()[0], tagMatch = step.children()[1], arguments = step
-					.children()[2];
+			Match axisMatch = step.children()[0], tagMatch = step.children()[1];
 			String s = tagMatch.group();
 			if (axisMatch.length() == 0) {
 				if ("*".equals(s))
-					return new RootWildcard<N>(arguments, this);
+					return new RootWildcard<N>(predicates, this);
 				else if (s.charAt(0) == '~') {
 					s = cleanMatch(s);
-					return new RootMatching<N>(s, arguments, this);
+					return new RootMatching<N>(s, predicates, this);
 				} else
-					return new RootTag<N>(s, arguments, this);
+					return new RootTag<N>(s, predicates, this);
 			} else {
 				String aname = axisMatch.first(anameMT).group();
 				if ("*".equals(s))
-					return new RootAxisWildcard<N>(aname, arguments, this);
+					return new RootAxisWildcard<N>(aname, predicates, this);
 				else if (s.charAt(0) == '~') {
 					s = cleanMatch(s);
-					return new RootAxisMatching<N>(aname, s, arguments, this);
+					return new RootAxisMatching<N>(aname, s, predicates, this);
 				} else
-					return new RootAxisTag<N>(aname, s, arguments, this);
+					return new RootAxisTag<N>(aname, s, predicates, this);
 			}
 		}
 	}
@@ -420,32 +420,38 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	private Selector<N> makeRelativeStep(Match step) {
-		step = step.children()[0];
-		if (step.hasLabel("abbreviated")) {
-			if (step.length() == 1)
-				return new SelfSelector<N>();
-			return new ParentSelector<N>();
+		Match predicates = step.children()[1];
+		step = step.children()[0].children()[0];
+		if (step.rule().label().id.equals("abbreviated")) {
+			step = step.children()[1];
+			switch (step.length()) {
+			case 1:
+				return new SelfSelector<N>(predicates, this);
+			case 2:
+				new ParentSelector<N>(predicates, this);
+			default:
+				return new IdSelector<N>(step, predicates);
+			}
 		} else {
-			Match axisMatch = step.children()[0], tagMatch = step.children()[1], arguments = step
-					.children()[2];
+			Match axisMatch = step.children()[0], tagMatch = step.children()[1];
 			String s = tagMatch.group();
 			if (axisMatch.length() == 0) {
 				if ("*".equals(s))
-					return new ChildWildcard<N>(arguments, this);
+					return new ChildWildcard<N>(predicates, this);
 				else if (s.charAt(0) == '~') {
 					s = cleanMatch(s);
-					return new ChildMatching<N>(s, arguments, this);
+					return new ChildMatching<N>(s, predicates, this);
 				} else
-					return new ChildTag<N>(s, arguments, this);
+					return new ChildTag<N>(s, predicates, this);
 			} else {
 				String aname = axisMatch.first(anameMT).group();
 				if ("*".equals(s))
-					return new AxisWildcard<N>(aname, arguments, this);
+					return new AxisWildcard<N>(aname, predicates, this);
 				else if (s.charAt(0) == '~') {
 					s = cleanMatch(s);
-					return new AxisMatching<N>(aname, s, arguments, this);
+					return new AxisMatching<N>(aname, s, predicates, this);
 				} else
-					return new AxisTag<N>(aname, s, arguments, this);
+					return new AxisTag<N>(aname, s, predicates, this);
 			}
 		}
 	}
@@ -1034,5 +1040,46 @@ public abstract class Forester<N> implements Serializable {
 					+ " with node, index, collection, and parameters provided",
 					e);
 		}
+	}
+
+	/**
+	 * Returns a string uniquely identifying the node in the tree as a sequence
+	 * of branch indices. For instance, the root node will be "/", the leftmost
+	 * node under the root will be "/0", the second node under the leftmost node
+	 * under root will be "/0/1", and so on.
+	 * <p>
+	 * This attribute is chiefly useful in debugging.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param c
+	 *            collection of which context node is a member; required for
+	 *            method signature but ignored
+	 * @param i
+	 *            tree index
+	 * @return <code>true</code>
+	 */
+	@Attribute
+	protected final String uid(N n, Collection<N> c, Index<N> i) {
+		List<Integer> list = new ArrayList<Integer>();
+		N node = n;
+		while (node != i.root) {
+			N parent = i.f.parent(node, i);
+			List<N> children = i.f.children(parent, i);
+			for (int in = 0, lim = children.size(); in < lim; in++) {
+				N child = children.get(in);
+				if (child == node) {
+					list.add(in);
+					break;
+				}
+			}
+			node = parent;
+		}
+		if (list.isEmpty())
+			return "/";
+		StringBuilder b = new StringBuilder();
+		for (int in = list.size() - 1; in >= 0; in--)
+			b.append('/').append(list.get(in));
+		return b.toString();
 	}
 }

@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import dfh.grammar.Match;
+
 /**
  * {@link Selector} for the .. expression.
  * <p>
@@ -13,11 +15,15 @@ import java.util.List;
  * 
  * @param <N>
  */
-class ParentSelector<N> implements Selector<N> {
+class ParentSelector<N> extends TestSelector<N> {
 	private static final long serialVersionUID = 1L;
 
+	public ParentSelector(Match predicates, Forester<N> f) {
+		super(predicates, f);
+	}
+
 	@Override
-	public Collection<N> select(N n, Index<N> i) {
+	protected Collection<N> candidates(N n, Index<N> i) {
 		if (i.isRoot(n))
 			return Collections.emptyList();
 		List<N> list = new ArrayList<N>(1);

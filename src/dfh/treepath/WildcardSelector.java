@@ -21,11 +21,11 @@ abstract class WildcardSelector<N> implements Selector<N> {
 	protected NodeTest<N> test;
 
 	@SuppressWarnings("unchecked")
-	WildcardSelector(Match arguments, Forester<N> f) {
-		List<Match> argList = arguments.closest(TestSelector.argMT);
-		final Predicate<N>[] predicates = new Predicate[argList.size()];
+	WildcardSelector(Match predMatch, Forester<N> f) {
+		List<Match> predList = predMatch.closest(TestSelector.predicateMT);
+		final Predicate<N>[] predicates = new Predicate[predList.size()];
 		for (int i = 0; i < predicates.length; i++) {
-			predicates[i] = Predicate.build(argList.get(i), f);
+			predicates[i] = Predicate.build(predList.get(i), f);
 			if (predicates[i] instanceof IndexPredicate)
 				throw new PathException(
 						"index predicates cannot be used with the wildcard character");

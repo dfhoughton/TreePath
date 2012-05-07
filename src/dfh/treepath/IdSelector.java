@@ -19,7 +19,7 @@ class IdSelector<N> implements Selector<N> {
 	private static final long serialVersionUID = 1L;
 	private final String id;
 
-	public IdSelector(Match fs) {
+	public IdSelector(Match fs, Match predMatch) {
 		id = fs.children()[0].children()[1].group().replaceAll("\\\\(.)", "$1");
 	}
 

@@ -18,8 +18,8 @@ class AxisTag<N> extends AxisSelector<N> {
 
 	protected final NodeTest<N> test;
 
-	AxisTag(String axisName, final String tag, Match arguments, Forester<N> f) {
-		super(axisName, arguments, f);
+	AxisTag(String axisName, final String tag, Match predicates, Forester<N> f) {
+		super(axisName, predicates, f);
 		test = new NodeTest<N>() {
 			private static final long serialVersionUID = 1L;
 

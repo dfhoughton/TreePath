@@ -234,4 +234,17 @@ public class AttributeTests {
 		List<Element> l = p.select(root);
 		assertEquals(2, l.size());
 	}
+	
+	@Test
+	public void uidTest() {
+		Element root = parse("<a><b/><c><d/><d id='foo'/></c></a>");
+		Path<Element> p = f.path("//*[@id = 'foo'][@log(@uid)]");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("/1/1", s);
+	}
 }

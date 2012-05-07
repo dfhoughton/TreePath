@@ -8,7 +8,7 @@ import dfh.grammar.MatchTest;
 
 abstract class TestSelector<N> implements Selector<N> {
 	private static final long serialVersionUID = 1L;
-	static final MatchTest argMT = new MatchTest() {
+	static final MatchTest predicateMT = new MatchTest() {
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -20,7 +20,7 @@ abstract class TestSelector<N> implements Selector<N> {
 
 	@SuppressWarnings("unchecked")
 	TestSelector(Match arguments, Forester<N> f) {
-		List<Match> argList = arguments.closest(argMT);
+		List<Match> argList = arguments.closest(predicateMT);
 		predicates = new Predicate[argList.size()];
 		for (int i = 0; i < predicates.length; i++) {
 			predicates[i] = Predicate.build(argList.get(i), f);
