@@ -39,8 +39,9 @@ import dfh.treepath.PathGrammar.Axis;
  */
 public abstract class Forester<N> implements Serializable {
 	private static final long serialVersionUID = 1L;
-	Map<String, Method> attributes = new HashMap<String, Method>();
-	NodeTest<N>[] ignore;
+	protected final static Map<Class<? extends Forester<?>>, Map<String, Method>> attributeCache = new HashMap<Class<? extends Forester<?>>, Map<String, Method>>();
+	final Map<String, Method> attributes;
+	final NodeTest<N>[] ignore;
 	/**
 	 * A place for the log attribute to send its logging.
 	 */
@@ -49,31 +50,8 @@ public abstract class Forester<N> implements Serializable {
 	/**
 	 * Initializes the map from attributes to methods.
 	 */
-	public Forester(NodeTest<N>... ignorable) {
-		ignore(ignorable);
-		Class<?> cz = getClass();
-		while (Forester.class.isAssignableFrom(cz)) {
-			for (Method m : cz.getDeclaredMethods()) {
-				int mods = m.getModifiers();
-				if (!Modifier.isPrivate(mods)) {
-					Attribute a = m.getAnnotation(Attribute.class);
-					if (a != null) {
-						String name = a.value();
-						if (name.length() == 0)
-							name = m.getName();
-						if (attributes.containsKey(name))
-							continue;
-						m.setAccessible(true);
-						attributes.put(name, m);
-					}
-				}
-			}
-			cz = cz.getSuperclass();
-		}
-	}
-
 	@SuppressWarnings("unchecked")
-	public void ignore(NodeTest<N>... ignorable) {
+	public Forester(NodeTest<N>... ignorable) {
 		if (ignorable.length > 0) {
 			Set<NodeTest<N>> set = new HashSet<NodeTest<N>>();
 			for (NodeTest<N> t : ignorable)
@@ -81,6 +59,65 @@ public abstract class Forester<N> implements Serializable {
 			ignore = set.toArray(new NodeTest[set.size()]);
 		} else
 			ignore = new NodeTest[0];
+		attributes = getAttributes();
+	}
+
+	@SuppressWarnings("unchecked")
+	protected final Map<String, Method> getAttributes() {
+		synchronized (attributeCache) {
+			Map<String, Method> map = attributeCache.get(this.getClass());
+			if (map == null) {
+				map = new HashMap<String, Method>();
+				Class<?> icl = null;
+				try {
+					icl = Class.forName("java.util.Collection");
+				} catch (ClassNotFoundException e) {
+					throw new PathException(e);
+				}
+				Class<?> cz = getClass();
+				while (Forester.class.isAssignableFrom(cz)) {
+					for (Method m : cz.getDeclaredMethods()) {
+						int mods = m.getModifiers();
+						if (!Modifier.isPrivate(mods)) {
+							Attribute a = m.getAnnotation(Attribute.class);
+							if (a != null) {
+								String name = a.value();
+								if (name.length() == 0)
+									name = m.getName();
+								if (map.containsKey(name))
+									continue;
+								Class<?>[] pts = m.getParameterTypes();
+								if (pts.length < 3)
+									throw new PathException(
+											"ill-formed attribute @"
+													+ name
+													+ "; every attribute must have at least a node, collection, and index parameter");
+								if (!icl.isAssignableFrom(pts[1]))
+									throw new PathException(
+											"the second parameter for attribute @"
+													+ name
+													+ " must represent the collection of nodes of which the context node is a member");
+								if (!Index.class.isAssignableFrom(pts[2]))
+									throw new PathException(
+											"the third parameter for attribute @"
+													+ name
+													+ " must be an instance of dfh.treepath.Index");
+								if (m.getReturnType() == Void.TYPE)
+									throw new PathException("attribute @"
+											+ name
+											+ " does not return any value");
+								m.setAccessible(true);
+								map.put(name, m);
+							}
+						}
+					}
+					cz = cz.getSuperclass();
+				}
+				attributeCache.put(
+						(Class<? extends Forester<?>>) this.getClass(), map);
+			}
+			return map;
+		}
 	}
 
 	protected static final MatchTest pathMt = new MatchTest() {

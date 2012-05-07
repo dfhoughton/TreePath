@@ -18,6 +18,8 @@ TODO
   collection being filtered
 . add a unit test for every attribute declared
 * let foresters provide attribute values for nodes
+. create @uid for debugging
+. perhaps create memoization function
 
 RELICS
 ======
@@ -32,7 +34,7 @@ Things swept out of TODO list:
 * make Path.select(N) return a list rather than a collection for convenience
 * make everything serializable
 * make attribute tests symmetric
-- test method signatures of attributes during construction
+* test method signatures of attributes during construction
 * let Forester ignore nodes matching particular NodeTests
 * allow colons in attribute and tag names without escaping
 * create != operator

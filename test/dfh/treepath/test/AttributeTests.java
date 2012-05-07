@@ -2,6 +2,8 @@ package dfh.treepath.test;
 
 import static dfh.treepath.test.XMLToy.parse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -10,8 +12,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import dfh.treepath.Attribute;
 import dfh.treepath.Forester;
+import dfh.treepath.Index;
 import dfh.treepath.Path;
+import dfh.treepath.PathException;
 import dfh.treepath.test.XMLToy.Element;
 import dfh.treepath.test.XMLToy.XMLToyForester;
 
@@ -61,7 +66,7 @@ public class AttributeTests {
 		l = p.select(root);
 		assertEquals(1, l.size());
 	}
-	
+
 	@Test
 	public void attributeTestValueTest() {
 		Element root = parse("<a><b id='foo'/></a>");
@@ -75,4 +80,70 @@ public class AttributeTests {
 		assertEquals("true", output);
 	}
 
+	@SuppressWarnings("serial")
+	@Test
+	public void methodSignatureTest1() {
+		try {
+			new XMLToyForester() {
+				@SuppressWarnings("unused")
+				@Attribute
+				void foo() {
+				}
+			};
+			fail("should have thrown an exception");
+		} catch (PathException e) {
+			assertTrue(e.getMessage().startsWith("ill-formed attribute"));
+		}
+	}
+
+	@SuppressWarnings("serial")
+	@Test
+	public void methodSignatureTest2() {
+		try {
+			new XMLToyForester() {
+				@SuppressWarnings("unused")
+				@Attribute
+				void foo(Element e, String bar, int i) {
+				}
+			};
+			fail("should have thrown an exception");
+		} catch (PathException e) {
+			assertTrue(e.getMessage().startsWith(
+					"the second parameter for attribute "));
+		}
+	}
+
+	@SuppressWarnings("serial")
+	@Test
+	public void methodSignatureTest3() {
+		try {
+			new XMLToyForester() {
+				@SuppressWarnings("unused")
+				@Attribute
+				void foo(Element e, Collection<Element> bar, int i) {
+				}
+			};
+			fail("should have thrown an exception");
+		} catch (PathException e) {
+			assertTrue(e.getMessage().startsWith(
+					"the third parameter for attribute "));
+		}
+	}
+
+	@SuppressWarnings("serial")
+	@Test
+	public void methodSignatureTest4() {
+		try {
+			new XMLToyForester() {
+				@SuppressWarnings("unused")
+				@Attribute
+				void foo(Element e, Collection<Element> bar, Index<Element> i) {
+				}
+			};
+			fail("should have thrown an exception");
+		} catch (PathException e) {
+			assertTrue(e.getMessage().startsWith(
+					"attribute @foo does not return any value"));
+		}
+	}
 }
