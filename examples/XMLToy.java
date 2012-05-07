@@ -36,6 +36,10 @@ public class XMLToy {
 			"squote = /'(?:[^']|\\\\.)*+'/",//
 			"s = /\\s*+/",//
 	};
+	/**
+	 * The grammar which will convert an XML document into a preliminary parse
+	 * tree.
+	 */
 	public static final Grammar g = new Grammar(rules);
 
 	/**
@@ -54,11 +58,27 @@ public class XMLToy {
 				return m.rule().label().id.equals("element");
 			}
 		};
+		/**
+		 * Element tag.
+		 */
 		public final String tag;
+		/**
+		 * Element attributes, if any.
+		 */
 		public final Map<String, String> attributes;
+		/**
+		 * Element children, if any.
+		 */
 		public final Element[] children;
 
-		public Element(Match e) {
+		/**
+		 * Converts a parse tree node into a tree of elements.
+		 * 
+		 * @param e
+		 *            node in parse tree that defines the element and its
+		 *            children
+		 */
+		private Element(Match e) {
 			tag = e.first("tag").group();
 			List<Match> alist = e.first("attributes").get("attribute");
 			attributes = new HashMap<String, String>();
@@ -84,15 +104,19 @@ public class XMLToy {
 		public String toString() {
 			StringBuilder b = new StringBuilder();
 			b.append('<').append(tag);
-			b.append(' ');
+			boolean first = true;
 			for (Entry<String, String> e : attributes.entrySet()) {
+				if (first)
+					first = false;
+				else
+					b.append(' ');
 				b.append(e.getKey());
 				b.append("=\"");
 				b.append(e.getValue());
 				b.append('"');
 			}
 			if (children.length == 0)
-				b.append("/>");
+				b.append(" />");
 			else {
 				b.append('>');
 				for (Element c : children)

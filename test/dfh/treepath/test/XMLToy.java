@@ -92,15 +92,19 @@ public class XMLToy {
 		public String toString() {
 			StringBuilder b = new StringBuilder();
 			b.append('<').append(tag);
-			b.append(' ');
+			boolean first = true;
 			for (Entry<String, String> e : attributes.entrySet()) {
+				if (first)
+					first = false;
+				else
+					b.append(' ');
 				b.append(e.getKey());
 				b.append("=\"");
 				b.append(e.getValue());
 				b.append('"');
 			}
 			if (children.length == 0)
-				b.append("/>");
+				b.append(" />");
 			else {
 				b.append('>');
 				for (Element c : children)
