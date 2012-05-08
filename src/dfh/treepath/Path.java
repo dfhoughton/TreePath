@@ -71,6 +71,8 @@ public class Path<N> implements Serializable {
 	 * @return the nodes matching the path in the order of their discovery
 	 */
 	public List<N> select(N root, Index<N> i) {
+		if (root == null)
+			throw new PathException("select called on null node");
 		if (!i.indexed())
 			i.index();
 		if (f.isRoot(root, null, i))
