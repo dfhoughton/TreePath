@@ -103,7 +103,7 @@ public class MatchPathTest {
 		List<Match> verbPhrases = f.path("//VP").select(n);
 		assertEquals(1, verbs.size());
 		assertEquals("sees you", verbPhrases.get(0).group());
-		List<Match> objects = f.path("//VP//NP").select(n);
+		List<Match> objects = f.path("//VP/>NP").select(n);
 		assertEquals(1, objects.size());
 		assertEquals("you", objects.get(0).group());
 		List<Match> subjects = f.path(
@@ -134,7 +134,7 @@ public class MatchPathTest {
 		List<Match> verbPhrases = f.path("//VP").select(n);
 		assertEquals(1, verbs.size());
 		assertEquals("sees you", verbPhrases.get(0).group());
-		List<Match> objects = f.path("//VP//NP").select(n);
+		List<Match> objects = f.path("//VP/>NP").select(n);
 		assertEquals(1, objects.size());
 		assertEquals("you", objects.get(0).group());
 		List<Match> subjects = f.path(
@@ -167,7 +167,7 @@ public class MatchPathTest {
 		List<Match> verbPhrases = f.path("//VP").select(n);
 		assertEquals(1, verbs.size());
 		assertEquals("sees you", verbPhrases.get(0).group());
-		List<Match> objects = f.path("//VP//NP").select(n);
+		List<Match> objects = f.path("//VP/>NP").select(n);
 		assertEquals(1, objects.size());
 		assertEquals("you", objects.get(0).group());
 		List<Match> subjects = f.path(
@@ -202,7 +202,7 @@ public class MatchPathTest {
 		List<Match> verbPhrases = f.path("//VP").select(n);
 		assertEquals(1, verbs.size());
 		assertEquals("sit", verbPhrases.get(0).group());
-		List<Match> objects = f.path("//VP//NP").select(n);
+		List<Match> objects = f.path("//VP/>NP").select(n);
 		assertEquals(0, objects.size());
 		List<Match> subjects = f.path(
 				"//NP[not ./ancestor::*[@label = 'VP' or @label = 'NP']]")
@@ -236,7 +236,7 @@ public class MatchPathTest {
 		List<Match> verbPhrases = f.path("//VP").select(n);
 		assertEquals(1, verbs.size());
 		assertEquals("sit", verbPhrases.get(0).group());
-		List<Match> objects = f.path("//VP//NP").select(n);
+		List<Match> objects = f.path("//VP/>NP").select(n);
 		assertEquals(0, objects.size());
 		List<Match> subjects = f.path(
 				"//NP[not ./ancestor::*[@s:matches(@label,'[PVN]P')]]").select(
@@ -254,4 +254,26 @@ public class MatchPathTest {
 		assertTrue(phraseSet.contains("on you"));
 	}
 
+	@Test
+	public void test7() {
+		Grammar g = new Grammar("rule = 'a' not before 'c' 'b'");
+		Match m = g.matches("ab").match();
+		@SuppressWarnings("unchecked")
+		MatchPath mp = new MatchPath();
+		List<Match> list = mp.path("//*[@assertion]").select(m);
+		assertEquals(1, list.size());
+		list = mp.path("//*[@zero]").select(m);
+		assertEquals(1, list.size());
+		list = mp.path("//*[@zero and @length > 0]").select(m);
+		assertEquals(0, list.size());
+		list = mp.path("//*").select(m);
+		assertEquals(4, list.size());
+		Set<String> set = new HashSet<String>();
+		for (Match c : list)
+			set.add(c.group());
+		assertTrue(set.contains("ab"));
+		assertTrue(set.contains("a"));
+		assertTrue(set.contains("b"));
+		assertTrue(set.contains(""));
+	}
 }
