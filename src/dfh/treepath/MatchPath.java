@@ -68,7 +68,7 @@ public class MatchPath extends FunctionalForester<Match> {
 	}
 
 	/**
-	 * Retruns {@link Match#children()} as a list.
+	 * Returns {@link Match#children()} as a list.
 	 */
 	@Override
 	protected List<Match> children(Match n, Index<Match> i) {

@@ -6,7 +6,10 @@ import java.util.Map;
 
 /**
  * A class that caches information pertaining to a particular tree, if
- * necessary.
+ * necessary. For some sorts of tree, this class will do little more than
+ * provide a reference back to the {@link Forester} and root node. For others
+ * the index supplements the tree with information not accessible from
+ * particular nodes.
  * <p>
  * 
  * @author David F. Houghton - Apr 28, 2012
@@ -15,9 +18,23 @@ import java.util.Map;
  *            a type of tree node
  */
 public class Index<N> {
+	/**
+	 * root node in tree
+	 */
 	public final N root;
+	/**
+	 * {@link Forester} capable of interpreting the tree, generally the one that
+	 * created the index.
+	 */
 	public final Forester<N> f;
+	/**
+	 * Map from ids to nodes, if this is appropriate for the tree type and any
+	 * identified nodes exist.
+	 */
 	protected Map<String, N> identifiedNodes;
+	/**
+	 * Whether the index has been initialized.
+	 */
 	protected boolean indexed;
 
 	/**
@@ -52,6 +69,12 @@ public class Index<N> {
 		return indexed;
 	}
 
+	/**
+	 * Walk the tree, indexing all nodes.
+	 * 
+	 * @param n
+	 *            current node
+	 */
 	protected void walk(N n) {
 		List<N> children = f.kids(n, this);
 		index(n);
@@ -61,12 +84,27 @@ public class Index<N> {
 		}
 	}
 
+	/**
+	 * Record any unique identifier of this node.
+	 * 
+	 * @param n
+	 *            node
+	 */
 	protected void index(N n) {
 		String id = id(n);
 		if (id != null)
 			identifiedNodes.put(id, n);
 	}
 
+	/**
+	 * Do relevant indexing for a parent and child pair. Unless overridden this
+	 * method does nothing.
+	 * 
+	 * @param n
+	 *            parent node
+	 * @param c
+	 *            child node
+	 */
 	protected void index(N n, N c) {
 	}
 
@@ -82,7 +120,10 @@ public class Index<N> {
 	}
 
 	/**
+	 * Returns the unique identifier, if any, that identifies this node.
+	 * 
 	 * @param n
+	 *            node
 	 * @return a unique string identifier of this node, if any
 	 */
 	public String id(N n) {

@@ -9,6 +9,7 @@ import java.io.Serializable;
  * @author David F. Houghton - May 5, 2012
  * 
  * @param <N>
+ *            node type
  */
 public interface NodeTest<N> extends Serializable {
 	/**

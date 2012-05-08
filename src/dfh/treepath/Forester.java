@@ -40,6 +40,11 @@ import dfh.treepath.PathGrammar.Axis;
  */
 public abstract class Forester<N> implements Serializable {
 	private static final long serialVersionUID = 1L;
+	/**
+	 * A cache retaining the mappings from varieties of {@link Forester} to the
+	 * attributes they can handle. This is used to accelerate construction by
+	 * caching the results of reflective code.
+	 */
 	protected final static Map<Class<? extends Forester<?>>, Map<String, Method>> attributeCache = new HashMap<Class<? extends Forester<?>>, Map<String, Method>>();
 	final Map<String, Method> attributes;
 	final NodeTest<N>[] ignore;
@@ -67,6 +72,12 @@ public abstract class Forester<N> implements Serializable {
 		attributes = getAttributes();
 	}
 
+	/**
+	 * Returns attributes handled, checking {@link #attributeCache} before
+	 * discovering them by reflection.
+	 * 
+	 * @return attributes handled by forester
+	 */
 	@SuppressWarnings("unchecked")
 	protected final Map<String, Method> getAttributes() {
 		synchronized (attributeCache) {
@@ -125,6 +136,10 @@ public abstract class Forester<N> implements Serializable {
 		}
 	}
 
+	/**
+	 * {@link MatchTest} used in compiling the path parse tree into a
+	 * {@link Path}.
+	 */
 	protected static final MatchTest pathMt = new MatchTest() {
 		private static final long serialVersionUID = 1L;
 
@@ -220,6 +235,17 @@ public abstract class Forester<N> implements Serializable {
 		}
 	}
 
+	/**
+	 * Implements the siblings axis.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param t
+	 *            node type of interest
+	 * @param i
+	 *            tree index
+	 * @return siblings of context node
+	 */
 	protected Collection<N> siblings(N n, NodeTest<N> t, Index<N> i) {
 		List<N> siblings = siblings(parent(n, i), i);
 		if (siblings.isEmpty())
@@ -231,6 +257,17 @@ public abstract class Forester<N> implements Serializable {
 		return list;
 	}
 
+	/**
+	 * Implements the siblings-or-self axis.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param t
+	 *            node type of interest
+	 * @param i
+	 *            tree index
+	 * @return context node and its siblings in tree order
+	 */
 	protected Collection<N> siblingsOrSelf(N n, NodeTest<N> t, Index<N> i) {
 		if (i.isRoot(n)) {
 			List<N> list = new ArrayList<N>(1);
@@ -246,6 +283,17 @@ public abstract class Forester<N> implements Serializable {
 		return list;
 	}
 
+	/**
+	 * Implements child axis.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param t
+	 *            nodes of interest
+	 * @param i
+	 *            tree index
+	 * @return children of context node
+	 */
 	protected List<N> children(N n, NodeTest<N> t, Index<N> i) {
 		List<N> children = kids(n, i);
 		if (children.isEmpty())
@@ -259,7 +307,10 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	/**
+	 * Compiles a path expression into a {@link Path}.
+	 * 
 	 * @param path
+	 *            path expression
 	 * @return compiled path expression
 	 */
 	public Path<N> path(String path) {
@@ -291,6 +342,12 @@ public abstract class Forester<N> implements Serializable {
 		}
 	}
 
+	/**
+	 * Used to build relative paths.
+	 * 
+	 * @param n
+	 * @return relative path
+	 */
 	Path<N> path(Match n) {
 		List<Match> paths = n.closest(pathMt);
 		@SuppressWarnings("unchecked")
@@ -425,7 +482,7 @@ public abstract class Forester<N> implements Serializable {
 	 * @return
 	 */
 	private String cleanMatch(String s) {
-		s = s.substring(1, s.length() - 1).replaceAll("\\\\~", "~");
+		s = s.substring(1, s.length() - 1).replaceAll("\\\\(.)", "$1");
 		return s;
 	}
 
@@ -464,18 +521,6 @@ public abstract class Forester<N> implements Serializable {
 					return new AxisTag<N>(aname, s, predicates, this);
 			}
 		}
-	}
-
-	/**
-	 * @param n
-	 * @param i
-	 * @return the ith child of n
-	 */
-	protected N child(N n, int i, Index<N> in) {
-		List<N> children = children(n, in);
-		if (children == null || children.isEmpty())
-			return null;
-		return children.get(i);
 	}
 
 	/**
@@ -694,6 +739,17 @@ public abstract class Forester<N> implements Serializable {
 		return leaves;
 	}
 
+	/**
+	 * Ancestors of context node; implements ancestor axis.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param t
+	 *            node types of interest
+	 * @param i
+	 *            tree index
+	 * @return ancestors of context node from youngest to oldest
+	 */
 	protected List<N> ancestors(N n, NodeTest<N> t, Index<N> i) {
 		LinkedList<N> ancestors = new LinkedList<N>();
 		N o = n;
@@ -706,6 +762,17 @@ public abstract class Forester<N> implements Serializable {
 		return ancestors;
 	}
 
+	/**
+	 * Implements the descendant axis.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param t
+	 *            node types of interest
+	 * @param i
+	 *            tree index
+	 * @return descendants of context node
+	 */
 	protected Collection<N> descendants(N n, NodeTest<N> t, Index<N> i) {
 		List<N> children = kids(n, i);
 		if (children.isEmpty())
@@ -720,6 +787,17 @@ public abstract class Forester<N> implements Serializable {
 		return descendants;
 	}
 
+	/**
+	 * Implements /> expression.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param t
+	 *            nodes of interest
+	 * @param i
+	 *            tree index
+	 * @return nearest nodes of interest dominated by the context node
+	 */
 	protected Collection<N> closest(N n, NodeTest<N> t, Index<N> i) {
 		if (t.passes(n, i)) {
 			List<N> list = new ArrayList<N>(1);
@@ -735,6 +813,17 @@ public abstract class Forester<N> implements Serializable {
 		return closest;
 	}
 
+	/**
+	 * Implements the preceding-sibling axis.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param t
+	 *            node types of interest
+	 * @param i
+	 *            tree index
+	 * @return preceding siblings of context node
+	 */
 	protected List<N> precedingSiblings(N n, NodeTest<N> t, Index<N> i) {
 		if (isRoot(n, null, i))
 			return Collections.emptyList();
@@ -751,6 +840,15 @@ public abstract class Forester<N> implements Serializable {
 		return precedingSiblings;
 	}
 
+	/**
+	 * Obtains context node and its siblings in their tree order.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param i
+	 *            tree index
+	 * @return context node and its siblings
+	 */
 	protected List<N> siblings(N n, Index<N> i) {
 		if (isRoot(n, null, i))
 			return Collections.emptyList();
@@ -765,12 +863,17 @@ public abstract class Forester<N> implements Serializable {
 		return sibs;
 	}
 
-	protected List<N> siblingsOrSelf(N n, Index<N> i) {
-		if (isRoot(n, null, i))
-			return Collections.emptyList();
-		return kids(parent(n, i), i);
-	}
-
+	/**
+	 * Implements following-sibling axis.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param t
+	 *            node types of interest
+	 * @param i
+	 *            tree index
+	 * @return siblings following context node
+	 */
 	protected List<N> followingSiblings(N n, NodeTest<N> t, Index<N> i) {
 		if (isRoot(n, null, i))
 			return Collections.emptyList();
@@ -788,6 +891,17 @@ public abstract class Forester<N> implements Serializable {
 		return followingSiblings;
 	}
 
+	/**
+	 * Implements preceding axis.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param t
+	 *            node types of interest
+	 * @param i
+	 *            tree index
+	 * @return nodes preceding the context node in the tree
+	 */
 	@SuppressWarnings("unchecked")
 	protected Collection<N> preceding(N n, NodeTest<N> t, Index<N> i) {
 		if (isRoot(n, null, i))
@@ -810,6 +924,17 @@ public abstract class Forester<N> implements Serializable {
 		return preceding;
 	}
 
+	/**
+	 * Implements following axis.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param t
+	 *            node types of interest
+	 * @param i
+	 *            tree index
+	 * @return nodes following the context node in the tree
+	 */
 	@SuppressWarnings("unchecked")
 	protected Collection<N> following(N n, NodeTest<N> t, Index<N> i) {
 		if (isRoot(n, null, i))
@@ -889,15 +1014,25 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	/**
+	 * Defines what it means for a node in this tree to have a particular tag --
+	 * the "b" in the path expression "//b".
+	 * 
 	 * @param n
+	 *            context node
 	 * @param tag
+	 *            tag
 	 * @return whether the node bears the given tag
 	 */
 	protected abstract boolean hasTag(N n, String tag);
 
 	/**
+	 * Defines what it means for a node in this tree to have a tag matching the
+	 * specified pattern. See {@link #hasTag(Object, String)}.
+	 * 
 	 * @param n
+	 *            context node
 	 * @param p
+	 *            tag pattern
 	 * @return whether the pattern matches the node's tag or tags
 	 */
 	protected abstract boolean matchesTag(N n, Pattern p);

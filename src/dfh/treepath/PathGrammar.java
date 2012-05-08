@@ -25,7 +25,57 @@ public class PathGrammar {
 	 * 
 	 */
 	public static enum Axis {
-		preceding, precedingSibling, following, followingSibling, ancestor, ancestorOrSelf, descendant, descendantOrSelf, sibling, siblingOrSelf, leaf, self, parent, child;
+		/**
+		 * E.g., <code>//foo/preceding::*</code>
+		 */
+		preceding, /**
+		 * E.g., <code>//foo/preceding-sibling::*</code>
+		 */
+		precedingSibling, /**
+		 * E.g., <code>//foo/following::*</code>
+		 */
+		following, /**
+		 * E.g., <code>//foo/following-sibling::*</code>
+		 */
+		followingSibling, /**
+		 * E.g., <code>//foo/ancestor::*</code>
+		 */
+		ancestor, /**
+		 * E.g., <code>//foo/ancestor-or-self::*</code>
+		 */
+		ancestorOrSelf, /**
+		 * E.g., <code>//foo/descendant::*</code>
+		 */
+		descendant, /**
+		 * E.g., <code>//foo/descendant-or-self::*</code>
+		 */
+		descendantOrSelf, /**
+		 * E.g., <code>//foo/sibling::*</code>
+		 */
+		sibling, /**
+		 * E.g., <code>//foo/sibling-or-self::*</code>
+		 */
+		siblingOrSelf, /**
+		 * E.g., <code>//foo/leaf::*</code>
+		 */
+		leaf, /**
+		 * E.g., <code>//foo/self::*</code>
+		 */
+		self, /**
+		 * E.g., <code>//foo/parent::*</code>
+		 */
+		parent, /**
+		 * E.g., <code>//foo/child::*</code>
+		 */
+		child;
+		/**
+		 * Used in place of {@link #valueOf(String)} to handle hyphens in axis
+		 * names.
+		 * 
+		 * @param s
+		 *            axis name
+		 * @return axis constant
+		 */
 		public static Axis vo(String s) {
 			if (s.indexOf('-') == -1)
 				return valueOf(s);
@@ -43,6 +93,9 @@ public class PathGrammar {
 		}
 	}
 
+	/**
+	 * The grammar rules.
+	 */
 	public static String[] rules = {
 			//
 			"treepath = <path> [ '|' <path> ]*",//
@@ -84,6 +137,9 @@ public class PathGrammar {
 			"and_cnd = <condition> [ <s> /&|(?<!\\/)\\band\\b(?!\\/)/ <s> <condition> ]+ (and_precedence)",//
 			"xor_cnd = <condition> [ <s> /^|(?<!\\/)\\bxor\\b(?!\\/)/ <s> <condition> ]+ (xor_precedence)",//
 	};
+	/**
+	 * A reference to the compiled grammar, mostly useful for testing.
+	 */
 	public static Grammar g = new Grammar(rules);
 	static {
 		g.defineCondition("compiles", new Condition() {
@@ -163,6 +219,19 @@ public class PathGrammar {
 		});
 	}
 
+	/**
+	 * No one should every construct an instance of this.
+	 */
+	private PathGrammar() {
+	}
+
+	/**
+	 * Calls {@link Grammar#describe()} to print out a more readable list of the
+	 * grammar's rules. Condition definitions are not provided but their
+	 * semantics can be inferred from their names.
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		System.out.print(g.describe());
 	}
