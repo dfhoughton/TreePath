@@ -25,4 +25,11 @@ public @interface Attribute {
 	 * @return name attribute goes by in tree path expressions
 	 */
 	String value() default "";
+
+	/**
+	 * An optional brief description of the attribute.
+	 * 
+	 * @return an optional brief description of the attribute
+	 */
+	String description() default "";
 }

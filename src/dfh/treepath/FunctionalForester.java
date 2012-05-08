@@ -58,7 +58,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            pattern to match
 	 * @return whether the pattern matched
 	 */
-	@Attribute("s:matches")
+	@Attribute(value = "s:matches", description = "whether the string parameter matches a pattern")
 	protected boolean matches(N n, Collection<N> c, Index<N> i, String s,
 			String pattern) {
 		return Pattern.matches(pattern, s);
@@ -80,7 +80,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            prefix
 	 * @return whether the string has the given prefix
 	 */
-	@Attribute("s:starts-with")
+	@Attribute(value = "s:starts-with", description = "whether the string parameters as a particular prefix")
 	protected boolean startsWith(N n, Collection<N> c, Index<N> i, String s,
 			String pattern) {
 		return s.startsWith(pattern);
@@ -102,7 +102,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            suffix
 	 * @return whether the string has the given suffix
 	 */
-	@Attribute("s:ends-with")
+	@Attribute(value = "s:ends-with", description = "whether the string parameter has a particular suffix")
 	protected boolean endsWith(N n, Collection<N> c, Index<N> i, String s,
 			String pattern) {
 		return s.endsWith(pattern);
@@ -125,7 +125,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            infix
 	 * @return whether the string contains the given infix
 	 */
-	@Attribute("s:contains")
+	@Attribute(value = "s:contains", description = "whether the string contains a particular infix")
 	protected boolean contains(N n, Collection<N> c, Index<N> i, String s,
 			String pattern) {
 		return s.indexOf(pattern) > -1;
@@ -147,7 +147,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            infix
 	 * @return index of first character of infix in string
 	 */
-	@Attribute("s:index")
+	@Attribute(value = "s:index", description = "the index of an infix in the string")
 	protected int index(N n, Collection<N> c, Index<N> i, String s,
 			String pattern) {
 		return s.indexOf(pattern);
@@ -168,7 +168,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 * @return concatenation of the stringification of an arbitrary list of
 	 *         objects
 	 */
-	@Attribute("s:concat")
+	@Attribute(value = "s:concat", description = "string concatenating items")
 	protected String concatenate(N n, Collection<N> c, Index<N> i,
 			Object... parts) {
 		StringBuilder b = new StringBuilder();
@@ -191,7 +191,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            a list of numbers
 	 * @return the maximum value in the list
 	 */
-	@Attribute("m:max")
+	@Attribute(value = "m:max", description = "maximum value")
 	protected Number max(N n, Collection<N> c, Index<N> i, Number... nums) {
 		Number max = nums[0];
 		for (int j = 1; j < nums.length; j++) {
@@ -216,7 +216,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            a list of numbers
 	 * @return the minimum value
 	 */
-	@Attribute("m:min")
+	@Attribute(value = "m:min", description = "minimum value")
 	protected Number min(N n, Collection<N> c, Index<N> i, Number... nums) {
 		Number min = nums[0];
 		for (int j = 1; j < nums.length; j++) {
@@ -241,7 +241,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            a list of numbers
 	 * @return the sum of values in the list represented as a double
 	 */
-	@Attribute("m:sum")
+	@Attribute(value = "m:sum", description = "sum of values")
 	protected Double sum(N n, Collection<N> c, Index<N> i, Number... nums) {
 		double sum = 0;
 		for (Number num : nums)
@@ -264,7 +264,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            a list of numbers
 	 * @return the product
 	 */
-	@Attribute("m:prod")
+	@Attribute(value = "m:prod", description = "product of values")
 	protected Double product(N n, Collection<N> c, Index<N> i, Number... nums) {
 		if (nums.length == 0)
 			return 0D;
@@ -287,7 +287,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            tree index; required for method signature but ignored
 	 * @return {@link System#currentTimeMillis()}
 	 */
-	@Attribute("u:millis")
+	@Attribute(value = "u:millis", description = "current time in milliseconds")
 	protected Long millis(N n, Collection<N> c, Index<N> i) {
 		return System.currentTimeMillis();
 	}
@@ -308,7 +308,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            replacement pattern
 	 * @return transformed string
 	 */
-	@Attribute("s:replace-first")
+	@Attribute(value = "s:replace-first", description = "replace first occurrence of pattern")
 	protected String replaceFirst(N n, Collection<N> c, Index<N> i, String s,
 			String pattern, String replacement) {
 		return s.replaceFirst(pattern, replacement);
@@ -330,7 +330,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            replacement pattern
 	 * @return transformed string
 	 */
-	@Attribute("s:replace-all")
+	@Attribute(value = "s:replace-all", description = "replace all occurrences of pattern")
 	protected String replaceAll(N n, Collection<N> c, Index<N> i, String s,
 			String pattern, String replacement) {
 		return s.replaceAll(pattern, replacement);
@@ -354,7 +354,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            replacement infix
 	 * @return transformed string
 	 */
-	@Attribute("s:replace")
+	@Attribute(value = "s:replace", description = "replace all occurrences of infix")
 	protected String replace(N n, Collection<N> c, Index<N> i, String s,
 			String pattern, String replacement) {
 		return s.replace(pattern, replacement);
@@ -376,7 +376,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            second string
 	 * @return integer representing the alphabetical ordering of the two strings
 	 */
-	@Attribute("s:cmp")
+	@Attribute(value = "s:cmp", description = "compare string order")
 	protected Integer compare(N n, Collection<N> c, Index<N> i, String s1,
 			String s2) {
 		return s1.compareTo(s2);
@@ -399,7 +399,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            one or two character offsets
 	 * @return a substring
 	 */
-	@Attribute("s:substr")
+	@Attribute(value = "s:substr", description = "select substring")
 	protected String substring(N n, Collection<N> c, Index<N> i, String s,
 			Integer... offsets) {
 		switch (offsets.length) {
@@ -430,7 +430,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            string to measure
 	 * @return the length of the string parameter
 	 */
-	@Attribute("s:len")
+	@Attribute(value = "s:len", description = "string length")
 	protected Integer length(N n, Collection<N> c, Index<N> i, String s) {
 		return s.length();
 	}
@@ -449,7 +449,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            string to transform
 	 * @return string in uppercase
 	 */
-	@Attribute("s:uc")
+	@Attribute(value = "s:uc", description = "uppercase")
 	protected String uppercase(N n, Collection<N> c, Index<N> i, String s) {
 		return s.toUpperCase();
 	}
@@ -468,7 +468,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            string to transform
 	 * @return string in lowercase
 	 */
-	@Attribute("s:lc")
+	@Attribute(value = "s:lc", description = "lowercase")
 	protected String lowercase(N n, Collection<N> c, Index<N> i, String s) {
 		return s.toLowerCase();
 	}
@@ -487,7 +487,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            string to transform
 	 * @return initial uppercase string
 	 */
-	@Attribute("s:ucfirst")
+	@Attribute(value = "s:ucfirst", description = "capitalize only first letter")
 	protected String ucFirst(N n, Collection<N> c, Index<N> i, String s) {
 		switch (s.length()) {
 		case 0:
@@ -514,7 +514,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            string to transform
 	 * @return trim without marginal whitespace
 	 */
-	@Attribute("s:trim")
+	@Attribute(value = "s:trim", description = "trim whitespace")
 	protected String trim(N n, Collection<N> c, Index<N> i, String s) {
 		return s.trim();
 	}
@@ -535,7 +535,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 * @return trim without marginal whitespace and with internal whitespace
 	 *         normalized to a single space
 	 */
-	@Attribute("s:nspace")
+	@Attribute(value = "s:nspace", description = "normalize whitespace")
 	protected String normalizeWhitespace(N n, Collection<N> c, Index<N> i,
 			String s) {
 		return s.trim().replaceAll("\\s++", " ");
@@ -559,7 +559,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            items to join
 	 * @return trim without marginal whitespace
 	 */
-	@Attribute("s:join")
+	@Attribute(value = "s:join", description = "concatenate items with separator")
 	protected String join(N n, Collection<N> c, Index<N> i, Object separator,
 			Object... items) {
 		// to handle null properly
@@ -591,7 +591,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            number to obtain the absolute value of
 	 * @return absolute value of number
 	 */
-	@Attribute("m:abs")
+	@Attribute(value = "m:abs", description = "absolute value")
 	protected Number abs(N n, Collection<N> c, Index<N> i, Number num) {
 		// attempt to preserve type
 		return num.intValue() == num.doubleValue() ? Math.abs(num.intValue())
@@ -612,7 +612,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            number to obtain the ceiling value of
 	 * @return ceiling of num
 	 */
-	@Attribute("m:ceil")
+	@Attribute(value = "m:ceil", description = "round up")
 	protected Number ceil(N n, Collection<N> c, Index<N> i, Number num) {
 		// attempt to preserve type
 		return Math.ceil(num.doubleValue());
@@ -632,7 +632,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            number to obtain the integral portion of
 	 * @return integral portion of num
 	 */
-	@Attribute("m:int")
+	@Attribute(value = "m:int", description = "integral portion")
 	protected Integer integralPortion(N n, Collection<N> c, Index<N> i,
 			Number num) {
 		return num.intValue();
@@ -652,7 +652,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            number to obtain the floor value of
 	 * @return floor of num
 	 */
-	@Attribute("m:floor")
+	@Attribute(value = "m:floor", description = "round down")
 	protected Number floor(N n, Collection<N> c, Index<N> i, Number num) {
 		return Math.floor(num.doubleValue());
 	}
@@ -671,7 +671,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            number to round
 	 * @return num rounded to the nearest whole number
 	 */
-	@Attribute("m:round")
+	@Attribute(value = "m:round", description = "round to nearest whole number")
 	protected Number round(N n, Collection<N> c, Index<N> i, Number num) {
 		return Math.round(num.doubleValue());
 	}
@@ -695,7 +695,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            pattern to match
 	 * @return whether the pattern matched
 	 */
-	@Attribute("s:looking-at")
+	@Attribute(value = "s:looking-at", description = "match prefix")
 	protected boolean lookingAt(N n, Collection<N> c, Index<N> i, String s,
 			String pattern) {
 		return Pattern.compile(pattern).matcher(s).lookingAt();
@@ -720,7 +720,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            pattern to match
 	 * @return whether the pattern matched
 	 */
-	@Attribute("s:find")
+	@Attribute(value = "s:find", description = "look for pattern in string")
 	protected boolean find(N n, Collection<N> c, Index<N> i, String s,
 			String pattern) {
 		return Pattern.compile(pattern).matcher(s).find();

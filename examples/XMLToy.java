@@ -181,7 +181,7 @@ public class XMLToy {
 		 * @return the value of the attribute of interest, or null if it is not
 		 *         defined for the node
 		 */
-		@Attribute
+		@Attribute(description = "element's tag")
 		public String attr(Element e, Collection<Element> c, Index<Element> i,
 				String name) {
 			return e.attributes.get(name);

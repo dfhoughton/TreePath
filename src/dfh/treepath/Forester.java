@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import dfh.grammar.GrammarException;
@@ -49,7 +49,11 @@ public abstract class Forester<N> implements Serializable {
 	private PrintStream loggingStream = System.err;
 
 	/**
-	 * Initializes the map from attributes to methods.
+	 * Initializes the map from attributes to methods and records the node types
+	 * to ignore.
+	 * 
+	 * @param ignorable
+	 *            node types to ignore
 	 */
 	@SuppressWarnings("unchecked")
 	public Forester(NodeTest<N>... ignorable) {
@@ -150,13 +154,18 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	/**
-	 * Translates a node and an axis into the appropriate collection of nodes.
+	 * Translates a node and an axis into the appropriate collection of
+	 * candidate nodes.
 	 * 
 	 * @param n
-	 * @param name
+	 *            context node relative to which the axis will be examined
+	 * @param a
+	 *            axis to walk
+	 * @param t
+	 *            node test to locate desired nodes on the specified axis
 	 * @param i
-	 * @return the nodes pertaining to a particular axis relative to the context
-	 *         node
+	 *            tree idnex
+	 * @return those nodes on the given axis that pass the test
 	 */
 	protected Collection<N> axis(N n, Axis a, NodeTest<N> t, Index<N> i) {
 		switch (a) {
@@ -352,10 +361,11 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	/**
-	 * Makes a //foo step
+	 * Makes a <code>//foo</code> step.
 	 * 
 	 * @param step
-	 * @return
+	 *            the node from the path parse tree representing the step
+	 * @return the {@link Selector} representing the step
 	 */
 	private Selector<N> makeGlobalStep(Match step) {
 		Match tagMatch = step.children()[0], predicates = step.children()[1];
@@ -480,7 +490,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            tree index
 	 * @return whether n is a leaf
 	 */
-	@Attribute("leaf")
+	@Attribute(value = "leaf", description = "whether the context node is a leaf")
 	protected boolean isLeaf(N n, Collection<N> c, Index<N> i) {
 		List<N> children = kids(n, i);
 		if (children.isEmpty())
@@ -507,7 +517,7 @@ public abstract class Forester<N> implements Serializable {
 	 * @return the node selected, or <code>null</code> if there is no
 	 *         appropriate node
 	 */
-	@Attribute
+	@Attribute(description = "picks a node from a collection")
 	protected N pick(N n, Collection<N> c, Index<N> i, Collection<N> from,
 			int index) {
 		int j = index;
@@ -541,12 +551,11 @@ public abstract class Forester<N> implements Serializable {
 	 *            method signature but ignored
 	 * @param i
 	 *            tree index
-	 * @param path
-	 *            a path used to select a candidate set; the path is evaluated
-	 *            relative to the context node
+	 * @param from
+	 *            a candidate node set selected by a path
 	 * @return the number of nodes selected by the path
 	 */
-	@Attribute
+	@Attribute(description = "the size of the node collection")
 	protected int size(N n, Collection<N> c, Index<N> i, Collection<N> from) {
 		return from.size();
 	}
@@ -564,7 +573,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            tree index
 	 * @return whether n is the tree root
 	 */
-	@Attribute("root")
+	@Attribute(value = "root", description = "whether the context node is the root")
 	protected boolean isRoot(N n, Collection<N> c, Index<N> i) {
 		return i.isRoot(n);
 	}
@@ -575,7 +584,7 @@ public abstract class Forester<N> implements Serializable {
 	 * @param i
 	 * @return the identifying string, if any, of this node
 	 */
-	@Attribute
+	@Attribute(description = "the nodes string id, if any")
 	protected String id(N n, Collection<N> c, Index<N> i) {
 		return i.id(n);
 	}
@@ -593,7 +602,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            tree index; required for method signature but ignored
 	 * @return <code>null</code>
 	 */
-	@Attribute("null")
+	@Attribute(value = "null", description = "the null value")
 	protected final Object Null(N n, Collection<N> c, Index<N> i) {
 		return null;
 	}
@@ -611,7 +620,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            tree index; required for method signature but ignored
 	 * @return <code>true</code>
 	 */
-	@Attribute("true")
+	@Attribute(value = "true", description = "the true value")
 	protected final Boolean True(N n, Collection<N> c, Index<N> i) {
 		return Boolean.TRUE;
 	}
@@ -629,7 +638,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            tree index
 	 * @return <code>false</code>
 	 */
-	@Attribute("false")
+	@Attribute(value = "false", description = "the false value")
 	protected final Boolean False(N n, Collection<N> c, Index<N> i) {
 		return Boolean.FALSE;
 	}
@@ -648,7 +657,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            value to test
 	 * @return whether o isn't null
 	 */
-	@Attribute
+	@Attribute(description = "whether the parameter value is non-null")
 	protected final Boolean defined(N n, Collection<N> c, Index<N> i, Object o) {
 		return o == null ? false : true;
 	}
@@ -665,7 +674,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            tree index; required for method signature but ignored
 	 * @return the context node n
 	 */
-	@Attribute("this")
+	@Attribute(value = "this", description = "the context node")
 	protected final N This(N n, Collection<N> c, Index<N> i) {
 		return n;
 	}
@@ -823,10 +832,12 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	/**
+	 * Returns the index of the context node in the context collection.
+	 * 
 	 * @param n
-	 * @return index of n among its parent's children; -1 if n is root
+	 * @return index of n in its context collection; -1 if n is root
 	 */
-	@Attribute
+	@Attribute(description = "the index of the context node in the context collection")
 	protected int index(N n, Collection<N> c, Index<N> in) {
 		if (isRoot(n, null, in))
 			return -1;
@@ -840,9 +851,13 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	/**
+	 * All the children of the context node regardless of whether we are
+	 * ignoring any node types.
+	 * 
 	 * @param n
+	 *            context node
 	 * @param i
-	 * @param t
+	 *            tree index
 	 * @return the children of n
 	 */
 	protected abstract List<N> children(N n, Index<N> i);
@@ -852,8 +867,10 @@ public abstract class Forester<N> implements Serializable {
 	 * node tests in {@link #ignore}.
 	 * 
 	 * @param n
+	 *            context node
 	 * @param i
-	 * @return
+	 *            tree index
+	 * @return children remaining after dropping those to be ignored
 	 */
 	protected final List<N> kids(N n, Index<N> i) {
 		List<N> children = children(n, i);
@@ -886,15 +903,23 @@ public abstract class Forester<N> implements Serializable {
 	protected abstract boolean matchesTag(N n, Pattern p);
 
 	/**
+	 * Obtains the parent of the context node.
+	 * 
 	 * @param n
+	 *            context node
 	 * @param i
-	 * @param t
+	 *            tree index
 	 * @return the parent of n
 	 */
 	protected abstract N parent(N n, Index<N> i);
 
 	/**
+	 * Obtains the root of the tree containing the context node.
+	 * 
 	 * @param n
+	 *            context node
+	 * @param i
+	 *            tree index used to find the root
 	 * @return the root of the tree containing n
 	 */
 	protected N root(N n, Index<N> i) {
@@ -915,27 +940,44 @@ public abstract class Forester<N> implements Serializable {
 
 	/**
 	 * Returns an alphabetized collection of the attributes this
-	 * {@link Forester} can handle.
+	 * {@link Forester} can handle, mapping each to its description, if any.
+	 * <p>
+	 * This method serves to make foresters self-documenting.
 	 * 
 	 * @return an alphabetized collection of the attributes this
 	 *         {@link Forester} can handle
 	 */
-	public Set<String> attributes() {
-		return new TreeSet<String>(attributes.keySet());
+	public Map<String, String> attributes() {
+		Map<String, String> m = new TreeMap<String, String>();
+		for (Method method : attributes.values()) {
+			Attribute a = method.getAnnotation(Attribute.class);
+			String name = a.value();
+			if ("".equals(name))
+				name = method.getName();
+			m.put(name, a.description());
+		}
+		return m;
 	}
 
 	/**
+	 * Obtains the stream that will be used by
+	 * {@link #log(Object, Collection, Index, Object...)}. This is by default
+	 * {@link System#err}.
+	 * 
 	 * @return the {@link PrintStream} used by the
-	 *         {@link #log(Object, Collection, Index, Object)} attribute
+	 *         {@link #log(Object, Collection, Index, Object...)} attribute
 	 */
 	public PrintStream getLoggingStream() {
 		return loggingStream;
 	}
 
 	/**
+	 * Sets the stream to be used by
+	 * {@link #log(Object, Collection, Index, Object...)}.
+	 * 
 	 * @param loggingStream
 	 *            the {@link PrintStream} used by the
-	 *            {@link #log(Object, Collection, Index, Object)} attribute
+	 *            {@link #log(Object, Collection, Index, Object...)} attribute
 	 */
 	public void setLoggingStream(PrintStream loggingStream) {
 		this.loggingStream = loggingStream;
@@ -957,9 +999,9 @@ public abstract class Forester<N> implements Serializable {
 	 * @param msg
 	 *            0 or more messages to print, one per line, to the debugging
 	 *            stream
-	 * @return
+	 * @return <code>true</code> -- this attribute does no filtering
 	 */
-	@Attribute
+	@Attribute(description = "records parameters to a log stream")
 	protected final Boolean log(N n, Collection<N> c, Index<N> i, Object... msg) {
 		for (Object o : msg)
 			loggingStream.println(o);
@@ -988,10 +1030,10 @@ public abstract class Forester<N> implements Serializable {
 	/**
 	 * A convenience method that returns the value of the given attribute for a
 	 * particular node in a particular context. If the collection or index is
-	 * null, a fresh one wil be created. The collection will be a single member
-	 * list containing only the context node. The index will be the index
-	 * generated by {@link #index(Object)}, which treats the context node as the
-	 * root of its own tree.
+	 * <code>null</code>, a fresh one wil be created. The collection will be a
+	 * single member list containing only the context node. The index will be
+	 * the index generated by {@link #index(Object)}, which treats the context
+	 * node as the root of its own tree.
 	 * <p>
 	 * If you can calculate the attribute value directly, this will be more
 	 * efficient as it will involve no reflection and possible guesswork as to
@@ -1061,7 +1103,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            tree index
 	 * @return <code>true</code>
 	 */
-	@Attribute
+	@Attribute(description = "unique id of context node representing its position in its tree")
 	protected final String uid(N n, Collection<N> c, Index<N> i) {
 		List<Integer> list = new ArrayList<Integer>();
 		N node = n;
