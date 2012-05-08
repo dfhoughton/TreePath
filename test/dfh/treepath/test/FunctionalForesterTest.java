@@ -273,4 +273,329 @@ public class FunctionalForesterTest {
 		assertTrue(Pattern.matches("\\d++", s));
 	}
 
+	@Test
+	public void replaceFirstTest() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:replace-first('foo','o','e'))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("feo", s);
+	}
+
+	@Test
+	public void replaceAllTest() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:replace-all('foo','o','e'))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("fee", s);
+	}
+
+	@Test
+	public void replaceTest() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:replace('foo','o','e'))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("fee", s);
+	}
+
+	@Test
+	public void compareTest() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:cmp('foo','o') < 0)]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
+	@Test
+	public void substrTest1() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:substr('foo',1))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("oo", s);
+	}
+
+	@Test
+	public void substrTest2() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:substr('foo',1,2))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("o", s);
+	}
+
+	@Test
+	public void lengthTest() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:len('foo'))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("3", s);
+	}
+
+	@Test
+	public void ucTest() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:uc('foo'))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("FOO", s);
+	}
+
+	@Test
+	public void lcTest() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:lc('FOO'))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("foo", s);
+	}
+
+	@Test
+	public void ucFirstTest() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:ucfirst('FOO'))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("Foo", s);
+	}
+
+	@Test
+	public void trimTest() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:trim(' foo \t'))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("foo", s);
+	}
+
+	@Test
+	public void normalizeWhitespaceTest() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:nspace(' foo \nbar\t'))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("foo bar", s);
+	}
+
+	@Test
+	public void joinTest1() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:join(',',1))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("1", s);
+	}
+
+	@Test
+	public void joinTest2() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:join(',', 1, 'foo'))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("1,foo", s);
+	}
+
+	@Test
+	public void joinTest3() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:join(',', 1, @null))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("1,null", s);
+	}
+
+	@Test
+	public void joinTest4() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:join(@null, 1, 2))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("1null2", s);
+	}
+
+	@Test
+	public void absTest() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@m:abs(-1) = @m:abs(1))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
+	@Test
+	public void ceilTest() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@m:ceil(1.5))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("2.0", s);
+	}
+
+	@Test
+	public void intTest1() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@m:int(1.5))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("1", s);
+	}
+
+	@Test
+	public void intTest2() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@m:int(-1.5))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("-1", s);
+	}
+
+	@Test
+	public void floorTest1() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@m:floor(-1.5))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("-2.0", s);
+	}
+
+	@Test
+	public void floorTest2() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@m:floor(1.5))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("1.0", s);
+	}
+
+	@Test
+	public void roundTest() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@m:round(1.5))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("2", s);
+	}
+
+	@Test
+	public void lookingAtTest() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:looking-at(@tag, 'foo'))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
+	@Test
+	public void findTest() {
+		Element root = parse("<foobar/>");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream out = new PrintStream(baos);
+		f.setLoggingStream(out);
+		Path<Element> p = f.path("/.[@log(@s:find(@tag, 'ooba'))]");
+		p.select(root);
+		out.close();
+		String s = baos.toString().trim();
+		assertEquals("true", s);
+	}
+
 }

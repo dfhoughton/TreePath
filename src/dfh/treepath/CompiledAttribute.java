@@ -1,7 +1,6 @@
 package dfh.treepath;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
@@ -127,15 +126,12 @@ class CompiledAttribute<N> {
 		}
 		try {
 			return a.invoke(i.f, ops);
-		} catch (IllegalArgumentException e) {
+		} catch (Exception e) {
+			String msg = e.getMessage();
+			if (msg == null)
+				msg = "check parameters";
 			throw new PathException("attribute '" + name
-					+ "' failed during application: " + e.getMessage());
-		} catch (IllegalAccessException e) {
-			throw new PathException("attribute '" + name
-					+ "' failed during application: " + e.getMessage());
-		} catch (InvocationTargetException e) {
-			throw new PathException("attribute '" + name
-					+ "' failed during application: " + e.getMessage());
+					+ "' failed during application: " + msg);
 		}
 	}
 
