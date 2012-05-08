@@ -234,7 +234,7 @@ public class AttributeTests {
 		List<Element> l = p.select(root);
 		assertEquals(2, l.size());
 	}
-	
+
 	@Test
 	public void uidTest() {
 		Element root = parse("<a><b/><c><d/><d id='foo'/></c></a>");
@@ -246,5 +246,14 @@ public class AttributeTests {
 		out.close();
 		String s = baos.toString().trim();
 		assertEquals("/1/1", s);
+	}
+
+	@Test
+	public void badAttributeTest() {
+		try {
+			f.path("/.[@quux]");
+		} catch (PathException e) {
+			assertTrue(e.getMessage().startsWith("unknown attribute @"));
+		}
 	}
 }

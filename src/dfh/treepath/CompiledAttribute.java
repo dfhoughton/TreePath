@@ -1,5 +1,7 @@
 package dfh.treepath;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
@@ -39,6 +41,8 @@ class CompiledAttribute<N> {
 		String s = m.first("aname").group();
 		name = s.substring(1);
 		a = f.attributes.get(name);
+		if (a == null)
+			throw new PathException("unknown attribute @" + name);
 		List<Match> argList = m.children()[1].closest(argTest);
 		args = new Object[argList.size()];
 		int index = 0;
@@ -91,35 +95,65 @@ class CompiledAttribute<N> {
 		return o;
 	}
 
-	@SuppressWarnings("unchecked")
 	Object apply(N n, Collection<N> c, Index<N> i) {
-		Object[] ops = new Object[args.length + 3];
+		Object[] ops;
+		int varArgsIndex = -1;
+		Class<?> arType = null;
+		if (a.isVarArgs()) {
+			Class<?>[] params = a.getParameterTypes();
+			ops = new Object[params.length];
+			varArgsIndex = params.length - 1;
+			arType = params[varArgsIndex].getComponentType();
+		} else
+			ops = new Object[args.length + 3];
 		ops[0] = n;
 		ops[1] = c;
 		ops[2] = i;
 		int index = 3;
 		for (int j = 0; j < args.length; j++, index++) {
-			Object o = args[j];
-			if (o instanceof CompiledAttribute<?>) {
-				CompiledAttribute<N> ca = (CompiledAttribute<N>) o;
-				ops[index] = ca.apply(n, c, i);
-			} else if (o instanceof AttributeTestExpression<?>) {
-				AttributeTestExpression<N> ate = (AttributeTestExpression<N>) o;
-				ops[index] = ate.test(n, c, i);
-			} else if (o instanceof Path<?>) {
-				Path<N> p = (Path<N>) o;
-				ops[index] = p.sel(n, i);
-			} else if (o instanceof Expression<?>) {
-				ops[index] = ((Expression<N>) o).test(n, c, i);
-			} else {
-				ops[index] = o;
+			if (index == varArgsIndex) {
+				int size = args.length - j;
+				Object ar = Array.newInstance(arType, size);
+				ops[index] = ar;
+				for (int k = 0; j < args.length; j++, k++) {
+					Object o = args[j];
+					o = objectifyArgument(n, c, i, o);
+					Array.set(ar, k, arType.cast(o));
+				}
+				break;
 			}
+			Object o = args[j];
+			ops[index] = objectifyArgument(n, c, i, o);
 		}
 		try {
 			return a.invoke(i.f, ops);
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			throw new PathException("attribute '" + name
-					+ "' failed during application; check arguments", e);
+					+ "' failed during application: " + e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new PathException("attribute '" + name
+					+ "' failed during application: " + e.getMessage());
+		} catch (InvocationTargetException e) {
+			throw new PathException("attribute '" + name
+					+ "' failed during application: " + e.getMessage());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public Object objectifyArgument(N n, Collection<N> c, Index<N> i, Object o) {
+		if (o instanceof CompiledAttribute<?>) {
+			CompiledAttribute<N> ca = (CompiledAttribute<N>) o;
+			return ca.apply(n, c, i);
+		} else if (o instanceof AttributeTestExpression<?>) {
+			AttributeTestExpression<N> ate = (AttributeTestExpression<N>) o;
+			return ate.test(n, c, i);
+		} else if (o instanceof Path<?>) {
+			Path<N> p = (Path<N>) o;
+			return p.sel(n, i);
+		} else if (o instanceof Expression<?>) {
+			return ((Expression<N>) o).test(n, c, i);
+		} else {
+			return o;
 		}
 	}
 }

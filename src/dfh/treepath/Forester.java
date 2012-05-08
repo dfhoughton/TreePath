@@ -955,12 +955,14 @@ public abstract class Forester<N> implements Serializable {
 	 *            tree index; ignored by this attribute but required in the
 	 *            method signature
 	 * @param msg
-	 *            object printed out as a message
+	 *            0 or more messages to print, one per line, to the debugging
+	 *            stream
 	 * @return
 	 */
 	@Attribute
-	protected final Boolean log(N n, Collection<N> c, Index<N> i, Object msg) {
-		loggingStream.println(msg.toString());
+	protected final Boolean log(N n, Collection<N> c, Index<N> i, Object... msg) {
+		for (Object o : msg)
+			loggingStream.println(o);
 		return Boolean.TRUE;
 	}
 
