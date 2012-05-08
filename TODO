@@ -11,7 +11,7 @@ historical holding pen at the end.
 TODO
 ====
 
-. create extension class with basic attributes copied from XPath
+* create extension class with basic attributes copied from XPath
 . perhaps create memoization function
 . allow use of native comparison methods when available
 * figure out how to handle variadic attributes
