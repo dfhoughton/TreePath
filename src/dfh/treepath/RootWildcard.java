@@ -7,7 +7,7 @@ import java.util.List;
 import dfh.grammar.Match;
 
 /**
- * {@link Selector} implementing <code>/*</code>, <code>/*[@foo]</code> and the
+ * {@link Selector} implementing <code>/*</code>, <code>/*[&#064;foo]</code> and the
  * like, where this is the first expression in the path.
  * <p>
  * 

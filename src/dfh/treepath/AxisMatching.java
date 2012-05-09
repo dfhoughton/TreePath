@@ -7,7 +7,7 @@ import dfh.grammar.Match;
 
 /**
  * Implements expressions such as /preceding::~foo~ or
- * /preceding::~foo~[@attribute].
+ * /preceding::~foo~[&#064;attribute].
  * <p>
  * 
  * @author David F. Houghton - Apr 29, 2012

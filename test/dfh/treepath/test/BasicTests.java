@@ -207,5 +207,4 @@ public class BasicTests {
 		assertTrue(set.contains("<d />"));
 		assertTrue(set.contains("<foo />"));
 	}
-
 }

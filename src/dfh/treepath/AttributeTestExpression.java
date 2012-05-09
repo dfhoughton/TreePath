@@ -8,7 +8,7 @@ import dfh.treepath.ConditionalPredicate.Expression;
 
 /**
  * An expression that evaluates the various attribute test expressions:
- * <code>@foo = 'bar'</code>, <code>@bar &lt @quux</code>, etc.
+ * <code>&#064;foo = 'bar'</code>, <code>&#064;bar &lt; &#064;quux</code>, etc.
  * <p>
  * 
  * @author David F. Houghton - Apr 30, 2012

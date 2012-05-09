@@ -7,8 +7,8 @@ import java.util.List;
 import dfh.grammar.Match;
 
 /**
- * For implementing predicates like <code>a[@foo = 1]</code>,
- * <code>a[@foo = 'bar']</code>, <code>a[@foo &gt; .5]</code>, and so forth.
+ * For implementing predicates like <code>a[&#064;foo = 1]</code>,
+ * <code>a[&#064;foo = 'bar']</code>, <code>a[&#064;foo &gt; .5]</code>, and so forth.
  * <p>
  * 
  * @author David F. Houghton - Apr 30, 2012

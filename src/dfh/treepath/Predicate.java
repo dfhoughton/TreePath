@@ -7,7 +7,7 @@ import dfh.grammar.Match;
 
 /**
  * Instantiates the square bracket expressions such as [1], [foo], and
- * [@attribute].
+ * [&#064;attribute].
  * <p>
  * 
  * @author David F. Houghton - Apr 29, 2012

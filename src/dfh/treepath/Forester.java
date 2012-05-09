@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import dfh.grammar.GrammarException;
@@ -545,7 +546,7 @@ public abstract class Forester<N> implements Serializable {
 
 	/**
 	 * An attribute for selecting a member from a collection of nodes returned
-	 * by a path. E.g., @pick(foo//bar, 1). The index is zero-based.
+	 * by a path. E.g., &#064;pick(foo//bar, 1). The index is zero-based.
 	 * 
 	 * @param n
 	 *            context node
@@ -587,7 +588,7 @@ public abstract class Forester<N> implements Serializable {
 
 	/**
 	 * An attribute for selecting a member from a collection of nodes returned
-	 * by a path. E.g., @size(foo//bar).
+	 * by a path. E.g., &#064;size(foo//bar).
 	 * 
 	 * @param n
 	 *            context node
@@ -1075,21 +1076,52 @@ public abstract class Forester<N> implements Serializable {
 
 	/**
 	 * Returns an alphabetized collection of the attributes this
-	 * {@link Forester} can handle, mapping each to its description, if any.
-	 * <p>
-	 * This method serves to make foresters self-documenting.
+	 * {@link Forester} can handle, mapping each to its description, if any, and
+	 * a simplified method signature. E.g., from
+	 * {@link MatchPath#main(String[])}
+	 * 
+	 * <pre>
+	 * ...
+	 * 	public static void main(String[] args) {
+	 * 		int length = 0;
+	 * 		for (String s : MatchPath.standard().attributes.keySet())
+	 * 			length = Math.max(length, s.length());
+	 * 		String format = "&#064;%-" + length + "s : %s%n%" + length + "s    %s%n";
+	 * 		for (Entry&lt;String, String[]&gt; e : MatchPath.standard().attributes()
+	 * 				.entrySet()) {
+	 * 			System.out.printf(format, e.getKey(), e.getValue()[0], "",
+	 * 					e.getValue()[1]);
+	 * 		}
+	 * 	}
+	 * ...
+	 * 
+	 * &#064;assertion       : whether node is an assertion
+	 *                    public boolean dfh.treepath.MatchPath.assertion(...)
+	 * &#064;defined         : whether the parameter value is non-null
+	 *                    protected final Boolean dfh.treepath.Forester.defined(...,Object)
+	 * &#064;explicit        : whether the rule generating this node is explicitly defined
+	 *                    public boolean dfh.treepath.MatchPath.explicit(...)
+	 * ...
+	 * </pre>
+	 * 
+	 * This method serves to make foresters somewhat self-documenting.
 	 * 
 	 * @return an alphabetized collection of the attributes this
 	 *         {@link Forester} can handle
 	 */
-	public Map<String, String> attributes() {
-		Map<String, String> m = new TreeMap<String, String>();
+	public Map<String, String[]> attributes() {
+		Map<String, String[]> m = new TreeMap<String, String[]>();
 		for (Method method : attributes.values()) {
 			Attribute a = method.getAnnotation(Attribute.class);
 			String name = a.value();
 			if ("".equals(name))
 				name = method.getName();
-			m.put(name, a.description());
+			String[] description = {
+					a.description(),
+					method.toString()
+							.replaceFirst("\\((?:[^,]++,){2}[^,)]++", "\\(...")
+							.replaceAll("java\\.lang\\.", "") };
+			m.put(name, description);
 		}
 		return m;
 	}

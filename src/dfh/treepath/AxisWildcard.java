@@ -5,7 +5,7 @@ import java.util.Collection;
 import dfh.grammar.Match;
 
 /**
- * Implements expressions such as /preceding::* or /preceding::*[@attribute].
+ * Implements expressions such as /preceding::* or /preceding::*[&#064;attribute].
  * <p>
  * 
  * @author David F. Houghton - Apr 29, 2012

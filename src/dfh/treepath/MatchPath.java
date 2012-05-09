@@ -214,9 +214,14 @@ public class MatchPath extends FunctionalForester<Match> {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		for (Entry<String, String> e : MatchPath.standard().attributes()
+		int length = 0;
+		for (String s : MatchPath.standard().attributes.keySet())
+			length = Math.max(length, s.length());
+		String format = "@%-" + length + "s : %s%n%" + length + "s    %s%n";
+		for (Entry<String, String[]> e : MatchPath.standard().attributes()
 				.entrySet()) {
-			System.out.printf("%s\t: %s%n", e.getKey(), e.getValue());
+			System.out.printf(format, e.getKey(), e.getValue()[0], "",
+					e.getValue()[1]);
 		}
 	}
 }
