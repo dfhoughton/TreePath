@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.Test;
 
@@ -178,4 +180,32 @@ public class BasicTests {
 		assertTrue(o instanceof String);
 		assertEquals("bar", o.toString());
 	}
+
+	@Test
+	public void rootClosest() {
+		Element root = parse("<a><b><c/></b><foo><d/><e><foo/></e></foo></a>");
+		Path<Element> p = new XMLToyForester().path("/>foo/preceding::*");
+		Collection<Element> bs = p.select(root);
+		assertEquals(2, bs.size());
+		Set<String> set = new TreeSet<String>();
+		for (Element e: bs)
+			set.add(e.toString());
+		assertTrue(set.contains("<c />"));
+		assertTrue(set.contains("<b><c /></b>"));
+	}
+	
+	@Test
+	public void rootLeaves() {
+		Element root = parse("<a><b><c/></b><foo><d/><e><foo/></e></foo></a>");
+		Path<Element> p = new XMLToyForester().path("/leaf::*");
+		Collection<Element> bs = p.select(root);
+		assertEquals(3, bs.size());
+		Set<String> set = new TreeSet<String>();
+		for (Element e: bs)
+			set.add(e.toString());
+		assertTrue(set.contains("<c />"));
+		assertTrue(set.contains("<d />"));
+		assertTrue(set.contains("<foo />"));
+	}
+
 }

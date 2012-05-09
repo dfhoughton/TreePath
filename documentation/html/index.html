@@ -15,9 +15,222 @@
 </head>
 <body onLoad="dfh.prepare('TreePath', 'dfh.treepath')">
 	<h1>TreePath: a Generic Tree Querying Library</h1>
-<p>TreePath is like XPath but more general. It can be adapted to any tree data structure.</p><p>
-At the moment the documentation for this projecct is unwritten. These pages are a skeleton
-set of documents that will be fleshed out further in the future.</p>
-	<!--  <span id="toc"></span> -->
+	<p>
+		TreePath is like XPath but more general. It can be adapted to any tree
+		data structure. As in XPath, a tree path expression consists of a
+		number of steps --
+		<code>&lt;step1&gt; &lt;step2&gt; &lt;step3&gt;</code>
+		. Each step selects a set of candidates nodes in the context of the
+		candidates from the preceding step, the initial context being the root
+		node. Optionally, a step has predicates which filter the candidate
+		set. The nodes that remain after the final step are those selected by
+		the expression. So, for example,
+		<code>/foo</code>
+		would select the
+		<code>foo</code>
+		child nodes under the root node and
+		<code>/foo/bar[@length = 1]</code>
+		would select all the
+		<code>bar</code>
+		nodes that are children of
+		<code>foo</code>
+		nodes under the root, but these
+		<code>bar</code>
+		nodes must have a length attribute with a value of 1. The sections
+		below provide more examples and explain the mechanism and usage.
+	</p>
+	<span id="toc"></span>
+	<h2>Examples</h2>
+	<h5>//foo</h5>
+	All
+	<code>foo</code>
+	nodes.
+	<pre>
+  a
+ / \
+b  <b>foo</b>
+|  / |
+c d  e
+     |
+    <b>foo</b>
+</pre>
+	<h5>//~a|e~</h5>
+	All nodes whose tags contain an
+	<code>a</code>
+	or
+	<code>e</code>
+	.
+	<pre>
+  <b>a</b>
+ / \
+b  foo
+|  / |
+c d  <b>e</b>
+     |
+    foo
+</pre>
+	<h5>/>foo/preceding::*</h5>
+	All nodes preceding the closest
+	<code>foo</code>
+	nodes under the root.
+	<pre>
+  a
+ / \
+<b>b</b>  foo
+|  / |
+<b>c</b> d  e
+     |
+    foo
+</pre>
+	<h5>/leaf::* or //*[@leaf]</h5>
+	All leaves.
+	<pre>
+  a
+ / \
+b  foo
+|  / |
+<b>c</b> <b>d</b>  e
+     |
+    <b>foo</b>
+</pre>
+	<h2>Mechanism</h2>
+	<p>
+		In order to adapt
+		<code>dfh.treepath</code>
+		to a particular variety of tree, you need to extend the
+		<code>Forester</code>
+		class. A
+		<code>Forester</code>
+		then makes
+		<code>Path</code>
+		objects for you by compiling tree path expressions. If you give a
+		<code>Path</code>
+		the root node of a tree, it will select the nodes from the tree
+		corresponding to your expression.
+	</p>
+	<pre>Forester&lt;Node&gt; f = new MyForester();
+Path&lt;Node&gt; p = f.path('//foo/>bar[@quux xor @corge]');
+List&lt;Node&gt; l = f.select(root);</pre>
+	<h3>Foresters</h3>
+	<h3>Paths</h3>
+	<h3>Indices</h3>
+	<h3>NodeTests</h3>
+	<h2>Steps</h2>
+	<h2>Axes</h2>
+	<h2>Predicates</h2>
+	<h2>Attributes</h2>
+	<p>
+		In tree path attributes are functions that return some property of a
+		node in a selection context. For example, there might be an attribute
+		<code>@tag</code>
+		that returns the tag value of a node, or
+		<code>@position</code>
+		that returns its index in the candidate list it is found in<span
+			class="fn">This is not to say that internally candidate sets
+			are always instances of <code>java.util.List</code>. Rather, they are
+			collections that maintain the order of node discovery. The index of
+			an item in such a collection is just the number of times one must
+			iterate over the candidate collection to find it, counting the first
+			iteration as iteration 0.
+		</span>.
+	</p>
+	<p>
+		The base
+		<code>Forester</code>
+		class provides a small number of attributes to all extensions:
+	</p>
+	<dl>
+		<dt>@true</dt>
+		<dd>
+			The
+			<code>true</code>
+			value.
+		</dd>
+		<dt>@false</dt>
+		<dd>
+			The
+			<code>false</code>
+			value.
+		</dd>
+		<dt>@null</dt>
+		<dd>
+			The
+			<code>null</code>
+			value.
+		</dd>
+		<dt>@log</dt>
+		<dd>
+			An attribute that always returns true and prints each of its
+			parameters on its own line in a debugging stream,
+			<code>System.Err</code>
+			, by default.
+		</dd>
+		<dt>@uid</dt>
+		<dd>
+			An expression uniquely identifying the node by its position in the
+			tree.
+			<code>/0/1</code>
+			is the
+			<code>@uid</code>
+			of the second child of the first child of the root node.
+		</dd>
+		<dt>@id</dt>
+		<dd>A unique string id for the node, if any.</dd>
+		<dt>@this</dt>
+		<dd>The node itself.</dd>
+		<dt>@root</dt>
+		<dd>Whether the node is the root of its tree.</dd>
+		<dt>@leaf</dt>
+		<dd>Whether the nodes is a leaf, meaning it has no children.</dd>
+		<dt>@defined</dt>
+		<dd>
+			Whether some object is defined.
+			<code>@defined(@null)</code>
+			will always return
+			<code>false</code>
+		</dd>
+		<dt>@size</dt>
+		<dd>
+			The size of a collection. If
+			<code>//foo</code>
+			selects 3 nodes, then
+			<code>@size(//foo)</code>
+			will return 3.
+		</dd>
+		<dt>@index</dt>
+		<dd>
+			The index of the node in the collection it was selected with.
+			<code>//foo/bar[@index = 1]</code>
+			will select the same nodes as
+			<code>//foo/bar[1]</code>
+			.
+		</dd>
+	</dl>
+	<h3>Attribute Parameters</h3>
+	<p>
+		An attribute is created by annotating a method in a
+		<code>Forester</code>
+		with the
+		<code>dfh.treepath.Attribute</code>
+		annotation, optionally providing a name and/or a description.
+	</p>
+	<pre><b>@Attribute</b>
+String foo(Node n, Collection&lt;Node&gt; c, Index&lt;Node&gt; i) { return "foo"; }
+
+<b>@Attribute("short")</b>
+String reallyReallyLongMethodName(Node n, Collection&lt;Node&gt; c, Index&lt;Node&gt; i, int j) { return "short" + j; }
+
+<b>@Attribute(value = "longer", description = "has a longer name than short")</b>
+String alsoLong(Node n, Collection&lt;Node&gt; c, Index&lt;Node&gt; i, String... bar) {
+    StringBuilder b = new StringBuilder();
+    for (String s: bar)
+        b.append(s);
+    return b.toString(); 
+}
+
+<b>@Attribute(description = "a roundabout way of putting a number into an expression")</b>
+Number num(Node n, Collection&lt;Node&gt; c, Index&lt;Node&gt; i, Number num) { return num; }</pre>
+<p>If you </p>
+	<h3>Ad Hoc Attributes</h3>
 </body>
 </html>
