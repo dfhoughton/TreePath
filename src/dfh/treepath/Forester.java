@@ -396,7 +396,7 @@ public abstract class Forester<N> implements Serializable {
 		case 1:
 			return first ? makeRootStep(step) : makeRelativeStep(step);
 		case 2:
-			return slash.group().charAt(1) == '/' ? makeGlobalStep(step)
+			return slash.group().charAt(1) == '/' ? makeGlobalStep(step, first)
 					: makeClosestStep(step);
 		default:
 			throw new PathException("unexpected step separator in path: "
@@ -422,18 +422,19 @@ public abstract class Forester<N> implements Serializable {
 	 * 
 	 * @param step
 	 *            the node from the path parse tree representing the step
+	 * @param first
 	 * @return the {@link Selector} representing the step
 	 */
-	private Selector<N> makeGlobalStep(Match step) {
+	private Selector<N> makeGlobalStep(Match step, boolean first) {
 		Match tagMatch = step.children()[0], predicates = step.children()[1];
 		String s = tagMatch.group();
 		if ("*".equals(s))
-			return new AnywhereWildcard<N>(predicates, this);
+			return new AnywhereWildcard<N>(predicates, this, first);
 		else if (s.charAt(0) == '~') {
 			s = cleanMatch(s);
-			return new AnywhereMatching<N>(s, predicates, this);
+			return new AnywhereMatching<N>(s, predicates, this, first);
 		} else
-			return new AnywhereTag<N>(s, predicates, this);
+			return new AnywhereTag<N>(s, predicates, this, first);
 	}
 
 	private Selector<N> makeRootStep(Match step) {

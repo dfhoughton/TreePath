@@ -18,10 +18,14 @@ class AnywhereTag<N> extends TestSelector<N> {
 
 	private final NodeTest<N> test;
 
-	AnywhereTag(final String tag, Match arguments, Forester<N> f) {
+	private final boolean first;
+
+	AnywhereTag(final String tag, Match arguments, Forester<N> f, boolean first) {
 		super(arguments, f);
+		this.first = first;
 		test = new NodeTest<N>() {
 			private static final long serialVersionUID = 1L;
+
 			@Override
 			public boolean passes(N n, Index<N> i) {
 				return i.f.hasTag(n, tag);
@@ -31,7 +35,8 @@ class AnywhereTag<N> extends TestSelector<N> {
 
 	@Override
 	protected Collection<N> candidates(N n, Index<N> i) {
-		return i.f.axis(n, Axis.descendantOrSelf, test, i);
+		return i.f.axis(n, first ? Axis.descendantOrSelf : Axis.descendant,
+				test, i);
 	}
 
 }

@@ -30,11 +30,27 @@ import dfh.treepath.test.XMLToy.XMLToyForester;
 public class BasicTests {
 
 	@Test
-	public void anywhereTag() {
+	public void anywhereTag1() {
 		Element root = parse("<a><b/><c><b/><d><b/><b/></d></c></a>");
 		Path<Element> p = new XMLToyForester().path("//b");
 		Collection<Element> bs = p.select(root);
 		assertEquals(4, bs.size());
+	}
+
+	@Test
+	public void anywhereTag2() {
+		Element root = parse("<a><b><b/></b><b/></a>");
+		Path<Element> p = new XMLToyForester().path("//b//b");
+		List<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
+	}
+
+	@Test
+	public void anywhereTag3() {
+		Element root = parse("<a><a/></a>");
+		Path<Element> p = new XMLToyForester().path("//a");
+		List<Element> bs = p.select(root);
+		assertEquals(2, bs.size());
 	}
 
 	@Test

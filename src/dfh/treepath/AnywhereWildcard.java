@@ -15,14 +15,17 @@ import dfh.treepath.PathGrammar.Axis;
  */
 class AnywhereWildcard<N> extends WildcardSelector<N> {
 	private static final long serialVersionUID = 1L;
+	private final boolean first;
 
-	AnywhereWildcard(Match predicates, Forester<N> f) {
+	AnywhereWildcard(Match predicates, Forester<N> f, boolean first) {
 		super(predicates, f);
+		this.first = first;
 	}
 
 	@Override
 	public Collection<N> select(N n, Index<N> i) {
-		return i.f.axis(n, Axis.descendantOrSelf, test, i);
+		return i.f.axis(n, first ? Axis.descendantOrSelf : Axis.descendant,
+				test, i);
 	}
 
 }

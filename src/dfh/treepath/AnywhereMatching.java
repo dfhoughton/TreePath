@@ -18,9 +18,12 @@ import dfh.treepath.PathGrammar.Axis;
 class AnywhereMatching<N> extends TestSelector<N> {
 	private static final long serialVersionUID = 1L;
 	private final NodeTest<N> test;
+	private final boolean first;
 
-	AnywhereMatching(String pattern, Match arguments, Forester<N> f) {
+	AnywhereMatching(String pattern, Match arguments, Forester<N> f,
+			boolean first) {
 		super(arguments, f);
+		this.first = first;
 		try {
 			final Pattern p = Pattern.compile(pattern);
 			test = new NodeTest<N>() {
@@ -39,7 +42,8 @@ class AnywhereMatching<N> extends TestSelector<N> {
 
 	@Override
 	protected Collection<N> candidates(N n, Index<N> i) {
-		return i.f.axis(n, Axis.descendantOrSelf, test, i);
+		return i.f.axis(n, first ? Axis.descendantOrSelf : Axis.descendant,
+				test, i);
 	}
 
 }
