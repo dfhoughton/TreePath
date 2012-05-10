@@ -97,7 +97,7 @@ public class AttributeTests {
 				@Attribute
 				void foo() {
 				}
-			};
+			}.attributes();
 			fail("should have thrown an exception");
 		} catch (PathException e) {
 			assertTrue(e.getMessage().startsWith("ill-formed attribute"));
@@ -113,7 +113,7 @@ public class AttributeTests {
 				@Attribute
 				void foo(Element e, String bar, int i) {
 				}
-			};
+			}.attributes();
 			fail("should have thrown an exception");
 		} catch (PathException e) {
 			assertTrue(e.getMessage().startsWith(
@@ -130,7 +130,7 @@ public class AttributeTests {
 				@Attribute
 				void foo(Element e, Collection<Element> bar, int i) {
 				}
-			};
+			}.attributes();
 			fail("should have thrown an exception");
 		} catch (PathException e) {
 			assertTrue(e.getMessage().startsWith(
@@ -147,7 +147,7 @@ public class AttributeTests {
 				@Attribute
 				void foo(Element e, Collection<Element> bar, Index<Element> i) {
 				}
-			};
+			}.attributes();
 			fail("should have thrown an exception");
 		} catch (PathException e) {
 			assertTrue(e.getMessage().startsWith(

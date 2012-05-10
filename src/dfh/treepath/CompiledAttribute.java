@@ -32,7 +32,7 @@ import dfh.treepath.ConditionalPredicate.Expression;
  * @param <N>
  */
 class CompiledAttribute<N> {
-	private final Method a;
+	private final InstanceWrapper a;
 	private final Object[] args;
 	private final String name;
 	private static final MatchTest argTest = new MatchTest() {
@@ -106,8 +106,8 @@ class CompiledAttribute<N> {
 		Object[] ops;
 		int varArgsIndex = -1;
 		Class<?> arType = null;
-		if (a.isVarArgs()) {
-			Class<?>[] params = a.getParameterTypes();
+		if (a.method().isVarArgs()) {
+			Class<?>[] params = a.method().getParameterTypes();
 			ops = new Object[params.length];
 			varArgsIndex = params.length - 1;
 			arType = params[varArgsIndex].getComponentType();
@@ -133,7 +133,7 @@ class CompiledAttribute<N> {
 			ops[index] = objectifyArgument(n, c, i, o);
 		}
 		try {
-			return a.invoke(i.f, ops);
+			return a.method().invoke(a.instance(i.f), ops);
 		} catch (Exception e) {
 			String msg = e.getMessage();
 			if (msg == null)

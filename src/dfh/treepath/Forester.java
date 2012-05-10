@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -53,8 +54,8 @@ public abstract class Forester<N> implements Serializable {
 	 * attributes they can handle. This is used to accelerate construction by
 	 * caching the results of reflective code.
 	 */
-	protected final static Map<Class<? extends Forester<?>>, Map<String, Method>> attributeCache = new HashMap<Class<? extends Forester<?>>, Map<String, Method>>();
-	final Map<String, Method> attributes;
+	protected final static Map<Class<? extends Forester<?>>, Map<String, InstanceWrapper>> attributeCache = new HashMap<Class<? extends Forester<?>>, Map<String, InstanceWrapper>>();
+	transient Map<String, InstanceWrapper> attributes;
 	final NodeTest<N>[] ignore;
 	/**
 	 * A place for the log attribute to send its logging.
@@ -77,7 +78,15 @@ public abstract class Forester<N> implements Serializable {
 			ignore = set.toArray(new NodeTest[set.size()]);
 		} else
 			ignore = new NodeTest[0];
-		attributes = getAttributes();
+	}
+
+	/**
+	 * Make sure this Forester knows its attributes.
+	 */
+	protected void init() {
+		if (attributes == null) {
+			attributes = getAttributes();
+		}
 	}
 
 	/**
@@ -87,11 +96,12 @@ public abstract class Forester<N> implements Serializable {
 	 * @return attributes handled by forester
 	 */
 	@SuppressWarnings("unchecked")
-	protected final Map<String, Method> getAttributes() {
+	protected final Map<String, InstanceWrapper> getAttributes() {
 		synchronized (attributeCache) {
-			Map<String, Method> map = attributeCache.get(this.getClass());
+			Map<String, InstanceWrapper> map = attributeCache.get(this
+					.getClass());
 			if (map == null) {
-				map = new HashMap<String, Method>();
+				map = new HashMap<String, InstanceWrapper>();
 				Class<?> icl = null;
 				try {
 					icl = Class.forName("java.util.Collection");
@@ -131,7 +141,7 @@ public abstract class Forester<N> implements Serializable {
 											+ name
 											+ " does not return any value");
 								m.setAccessible(true);
-								map.put(name, m);
+								map.put(name, wrapMethod(m));
 							}
 						}
 					}
@@ -344,6 +354,7 @@ public abstract class Forester<N> implements Serializable {
 				}
 				throw new PathException(b.toString());
 			}
+			init();
 			return path(n);
 		} catch (GrammarException e) {
 			throw new PathException("failed to compile path " + path, e);
@@ -1100,8 +1111,10 @@ public abstract class Forester<N> implements Serializable {
 	 *         {@link Forester} can handle
 	 */
 	public Map<String, String[]> attributes() {
+		init();
 		Map<String, String[]> m = new TreeMap<String, String[]>();
-		for (Method method : attributes.values()) {
+		for (InstanceWrapper wm : attributes.values()) {
+			Method method = wm.method();
 			Attribute a = method.getAnnotation(Attribute.class);
 			String name = a.value();
 			if ("".equals(name))
@@ -1215,8 +1228,9 @@ public abstract class Forester<N> implements Serializable {
 		if (node == null)
 			throw new PathException(
 					"attributes cannot be evaluated on null nodes");
-		Method m = attributes.get(name);
-		if (m == null)
+		init();
+		InstanceWrapper wm = attributes.get(name);
+		if (wm == null)
 			throw new PathException("unknown attribute: " + name);
 		if (i == null) {
 			i = index(node);
@@ -1235,7 +1249,8 @@ public abstract class Forester<N> implements Serializable {
 			parameterList.add(i);
 			for (Object o : parameters)
 				parameterList.add(o);
-			return m.invoke(this, parameterList.toArray());
+			return wm.method().invoke(wm.instance(this),
+					parameterList.toArray());
 		} catch (Exception e) {
 			throw new PathException("could not evaluate attribute " + name
 					+ " with node, index, collection, and parameters provided",
@@ -1303,5 +1318,45 @@ public abstract class Forester<N> implements Serializable {
 	@Attribute(description = "converts anything into an attribute")
 	protected final Object echo(N n, Collection<N> c, Index<N> i, Object o) {
 		return o;
+	}
+
+	/**
+	 * Wraps up a method together with an instance on which it can be invoked.
+	 * 
+	 * @param m
+	 *            method to wrap
+	 * @return wrapped method
+	 */
+	InstanceWrapper wrapMethod(Method m) {
+		return new InstanceWrapper(this, m);
+	}
+
+	/**
+	 * Mix in attributes from one or more {@link AttributeLibrary libraries}.
+	 * 
+	 * @param mixins
+	 *            libraries to mix in
+	 */
+	public void mixin(Class<? extends AttributeLibrary<N>>... mixins) {
+		init();
+		for (Class<? extends AttributeLibrary<N>> mixin : mixins) {
+			try {
+				AttributeLibrary<N> al = mixin.newInstance();
+				al.init();
+				for (Entry<String, InstanceWrapper> e : al.attributes
+						.entrySet()) {
+					if (!attributes.containsKey(e.getKey()))
+						attributes.put(e.getKey(), e.getValue());
+				}
+			} catch (InstantiationException e) {
+				throw new PathException(
+						"failed to create a reference instance of attribute library "
+								+ mixin, e);
+			} catch (IllegalAccessException e) {
+				throw new PathException(
+						"failed to create a reference instance of attribute library "
+								+ mixin, e);
+			}
+		}
 	}
 }
