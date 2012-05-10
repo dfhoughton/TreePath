@@ -598,4 +598,12 @@ public class FunctionalForesterTest {
 		assertEquals("true", s);
 	}
 
+	@Test
+	public void definedTest() {
+		Element root = parse("<a><b/><b foo='bar' /></a>");
+		Path<Element> p = f.path("//b[@u:def(@attr('foo'))]");
+		List<Element> l = p.select(root);
+		assertEquals(1, l.size());
+	}
+
 }

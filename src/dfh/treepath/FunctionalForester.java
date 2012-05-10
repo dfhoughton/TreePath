@@ -725,4 +725,24 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 			String pattern) {
 		return Pattern.compile(pattern).matcher(s).find();
 	}
+
+	/**
+	 * A boolean attribute that is true if the object parameter is not null.
+	 * 
+	 * @param n
+	 *            context node; required for method signature but ignored
+	 * @param c
+	 *            collection of which context node is a member; required for
+	 *            method signature but ignored
+	 * @param i
+	 *            tree index
+	 * @param o
+	 *            value to test
+	 * @return whether o isn't null
+	 */
+	@Attribute(value = "u:def", description = "whether the parameter value is non-null")
+	protected final Boolean defined(N n, Collection<N> c, Index<N> i, Object o) {
+		return o == null ? false : true;
+	}
+
 }

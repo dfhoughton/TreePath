@@ -2,7 +2,6 @@ package dfh.treepath;
 
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
 
 import dfh.grammar.Condition;
 import dfh.grammar.Grammar;
@@ -98,7 +97,7 @@ public class PathGrammar {
 	 */
 	public static String[] rules = {
 			//
-			"treepath = <path> [ '|' <path> ]*",//
+			"treepath = <path> [ <s> '|' <s> <path> ]*",//
 			"path = <first_step> <subsequent_step>*+",//
 			"first_step = [{segment} <separator>?+ <step> ]",//
 			"id = 'id(' /(?:[^)\\\\]|\\\\.)++/ ')'",//
@@ -112,7 +111,7 @@ public class PathGrammar {
 			"forward = <wildcard> | <specific> | <pattern>",//
 			"wildcard = '*'",//
 			"specific = /[\\p{L}_](?:[\\p{L}\\p{N}_]|[-:](?=[\\p{L}_\\p{N}])|\\\\.)*+/",//
-			"pattern = /~(?:[^~\\\\]|\\\\~)++~/ (compiles)",//
+			"pattern = /~(?:[^~\\\\]|\\\\.)++~/",//
 			"aname = /@(?:[\\p{L}_$]|\\\\.)(?:[\\p{L}_$\\p{N}]|[-:](?=[\\p{L}_\\p{N}])|\\\\.)*+/",//
 			"attribute = <aname> <args>?",//
 			"args = '(' <s> <arg> [ <s> ',' <s> <arg> ]* <s> ')'",//
@@ -121,8 +120,8 @@ public class PathGrammar {
 			"signed_int = /[+-]?+/ <int>",//
 			"float = /[+-]?+/ <int>?+ /\\.\\d++/ [ /e[+-]?+/i <int> ]?+",//
 			"literal = <squote> | <dquote>",//
-			"squote = /'(?:[^']|\\\\.)++'/",//
-			"dquote = /\"(?:[^\"]|\\\\.)++\"/",//
+			"squote = /'(?:[^']|\\\\.)*+'/",//
+			"dquote = /\"(?:[^\"]|\\\\.)*+\"/",//
 			"predicate = '[' <s> [ <signed_int> | <treepath> | <attribute_test> | <condition> ] <s> ']'",//
 			"int = /\\b(?:0|[1-9][0-9]*+)\\b/",//
 			"s = /\\s*+/",//
@@ -142,19 +141,6 @@ public class PathGrammar {
 	 */
 	public static Grammar g = new Grammar(rules);
 	static {
-		g.defineCondition("compiles", new Condition() {
-			@Override
-			public boolean passes(CharSequence s) {
-				try {
-					String p = s.subSequence(1, s.length() - 1).toString()
-							.replaceAll("\\\\~", "~");
-					Pattern.compile(p);
-					return true;
-				} catch (Exception e) {
-					return false;
-				}
-			}
-		});
 		final MatchTest t = new MatchTest() {
 			private static final long serialVersionUID = 1L;
 

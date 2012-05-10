@@ -45,7 +45,7 @@ public class BasicTests {
 		Collection<Element> bs = p.select(root);
 		assertEquals(0, bs.size());
 	}
-	
+
 	@Test
 	public void rootSelf() {
 		Element root = parse("<a><b/></a>");
@@ -73,12 +73,22 @@ public class BasicTests {
 	}
 
 	@Test
-	public void indexTest() {
+	public void indexTest1() {
 		Element root = parse("<a><b foo='1'/><b foo='2'/><b foo='3'/></a>");
 		Path<Element> p = new XMLToyForester().path("//b[1]");
-		Collection<Element> bs = p.select(root);
+		List<Element> bs = p.select(root);
 		assertEquals(1, bs.size());
-		assertEquals("2", bs.iterator().next().attributes.get("foo"));
+		assertEquals("2", bs.get(0).attributes.get("foo"));
+	}
+
+	@Test
+	public void indexTest2() {
+		Element root = parse("<root><a><b foo='1'/><b foo='2'/><b foo='3'/></a><a><b foo='2'/><b foo='3'/></a></root>");
+		Path<Element> p = new XMLToyForester().path("//a/b[1]");
+		List<Element> bs = p.select(root);
+		assertEquals(2, bs.size());
+		assertEquals("2", bs.get(0).attributes.get("foo"));
+		assertEquals("3", bs.get(1).attributes.get("foo"));
 	}
 
 	@Test
@@ -188,12 +198,12 @@ public class BasicTests {
 		Collection<Element> bs = p.select(root);
 		assertEquals(2, bs.size());
 		Set<String> set = new TreeSet<String>();
-		for (Element e: bs)
+		for (Element e : bs)
 			set.add(e.toString());
 		assertTrue(set.contains("<c />"));
 		assertTrue(set.contains("<b><c /></b>"));
 	}
-	
+
 	@Test
 	public void rootLeaves() {
 		Element root = parse("<a><b><c/></b><foo><d/><e><foo/></e></foo></a>");
@@ -201,7 +211,7 @@ public class BasicTests {
 		Collection<Element> bs = p.select(root);
 		assertEquals(3, bs.size());
 		Set<String> set = new TreeSet<String>();
-		for (Element e: bs)
+		for (Element e : bs)
 			set.add(e.toString());
 		assertTrue(set.contains("<c />"));
 		assertTrue(set.contains("<d />"));

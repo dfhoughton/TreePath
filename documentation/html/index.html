@@ -21,10 +21,11 @@
 		number of steps --
 		<code>&lt;step1&gt; &lt;step2&gt; &lt;step3&gt;</code>
 		. Each step selects a set of candidates nodes in the context of the
-		candidates from the preceding step, the initial context being the root
-		node. Optionally, a step has predicates which filter the candidate
-		set. The nodes that remain after the final step are those selected by
-		the expression. So, for example,
+		candidates from the preceding step, the initial context being some
+		node, usually the root, offered as an inital parameter to the
+		expression. Optionally, a step has predicates which filter the
+		candidate set. The nodes that remain after the final step are those
+		selected by the expression. So, for example,
 		<code>/foo</code>
 		would select the
 		<code>foo</code>
@@ -41,7 +42,7 @@
 	</p>
 	<span id="toc"></span>
 	<h2>Examples</h2>
-	<h5>//foo</h5>
+	<div class="cb">//foo</div>
 	All
 	<code>foo</code>
 	nodes.
@@ -54,7 +55,7 @@ c d  e
      |
     <b>foo</b>
 </pre>
-	<h5>//~a|e~</h5>
+	<div class="cb">//~a|e~</div>
 	All nodes whose tags contain an
 	<code>a</code>
 	or
@@ -69,7 +70,7 @@ c d  <b>e</b>
      |
     foo
 </pre>
-	<h5>/>foo/preceding::*</h5>
+	<div class="cb">/>foo/preceding::*</div>
 	All nodes preceding the closest
 	<code>foo</code>
 	nodes under the root.
@@ -82,7 +83,7 @@ c d  <b>e</b>
      |
     foo
 </pre>
-	<h5>/leaf::* or //*[@leaf]</h5>
+	<div class="cb">/leaf::* or //*[@leaf]</div>
 	All leaves.
 	<pre>
   a
@@ -105,20 +106,517 @@ b  foo
 		<code>Path</code>
 		objects for you by compiling tree path expressions. If you give a
 		<code>Path</code>
-		the root node of a tree, it will select the nodes from the tree
+		the some node of a tree, it will select the nodes from the tree
 		corresponding to your expression.
 	</p>
 	<pre>Forester&lt;Node&gt; f = new MyForester();
 Path&lt;Node&gt; p = f.path('//foo/>bar[@quux xor @corge]');
 List&lt;Node&gt; l = f.select(root);</pre>
 	<h3>Foresters</h3>
+	<p>
+		Foresters know about your trees. In particular, they know how to find
+		the children and parent of a node and whether a particular string
+		matches its &ldquo;tag&rdquo; (or tags). Optionally, they may also
+		know what sort of nodes you'd rather ignore and what, if anything,
+		constitutes a unique identifier. So, for example, if your nodes are of
+		class
+		<code>Node</code>
+		and have the methods
+		<code>Node&nbsp;Node.parent()</code>
+		and
+		<code>java.util.List&lt;Node&gt;&nbsp;Node.children()</code>
+		, the following class will give you a
+		<code>Forester</code>
+		that can handle your trees.
+	</p>
+	<pre>class MyForester extends Forester&lt;Node&gt; {
+
+    @Override
+    protected List&lt;Node&gt; children(Node n, Index&lt;Node&gt; i) {
+        return n.children();
+    }
+
+    @Override
+    protected boolean hasTag(Node n, String tag) {
+        return n.tag().equals(tag);
+    }
+
+    @Override
+    protected boolean matchesTag(Node n, Pattern p) {
+        return p.matcher(n.tag()).find();
+    }
+
+    @Override
+    protected Node parent(Node n, Index&lt;Node&gt; i) {
+        return n.parent();
+    }
+			
+}</pre>
+	<p>If your nodes don't know their parents, you have to override
+		another method:</p>
+	<pre>    @Override
+    protected Index&lt;Node&gt; index(Node root) {
+        return new ParentIndex&lt;Node&gt;(root, this);
+    }</pre>
+	<p>
+		<code>ParentIndex</code>
+		will walk the tree from
+		<code>root</code>
+		, recording the parent-child relationship.
+	</p>
+	<p>If your nodes don't have tags, you can still use tree path
+		expressions, but you'll have to use the wildcard (*) in place of a tag
+		name or pattern.</p>
 	<h3>Paths</h3>
+	<p>
+		Foresters are
+		<code>Path</code>
+		factories: they compile path expressions into
+		<code>Path</code>
+		objects.
+	</p>
+	<pre>Path&lt;Node&gt; p = f.path("id(foo)//bar/*[@att = 1.5][not @quux]")</pre>
+	<p>
+		Once you have a path object -- you should reuse them when possible --
+		you call its select method, perhaps with an
+		<code>Index</code>
+		<span class="fn">You need to provide an index if the forester
+			by itself cannot generate the index from whatever node you give it.
+			In particular, if your nodes don't know their parent and you use a <code>ParentIndex</code>,
+			this index assumes whatever node you give it initially is the root.
+			If this is false, and in particularly if it is a damaging error, then
+			you had best generate the true index from the root and use this. Of
+			course, you will gain some efficiency by reusing indexes as well.
+		</span>. If you do not provide an index, one will be generated.
+	</p>
+	<pre>List&lt;Node&gt; list1 = p.select(n1), list2 = p.select(n2, index);</pre>
 	<h3>Indices</h3>
+	<p>An index is an object that caches information about a tree for
+		rapid retrieval. Minimally it caches an appropriate forester and the
+		root node. It may also cache the mapping from child to parent and
+		unique ids to nodes. The minimal index is cheap to construct, so there
+		is little lost in constructing a new one with every selection. If you
+		are doing many matches against the same tree, you can get a single
+		index for it initially using your forester.</p>
+	<pre>Index&lt;Node&gt; i = f.index(root);</pre>
 	<h3>NodeTests</h3>
-	<h2>Steps</h2>
-	<h2>Axes</h2>
-	<h2>Predicates</h2>
-	<h2>Attributes</h2>
+	<p>Node tests classify nodes into types -- nodes with a particular
+		tag or whose tag matches a particular pattern, zero-width nodes, text
+		nodes, whitespace nodes, etc. A node test has only the node itself to
+		examine, no selection context (other than the tree index). They are
+		used to interpret the steps, but the chief way one will interact with
+		them while using path expressions is in defining categories of nodes
+		to ignore.</p>
+	<pre>NodeTest&lt;Node&gt; t = new NodeTest() {
+    @Override
+    public boolean passes(Node n, Index&lt;Node&gt; i) {
+        return n.someTestOrOther();
+    }
+}
+Forester&lt;Node&gt; f = new MyForester(t); <b>// now all the nodes that pass someTestOrOther are invisible</b>
+	</pre>
+	<h2>Formalism</h2>
+	<p>The following sections explain the theory of tree path
+		expressions (mostly).</p>
+	<h3>Grammar</h3>
+	<p>
+		The following
+		<code>dfh.grammar</code>
+		grammar specification defines the set of valid tree path expressions.
+	</p>
+	<pre>       treepath = &lt;path&gt; [ &lt;s&gt; "|" &lt;s&gt; &lt;path&gt; ]*
+
+        and_cnd = &lt;condition&gt; [ &lt;s&gt; /&amp;|(?&lt;!\/)\band\b(?!\/)/ &lt;s&gt; &lt;condition&gt; ]+ (and_precedence)
+            arg = &lt;treepath&gt; | &lt;literal&gt; | &lt;num&gt; | &lt;attribute&gt; | &lt;attribute_test&gt; | &lt;condition&gt;
+           args = "(" &lt;s&gt; &lt;arg&gt; [ &lt;s&gt; "," &lt;s&gt; &lt;arg&gt; ]* &lt;s&gt; ")"
+      attribute = &lt;aname&gt; [ &lt;args&gt; ]?
+ attribute_test = &lt;attribute&gt; &lt;s&gt; &lt;cmp&gt; &lt;s&gt; &lt;value&gt; | &lt;value&gt; &lt;s&gt; &lt;cmp&gt; &lt;s&gt; &lt;attribute&gt;
+      condition = &lt;term&gt; | &lt;not_cnd&gt; | &lt;or_cnd&gt; | &lt;and_cnd&gt; | &lt;xor_cnd&gt; | &lt;group&gt;
+     first_step = [{segment} &lt;separator&gt;?+ &lt;step&gt; ]
+          group = "(" &lt;s&gt; &lt;condition&gt; &lt;s&gt; ")"
+        not_cnd = /!|(?&lt;!\/)\bnot\b(?!\/)/ &lt;s&gt; &lt;condition&gt; (not_precedence)
+         or_cnd = &lt;condition&gt; [ &lt;s&gt; /\|{2}|(?&lt;!\/)\bor\b(?!\/)/ &lt;s&gt; &lt;condition&gt; ]+
+           path = &lt;first_step&gt; [ &lt;subsequent_step&gt; ]*+
+      predicate = "[" &lt;s&gt; [ &lt;signed_int&gt; | &lt;treepath&gt; | &lt;attribute_test&gt; | &lt;condition&gt; ] &lt;s&gt; "]"
+           step = [ &lt;full&gt; | &lt;abbreviated&gt; ] [ &lt;predicate&gt; ]*+
+subsequent_step = [{segment} &lt;separator&gt; &lt;step&gt; ]
+           term = &lt;attribute&gt; | &lt;attribute_test&gt; | &lt;treepath&gt;
+          value = &lt;literal&gt; | &lt;num&gt; | &lt;attribute&gt;
+        xor_cnd = &lt;condition&gt; [ &lt;s&gt; /^|(?&lt;!\/)\bxor\b(?!\/)/ &lt;s&gt; &lt;condition&gt; ]+ (xor_precedence)
+    abbreviated = !-[ "//" | "/&gt;" ] [ "." | ".." | &lt;id&gt; ]
+           full = [ &lt;axis&gt; ]?+ &lt;forward&gt;
+            num = &lt;signed_int&gt; | &lt;float&gt;
+           axis = !-[ "//" | "/&gt;" ] &lt;axis_name&gt; "::"
+          float = /[+-]?+/ &lt;int&gt;?+ /\.\d++/ [ /e[+-]?+/i &lt;int&gt; ]?+
+        forward = &lt;wildcard&gt; | &lt;specific&gt; | &lt;pattern&gt;
+             id = "id(" /(?:[^)\\]|\\.)++/ ")"
+        literal = &lt;squote&gt; | &lt;dquote&gt;
+     signed_int = /[+-]?+/ &lt;int&gt;
+          aname = /@(?:[\p{L}_$]|\\.)(?:[\p{L}_$\p{N}]|[-:](?=[\p{L}_\p{N}])|\\.)*+/
+      axis_name = /(?&gt;s(?&gt;ibling(?&gt;-or-self)?+|elf)|p(?&gt;receding(?&gt;-sibling)?+|arent)|leaf|following(?&gt;-sibling)?+|descendant(?&gt;-or-self)?+|child|ancestor(?&gt;-or-self)?+)/
+            cmp = /[&lt;&gt;=]=?|!=/
+         dquote = /"(?:[^"]|\\.)*+"/
+            int = /\b(?:0|[1-9][0-9]*+)\b/
+        pattern = /~(?:[^~\\]|\\.)++~/
+              s = /\s*+/
+      separator = /\/[\/&gt;]?/
+       specific = /[\p{L}_](?:[\p{L}\p{N}_]|[-:](?=[\p{L}_\p{N}])|\\.)*+/
+         squote = /'(?:[^']|\\.)*+'/
+       wildcard = "*"</pre>
+	<p>
+		This grammar contains a few conditions; e.g.,
+		<code>(not_precedence)</code>
+		. These conditions all govern the precedence of logical operations,
+		ensuring that only valid parse trees for these operations are
+		returned. The class that implements this grammar, including the
+		conditions, is
+		<code>dfh.treepath.PathGrammar</code>
+		.
+	</p>
+	<h3>Steps</h3>
+	<p>Every tree path expression is a sequence of steps. Each step
+		begins with a collection of nodes and chooses a new set, taking each
+		node in the context set and selecting a new set and filtering it. For
+		example, a step might take a particular context node, select all its
+		children, and then filter these down to those with a particular tag or
+		those with a particular index -- a single node. Some examples:</p>
+	<dl>
+		<dt class="cb">/b</dt>
+		<dd>
+			Of the children of the context node, take those with the
+			<code>b</code>
+			tag.
+		</dd>
+		<dt class="cb">//b</dt>
+		<dd>
+			Of all the descendants of the context node, and the context node
+			itself, take those with the
+			<code>b</code>
+			tag.
+		</dd>
+		<dt class="cb">//b[@foo = 'bar']</dt>
+		<dd>
+			Of all the descendants of the context node, take those with the
+			<code>b</code>
+			tag, then filter these down to those whose
+			<code>@foo</code>
+			property has the value "bar".
+		</dd>
+		<dt class="cb">//b[@index > 3][@foo = 'bar']</dt>
+		<dd>
+			Of all the descendants of the context node, take those with the
+			<code>b</code>
+			tag, then drop the first 3, then filter the remainder down to those
+			whose
+			<code>@foo</code>
+			property has the value "bar".
+		</dd>
+	</dl>
+	<p>
+		A step consists of a separator --
+		<code>/</code>
+		,
+		<code>//</code>
+		, or
+		<code>/&gt;</code>
+		--, a node type -- e.g.,
+		<code>b</code>
+		--, and zero or more predicates.
+	</p>
+	<h4>Separators</h4>
+	<dl>
+		<dt>none</dt>
+		<dd>Occurring only before the initial step, the null separator
+			indicates that path is relative. The candidate nodes are chosen from
+			the appropriate axis defined relative to the context node.</dd>
+		<dt class="cb">/</dt>
+		<dd>For non-initial steps, the definition is the same as for the
+			null separator. For the initial step, it indicates that the context
+			node is the root.</dd>
+		<dt class="cb">//</dt>
+		<dd>
+			The candidate node axis is
+			<code>descendant-or-self</code>
+			.
+		</dd>
+		<dt class="cb">/&gt;</dt>
+		<dd>
+			This separator indicates that the candidate nodes are those nodes of
+			the specified node type which are closest to the context node,
+			meaning the path from the context node to them doesn't contain any
+			nodes of the specified type. In the XML document
+			<code>&lt;root&gt;&lt;a&gt;&lt;b&gt;&lt;a/&gt;&lt;/b&gt;&lt;/a&gt;&lt;/root&gt;</code>
+			, the expression
+			<code>/&gt;a</code>
+			would select the
+			<code>a</code>
+			element immediately under the root but not the nested element -- the
+			latter element is screened from the root by the first.
+			<p>This separator is unique to tree path expressions. I have
+				included it because I often find myself wanting to define this sort
+				of path for a tree.
+		</dd>
+	</dl>
+	<p>The latter two separator types cannot be followed by an explicit
+		axis specification. The last cannot be followed by the wildcard node
+		type.</p>
+	<h4>Node Types</h4>
+	<p>
+		Node type expressions select an initial candidate set of nodes. There
+		are three varieties, all defined relative to a node's
+		&ldquo;tag&rdquo; or tags. A node's tag, in turn, is simply a string
+		type label. Unlike in XPath, tree path expressions do not assume a
+		node has a single tag, or any tag, though in the latter case
+		expressions will be less efficient and one cannot use the
+		<code>/&gt;</code>
+		separator.
+	</p>
+	<h4>Literal</h4>
+	<pre>/<b>a</b>
+//<b>foo</b>
+/><b>bar</b>
+<b>corge</b>
+...</pre>
+	<p>Literal node type expressions require that a selected node have
+		precisely the type specified.</p>
+	<h4>Pattern</h4>
+	<pre>/<b>~a~</b>
+//<b>~foo~</b>
+/><b>~bar~</b>
+<b>~corge~</b>
+...</pre>
+	<p>Pattern node type expressions require only that the pattern --
+		the bit between the tildes -- match some part of one of the node's
+		tags. The pattern must compile into a Java regular expression or an
+		error will be thrown when the path is compiled.</p>
+	<h4>Wildcard</h4>
+	<pre>/<b>*</b>
+//<b>*</b>
+<b>*</b><!-- Eclipse code beautifier bug --></pre>
+	<p>The wildcard node type expression matches every node.</p>
+	<h3>Axes</h3>
+	<p>
+		Each step has an implicit or explicit axis -- a set of candidate nodes
+		chosen by their graphical relationship to a context node. The default
+		axis is
+		<code>child::</code>
+		-- all the children of the context node. If the separator preceding
+		the current step is
+		<code>//</code>
+		, the understood axis is
+		<code>descendant::</code>
+		(or
+		<code>descendant-or-self::</code>
+		, if it's the first step in the path) . For a thorough understanding
+		of axes try Googling "axis xpath". For the most part, the concepts are
+		the same. There are some differences in the axes available in tree
+		path expressions, however. Most importantly, tree path expressions
+		provide a
+		<code>leaf::</code>
+		axis, which is the list of nodes at or under the context node that
+		have no children.
+	</p>
+	<h3>Predicates</h3>
+	<p>
+		Predicates are filters which take a candidate set and eliminate nodes
+		that fail to pass some test. A step may have zero or more predicates.
+		A predicate is a function from a node and the other nodes it was
+		selected with given a particular context node to the values
+		<code>true</code>
+		or
+		<code>false</code>
+		. If it evaluates to
+		<code>true</code>
+		, the node is retained, otherwise it is discarded. As in XPath,
+		predicate expressions are always enclosed in square brackets.
+	</p>
+	<h4>Index</h4>
+	<pre>/a<b>[0]</b>
+//a<b>[1]</b>
+/&gt;a<b>[2]</b>
+a<b>[3]</b>
+...</pre>
+	<p>
+		Indices are the simplest predicate. They simply pick the node with the
+		appropriate index from the collection being evaluated. <b>NOTE:</b>
+		the index is <b>zero-based</b>, unlike in XPath. Why? Because I find
+		one always uses these path expressions while programming in a language
+		that uses zero-based indices, and switching back and forth is
+		confusing, particularly since, unlike in SQL, the formalism *looks*
+		the same in the expression language and the programming language. In
+		Java,
+		<code>a[0]</code>
+		picks the first element in the
+		<code>a</code>
+		array, so one expects
+		<code>a[0]</code>
+		to be the expression that picks the first
+		<code>a</code>
+		node immediately under the context node. Also note that
+		<code>//a/b[0]</code>
+		is going to pick
+		<code>b</code>
+		nodes that are the first node of that type immediately under some
+		<code>a</code>
+		node -- that is, it will not pick the first such node. The collection
+		selected from is that picked by one of the context nodes selected by
+		the preceding step, not the collection of all nodes selected by all
+		the context nodes together.
+	</p>
+	<h4>Path</h4>
+	<pre>/a<b>[foo]</b>
+//a<b>[//bar]</b>
+/&gt;a<b>[sibling::quux | ancestor::corge]</b>
+a<b>[/&gt;nef[2]]</b>
+...</pre>
+	<p>
+		Evaluates to true if the collection of nodes it selects is not empty.
+		For the XML document
+		<code>&lt;root&gt;&lt;a/&gt;&lt;/root&gt;</code>
+		, the path
+		<code>/.[a]</code>
+		will select the root node but
+		<code>/.[b]</code>
+		will select nothing.
+	</p>
+	<h4>Attribute</h4>
+	<pre>/a<b>[@foo]</b>
+//a<b>[@bar(1)]</b>
+/&gt;a<b>[@quux(//corge, @true)]</b>
+a<b>[@nef('a', 3, -1.5)]</b>
+...</pre>
+	<p>Attributes are described in more detail below, but briefly, they
+		are functions from candidate nodes, and perhaps other parameters, to
+		values. The following values all evaluate to false:</p>
+	<ul>
+		<li class="cb">false</li>
+		<li class="cb">0</li>
+		<li class="cb">""</li>
+		<li class="cb">null</li>
+		<li>empty collections</li>
+	</ul>
+	<p>
+		Everything else evaluates to
+		<code>true</code>
+		.
+	</p>
+	<h4>Attribute Test</h4>
+	<pre>/a<b>[@foo = @bar]</b>
+//a<b>[@bar(1) &lt; 2]</b>
+/&gt;a<b>[@quux(//corge, @true) &gt; 'mim']</b>
+a<b>[@nef('a', 3, -1.5) == @pick(//twee, 0)]</b>
+...</pre>
+	<p>
+		Attribute tests allow you to override the default boolean
+		interpretation of attributes.<span class="fn">And note that
+			there must be an attribute on one or the other side of the operator
+			in a test. <code>//a[1 &lt; 2]</code> and <code>//a[foo = bar]</code>
+			and the like will not parse as tree path expressions. However, one
+			can convert anything into an attribute with the <code>@echo</code>
+			attribute, so this in the end is no limitation. In general there is
+			little value in predicates like <code>[@echo(1) &lt; 2]</code> that
+			evaluate the same way for all nodes, but <code>@echo</code> lets you
+			construct them.
+		</span> Attribute tests always involve a pair of expressions separated by an
+		operator. The available operators are
+	</p>
+	<dl>
+		<dt class="cb">=</dt>
+		<dd>
+			Requires equality but not necessarily identity. Objects and strings
+			use
+			<code>equals(Object)</code>
+			; collections use equality of cardinality; numbers use equality of
+			value.
+		</dd>
+		<dt class="cb">==</dt>
+		<dd>Identity. For numbers, this is the same as equality, but
+			objects require object identity. Collections require identical
+			members and iteration order.</dd>
+		<dt class="cb">!=</dt>
+		<dd>
+			The negation of
+			<code>=</code>
+			.
+		</dd>
+		<dt class="cb">&lt;</dt>
+		<dd>Sort order comparison. Evaluates to true if the left argument
+			sorts before the right. Collections are compared by cardinality.</dd>
+		<dt class="cb">&gt;</dt>
+		<dd>
+			Like
+			<code>&lt;</code>
+			but requiring the opposite order.
+		</dd>
+		<dt class="cb">&lt;=</dt>
+		<dd>
+			Like
+			<code>&lt;</code>
+			but also returning true if the two arguments cannot be sorted.
+		</dd>
+		<dt class="cb">&gt;=</dt>
+		<dd>
+			Like
+			<code>&gt;</code>
+			but also returning true if the two arguments cannot be sorted.
+		</dd>
+	</dl>
+	<h4>Logical Expression</h4>
+	<pre>/a<b>[@foo or @bar]</b>
+//a<b>[not /&gt;corge[3]]</b>
+/&gt;a<b>[@quux != 3 ^ @nef]</b>
+a<b>[not @foo and (//bar or @chuzzle > 1)]</b>
+...</pre>
+	<p>
+		All the other predicate types aside from index predicates<span
+			class="fn">One can use the <code>@index</code> attribute to
+			duplicate the functionality of index predicates with attributes. <code>//a[0]</code>
+			is equivalent to <code>//a[@index = 0]</code>.
+		</span> can be combined with boolean operators.
+	</p>
+	<dl>
+		<dt>
+			<span class="cb">not</span> or <span class="cb">!</span>
+		</dt>
+		<dd>Takes a single argument and reverses its value. Highest
+			precedence.</dd>
+		<dt>
+			<span class="cb">and</span> or <span class="cb">&amp;</span>
+		</dt>
+		<dd>Takes joins two or more values. Returns true if all values
+			are true. Second highest precedence.</dd>
+		<dt>
+			<span class="cb">or</span> or <span class="cb">||</span><span
+				class="fn">The double bar boolean operator is distinct from
+				the single bar alternation operator. <code>//a[b | c]</code> will
+				parse to a different path from <code>//a[b || c]</code>. In this
+				case, the two paths are logically equivalent -- both select <code>a</code>
+				nodes that have either <code>b</code> or <code>c</code> nodes as
+				children, though the first collects all such nodes into one pool
+				whereas the other collects them into two and returns true if either
+				pool is non-empty. But consider <code>//a[b | c &amp; d]</code>
+				versus <code>//a[b || c &amp; d]</code>. The first will be
+				equivalent to <code>//a[(b | c) &amp; d]</code> whereas the second
+				will be equivalent to <code>//a[b || (c &amp; d)]</code>.
+			</span>
+		</dt>
+		<dd>Takes joins two or more values. Returns true if at least one
+			value is true. Lowest precedence.</dd>
+		<dt>
+			<span class="cb">xor</span> or <span class="cb">^</span>
+		</dt>
+		<dd>Takes joins two or more values. Returns true if one and only
+			one value is true. Third highest precedence.</dd>
+		<dt>
+			<span class="cb">(</span> ... <span class="cb">)</span>
+		</dt>
+		<dd>Groups arguments to make the order of operations explicit or
+			change the precedence of operations.</dd>
+	</dl>
+	<p>I have provided both concise and long versions of all the
+		operators to suit varying tastes, but I tend to use the long operators
+		myself to prevent confusion.</p>
+	<h3>Attributes</h3>
 	<p>
 		In tree path attributes are functions that return some property of a
 		node in a selection context. For example, there might be an attribute
@@ -135,37 +633,93 @@ List&lt;Node&gt; l = f.select(root);</pre>
 		</span>.
 	</p>
 	<p>
+		Attributes are implemented as methods in some
+		<code>Forester</code>
+		with a particular signature and bearing the
+		<code>@Attribute</code>
+		anotation. For example, here is the implementation of the
+		<code>@echo</code>
+		attribute.
+	</p>
+	<pre>	@Attribute(description = "converts anything into an attribute")
+	protected final Object echo(N n, Collection&lt;N&gt; c, Index&lt;N&gt; i, Object o) {
+		return o;
+	}</pre>
+	<p>The first three parameters in the method signature are required.
+		The rest can be whatever you want them to be, though they must
+		correspond to one of the types understood by path expressions. Here is
+		the relevant line from the grammar:</p>
+	<pre>            arg = &lt;treepath&gt; | &lt;literal&gt; | &lt;num&gt; | &lt;attribute&gt; | &lt;attribute_test&gt; | &lt;condition&gt;</pre>
+	<p>
+		Tree path expressions correspond to a
+		<code>java.util.Collection</code>
+		of nodes; literals -- single- or double-quoted strings --, to
+		<code>String</code>
+		; nums to
+		<code>Integer</code>
+		,
+		<code>Double</code>
+		, or just
+		<code>Number</code>
+		; attributes to arbitrary objects; and attribute tests and conditions,
+		to
+		<code>Boolean</code>
+		. You can use primitive types in lieu of
+		<code>Boolean</code>
+		and so forth. You may also use variadic methods. For example, here is
+		the implementation of the
+		<code>@log</code>
+		attribute:
+	</p>
+	<pre>	@Attribute(description = "records parameters to a log stream")
+	protected final Boolean log(N n, Collection&lt;N&gt; c, Index&lt;N&gt; i, Object... msg) {
+		for (Object o : msg)
+			loggingStream.println(o);
+		return Boolean.TRUE;
+	}</pre>
+	<p>Attributes are discovered by reflection, which is complicated
+		code to write and inefficient but gives us incredible flexibility. All
+		attributes in a forester's inheritance tree will be discovered aside
+		from private attributes, and these won't be found even in the terminal
+		class. I could handle accessibility modifiers differently, and perhaps
+		I will in the future, but for now this is how things work. The
+		reflective code gathers attributes the first time an instance of the
+		class is created. This reduces the reflection overhead. Some checking
+		of method signatures is done at this time, but it's best to create
+		unit tests for any attributes you define. Type erasure limits the
+		extensiveness of the signature checking ()as does my laziness).</p>
+	<p>
 		The base
 		<code>Forester</code>
 		class provides a small number of attributes to all extensions:
 	</p>
 	<dl>
-		<dt>@true</dt>
+		<dt class="cb">@true</dt>
 		<dd>
 			The
 			<code>true</code>
 			value.
 		</dd>
-		<dt>@false</dt>
+		<dt class="cb">@false</dt>
 		<dd>
 			The
 			<code>false</code>
 			value.
 		</dd>
-		<dt>@null</dt>
+		<dt class="cb">@null</dt>
 		<dd>
 			The
 			<code>null</code>
 			value.
 		</dd>
-		<dt>@log</dt>
+		<dt class="cb">@log</dt>
 		<dd>
 			An attribute that always returns true and prints each of its
 			parameters on its own line in a debugging stream,
 			<code>System.Err</code>
 			, by default.
 		</dd>
-		<dt>@uid</dt>
+		<dt class="cb">@uid</dt>
 		<dd>
 			An expression uniquely identifying the node by its position in the
 			tree.
@@ -174,22 +728,21 @@ List&lt;Node&gt; l = f.select(root);</pre>
 			<code>@uid</code>
 			of the second child of the first child of the root node.
 		</dd>
-		<dt>@id</dt>
+		<dt class="cb">@id</dt>
 		<dd>A unique string id for the node, if any.</dd>
-		<dt>@this</dt>
+		<dt class="cb">@this</dt>
 		<dd>The node itself.</dd>
-		<dt>@root</dt>
+		<dt class="cb">@root</dt>
 		<dd>Whether the node is the root of its tree.</dd>
-		<dt>@leaf</dt>
+		<dt class="cb">@leaf</dt>
 		<dd>Whether the nodes is a leaf, meaning it has no children.</dd>
-		<dt>@defined</dt>
+		<dt class="cb">@pick</dt>
 		<dd>
-			Whether some object is defined.
-			<code>@defined(@null)</code>
-			will always return
-			<code>false</code>
+			Picks an item from a collection.
+			<code>@pick(/*, 0)</code>
+			will return the first child of the root node.
 		</dd>
-		<dt>@size</dt>
+		<dt class="cb">@size</dt>
 		<dd>
 			The size of a collection. If
 			<code>//foo</code>
@@ -197,7 +750,7 @@ List&lt;Node&gt; l = f.select(root);</pre>
 			<code>@size(//foo)</code>
 			will return 3.
 		</dd>
-		<dt>@index</dt>
+		<dt class="cb">@index</dt>
 		<dd>
 			The index of the node in the collection it was selected with.
 			<code>//foo/bar[@index = 1]</code>
@@ -205,8 +758,29 @@ List&lt;Node&gt; l = f.select(root);</pre>
 			<code>//foo/bar[1]</code>
 			.
 		</dd>
+		<dt class="cb">@echo</dt>
+		<dd>
+			The value of its parameter.
+			<code>//foo/bar[@echo(1)]</code>
+			will return 1. This attribute is chiefly useful as a wrapper to
+			convert anything into an attribute that can be used in an attribute
+			test.
+		</dd>
 	</dl>
-	<h3>Attribute Parameters</h3>
+	<p>
+		The
+		<code>FunctionalForester</code>
+		class is a library of additional attributes, many of them copied from
+		XPath. A forester that extends
+		<code>FunctionalForester</code>
+		,
+		<code>MatchPath</code>
+		, for instance, gets access to all these attributes.
+	</p>
+	<h4>
+		<code>@Attribute</code>
+		Parameters
+	</h4>
 	<p>
 		An attribute is created by annotating a method in a
 		<code>Forester</code>
@@ -214,7 +788,7 @@ List&lt;Node&gt; l = f.select(root);</pre>
 		<code>dfh.treepath.Attribute</code>
 		annotation, optionally providing a name and/or a description.
 	</p>
-	<pre><b>@Attribute</b>
+	<pre><!-- Eclipse code beautifier bug --><b>@Attribute</b>
 String foo(Node n, Collection&lt;Node&gt; c, Index&lt;Node&gt; i) { return "foo"; }
 
 <b>@Attribute("short")</b>
@@ -230,7 +804,232 @@ String alsoLong(Node n, Collection&lt;Node&gt; c, Index&lt;Node&gt; i, String...
 
 <b>@Attribute(description = "a roundabout way of putting a number into an expression")</b>
 Number num(Node n, Collection&lt;Node&gt; c, Index&lt;Node&gt; i, Number num) { return num; }</pre>
-<p>If you </p>
-	<h3>Ad Hoc Attributes</h3>
+	<h5>
+		<code>value</code>
+	</h5>
+	<p>
+		The
+		<code>value</code>
+		parameter is useful to avoid namespace collisions, use Java keywords
+		like
+		<code>this</code>
+		as attribute names, and dodge Java naming conventions. If no
+		<code>value</code>
+		parameter is given the attribute name will be the method name.
+	</p>
+	<h5>
+		<code>description</code>
+	</h5>
+	<p>
+		The
+		<code>description</code>
+		provides a bit of metadata about the attribute. This is visible in the
+		code and javadocs, where it is largely redundant, but it is also
+		exposed through the
+		<code>Forester.attributes()</code>
+		method. The latter returns an alphabetized map from the names of
+		attributes available to the forester to two-member arrays of
+		meta-data: the attribute description and an abbreviated description of
+		the corresponding method signature. The main method of
+		<code>dfh.treepath.MatchPath</code>
+		uses this method to summarize all the attributes available to that
+		class:
+	</p>
+	<pre>	public static void main(String[] args) {
+		int length = 0;
+		for (String s : MatchPath.standard().attributes.keySet())
+			length = Math.max(length, s.length());
+		String format = "@%-" + length + "s : %s%n%" + length + "s    %s%n";
+		for (Entry&lt;String, String[]&gt; e : MatchPath.standard().attributes()
+				.entrySet()) {
+			System.out.printf(format, e.getKey(), e.getValue()[0], "",
+					e.getValue()[1]);
+		}
+	}</pre>
+	returns
+	<pre class="results">@assertion       : whether node is an assertion
+                   public boolean dfh.treepath.MatchPath.assertion(...)
+@echo            : converts anything into an attribute
+                   protected final Object dfh.treepath.Forester.echo(...,Object)
+@explicit        : whether the rule generating this node is explicitly defined
+                   public boolean dfh.treepath.MatchPath.explicit(...)
+@false           : the false value
+                   protected final Boolean dfh.treepath.Forester.False(...)
+@group           : group matched
+                   public String dfh.treepath.MatchPath.group(...)
+@id              : the nodes string id, if any
+                   protected String dfh.treepath.Forester.id(...)
+@index           : the index of the context node in the context collection
+                   protected int dfh.treepath.Forester.index(...)
+@label           : rule generating match
+                   public String dfh.treepath.MatchPath.label(...)
+@leaf            : whether the context node is a leaf
+                   protected boolean dfh.treepath.Forester.isLeaf(...)
+@length          : length of group matched
+                   public int dfh.treepath.MatchPath.length(...)
+@log             : records parameters to a log stream
+                   protected final Boolean dfh.treepath.Forester.log(...,Object[])
+@m:abs           : absolute value
+                   protected Number dfh.treepath.FunctionalForester.abs(...,Number)
+@m:ceil          : round up
+                   protected Number dfh.treepath.FunctionalForester.ceil(...,Number)
+@m:floor         : round down
+                   protected Number dfh.treepath.FunctionalForester.floor(...,Number)
+@m:int           : integral portion
+                   protected Integer dfh.treepath.FunctionalForester.integralPortion(...,Number)
+@m:max           : maximum value
+                   protected Number dfh.treepath.FunctionalForester.max(...,Number[])
+@m:min           : minimum value
+                   protected Number dfh.treepath.FunctionalForester.min(...,Number[])
+@m:prod          : product of values
+                   protected Double dfh.treepath.FunctionalForester.product(...,Number[])
+@m:round         : round to nearest whole number
+                   protected Number dfh.treepath.FunctionalForester.round(...,Number)
+@m:sum           : sum of values
+                   protected Double dfh.treepath.FunctionalForester.sum(...,Number[])
+@null            : the null value
+                   protected final Object dfh.treepath.Forester.Null(...)
+@pick            : picks a node from a collection
+                   protected Object dfh.treepath.Forester.pick(...,java.util.Collection,int)
+@root            : whether the context node is the root
+                   protected boolean dfh.treepath.Forester.isRoot(...)
+@s:cmp           : compare string order
+                   protected Integer dfh.treepath.FunctionalForester.compare(...,String,String)
+@s:concat        : string concatenating items
+                   protected String dfh.treepath.FunctionalForester.concatenate(...,Object[])
+@s:contains      : whether the string contains a particular infix
+                   protected boolean dfh.treepath.FunctionalForester.contains(...,String,String)
+@s:ends-with     : whether the string parameter has a particular suffix
+                   protected boolean dfh.treepath.FunctionalForester.endsWith(...,String,String)
+@s:find          : look for pattern in string
+                   protected boolean dfh.treepath.FunctionalForester.find(...,String,String)
+@s:index         : the index of an infix in the string
+                   protected int dfh.treepath.FunctionalForester.index(...,String,String)
+@s:join          : concatenate items with separator
+                   protected String dfh.treepath.FunctionalForester.join(...,Object,Object[])
+@s:lc            : lowercase
+                   protected String dfh.treepath.FunctionalForester.lowercase(...,String)
+@s:len           : string length
+                   protected Integer dfh.treepath.FunctionalForester.length(...,String)
+@s:looking-at    : match prefix
+                   protected boolean dfh.treepath.FunctionalForester.lookingAt(...,String,String)
+@s:matches       : whether the string parameter matches a pattern
+                   protected boolean dfh.treepath.FunctionalForester.matches(...,String,String)
+@s:nspace        : normalize whitespace
+                   protected String dfh.treepath.FunctionalForester.normalizeWhitespace(...,String)
+@s:replace       : replace all occurrences of infix
+                   protected String dfh.treepath.FunctionalForester.replace(...,String,String,String)
+@s:replace-all   : replace all occurrences of pattern
+                   protected String dfh.treepath.FunctionalForester.replaceAll(...,String,String,String)
+@s:replace-first : replace first occurrence of pattern
+                   protected String dfh.treepath.FunctionalForester.replaceFirst(...,String,String,String)
+@s:starts-with   : whether the string parameters as a particular prefix
+                   protected boolean dfh.treepath.FunctionalForester.startsWith(...,String,String)
+@s:substr        : select substring
+                   protected String dfh.treepath.FunctionalForester.substring(...,String,Integer[])
+@s:trim          : trim whitespace
+                   protected String dfh.treepath.FunctionalForester.trim(...,String)
+@s:uc            : uppercase
+                   protected String dfh.treepath.FunctionalForester.uppercase(...,String)
+@s:ucfirst       : capitalize only first letter
+                   protected String dfh.treepath.FunctionalForester.ucFirst(...,String)
+@size            : the size of the node collection
+                   protected int dfh.treepath.Forester.size(...,java.util.Collection)
+@this            : the context node
+                   protected final Object dfh.treepath.Forester.This(...)
+@true            : the true value
+                   protected final Boolean dfh.treepath.Forester.True(...)
+@u:def           : whether the parameter value is non-null
+                   protected final Boolean dfh.treepath.FunctionalForester.defined(...,Object)
+@u:millis        : current time in milliseconds
+                   protected Long dfh.treepath.FunctionalForester.millis(...)
+@uid             : unique id of context node representing its position in its tree
+                   protected final String dfh.treepath.Forester.uid(...)
+@zero            : whether node is zero-width
+                   public boolean dfh.treepath.MatchPath.zero(...)
+	</pre>
+	<p>The ellipsis represents arguments you do not provide in tree
+		path expressions. A final array represents a varargs argument.</p>
+	<b>Rationale</b>
+	<p>
+		The rationale behind the
+		<code>attributes()</code>
+		method and the
+		<code>description</code>
+		parameter of
+		<code>@Attribute</code>
+		that feeds it is just that attributes are not easily discovered in
+		javadocs or code, particularly when they may be added ad hoc, but they
+		are particularly important to tree path expressions. So I made
+		attributes self-documenting.
+	</p>
+	<h4>Ad Hoc Attributes</h4>
+	<p>If you wish to define a particular attribute you can add it to
+		an anonymous inner class:</p>
+	<pre>Forester&lt;N&gt; f = new MyForester() {
+    @Attribute
+    boolean foo(N n, Collection&lt;N&gt; c, Index&lt;N&gt; i) {
+        return bar(n) &gt; quux(n);
+    }
+};
+Path&lt;N&gt; p = f.path(//*[@foo]);</pre>
+	<p>This is useful mostly for rapid exploratory hacks. Once you find
+		something that works, you can move your ad hoc attributes into your
+		forester class or an extension.</p>
+	<h2>Why</h2>
+	<p>
+		I use my grammar library,
+		<code>dfh.grammar</code>
+		, a lot. Generally when I match something with a grammar I'm not
+		satisfied simply to know a match is possible, what was matched, or
+		where the match starts and ends: I want the entire parse tree, and
+		given the tree, I want to find particular parts and do things with
+		them. If I'm parsing a date, I want to find the year part and the
+		month part and so on. If I'm parsing an email address, I want to
+		separate the user name from the domain and I want to know the
+		subdomains. For many purposes the methods provided by the match object
+		itself suffice, but often enough I found myself writing the same sort
+		of picky code that basically drilled down a particular path in a
+		particular sort of parse tree. If this were XML I'd use XPath. If it
+		were HTML I'd use CSS (or perhaps XPath after converting it to XHTML).
+		So I thought I'd make something like XPath for my parse trees. I
+		didn't want it to be precisely the same as XML, however, because my
+		parse trees weren't precisely like XML trees. The notion of
+		&ldquo;attribute&rdquo; wasn't native to the problem, nor were
+		namespaces. While I was thinking about this it occurred to me that I
+		could make a generic library that could handle any sort of tree,
+		adapting the attribute idea to represent callbacks.
+	</p>
+	<p>
+		Having started along this path, I figured I would add features to the
+		expression language that I often wanted: an easy way to obtain leaves
+		or nodes near to a particular node but not screened from it by other
+		nodes of the same type -- what the
+		<code>/>foo</code>
+		expression represents. I found I could make it trivial to adapt the
+		library to a new sort of tree and trivial to add attributes, both of
+		which were very nice. So here we are.
+	</p>
+	<h2>Future Plans</h2>
+	<p>The only thing I have in mind as an improvement to this library
+		is mixins. It would be nice to write libraries of attributes and just
+		mix them in without worrying about the inheritance hierarchy. It would
+		look like this:</p>
+	<pre>Forester&lt;N&gt; f = new MyForester() {
+    {
+        mixin(Library1.class, Library2.class, Library3.class);
+    }
+}</pre>
+	<p>You could also do this in a class, of course, to facilitate
+		reusing a particular collection of attributes. I have a pretty good
+		notion of how to go about this, in fact, but it requires a root and
+		branch refactoring of how attributes are handled, so I thought I'd
+		release what I've got first and include mixins in a future release.</p>
+	<p>Another thing I might do if I find the time is implement the
+		tree path specification in other languages, starting with Perl. I find
+		this useful. I'd like someone else to as well. If I make it available
+		to someone who prefers to work in another language, particularly one
+		that facilitates code sharing as Perl does, then I increase the odds
+		that someone other than myself will use it.</p>
 </body>
 </html>

@@ -2,6 +2,7 @@ package dfh.treepath;
 
 import java.util.Collection;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import dfh.grammar.Match;
 
@@ -21,15 +22,20 @@ class AxisMatching<N> extends AxisSelector<N> {
 
 	AxisMatching(String axisName, String pattern, Match arguments, Forester<N> f) {
 		super(axisName, arguments, f);
-		final Pattern p = Pattern.compile(pattern);
-		test = new NodeTest<N>() {
-			private static final long serialVersionUID = 1L;
+		try {
+			final Pattern p = Pattern.compile(pattern);
+			test = new NodeTest<N>() {
+				private static final long serialVersionUID = 1L;
 
-			@Override
-			public boolean passes(N n, Index<N> i) {
-				return i.f.matchesTag(n, p);
-			}
-		};
+				@Override
+				public boolean passes(N n, Index<N> i) {
+					return i.f.matchesTag(n, p);
+				}
+			};
+		} catch (PatternSyntaxException e) {
+			throw new PathException("could not compile " + pattern
+					+ " as a regular expression", e);
+		}
 	}
 
 	@Override

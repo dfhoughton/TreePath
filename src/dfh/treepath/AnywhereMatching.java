@@ -2,6 +2,7 @@ package dfh.treepath;
 
 import java.util.Collection;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import dfh.grammar.Match;
 import dfh.treepath.PathGrammar.Axis;
@@ -20,14 +21,20 @@ class AnywhereMatching<N> extends TestSelector<N> {
 
 	AnywhereMatching(String pattern, Match arguments, Forester<N> f) {
 		super(arguments, f);
-		final Pattern p = Pattern.compile(pattern);
-		test = new NodeTest<N>() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			public boolean passes(N n, Index<N> i) {
-				return i.f.matchesTag(n, p);
-			}
-		};
+		try {
+			final Pattern p = Pattern.compile(pattern);
+			test = new NodeTest<N>() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public boolean passes(N n, Index<N> i) {
+					return i.f.matchesTag(n, p);
+				}
+			};
+		} catch (PatternSyntaxException e) {
+			throw new PathException("could not compile " + pattern
+					+ " as a regular expression", e);
+		}
 	}
 
 	@Override

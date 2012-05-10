@@ -43,6 +43,14 @@ public class AttributeTests {
 	}
 
 	@Test
+	public void echoTest() {
+		Element root = parse("<a><b><c/></b><b/></a>");
+		Path<Element> p = f.path("//b[@echo(c) = 1]");
+		Collection<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
+	}
+
+	@Test
 	public void logTest() {
 		Element root = parse("<a><b foo='1'/><b foo='2'/><b foo='3'/></a>");
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -145,14 +153,6 @@ public class AttributeTests {
 			assertTrue(e.getMessage().startsWith(
 					"attribute @foo does not return any value"));
 		}
-	}
-
-	@Test
-	public void definedTest() {
-		Element root = parse("<a><b/><b foo='bar' /></a>");
-		Path<Element> p = f.path("//b[@defined(@attr('foo'))]");
-		List<Element> l = p.select(root);
-		assertEquals(1, l.size());
 	}
 
 	@Test

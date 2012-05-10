@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import dfh.grammar.GrammarException;
@@ -546,7 +545,8 @@ public abstract class Forester<N> implements Serializable {
 
 	/**
 	 * An attribute for selecting a member from a collection of nodes returned
-	 * by a path. E.g., &#064;pick(foo//bar, 1). The index is zero-based.
+	 * by a path. E.g., <code>&#064;pick(foo//bar, 1)</code>. The index is
+	 * zero-based.
 	 * 
 	 * @param n
 	 *            context node
@@ -564,8 +564,8 @@ public abstract class Forester<N> implements Serializable {
 	 *         appropriate node
 	 */
 	@Attribute(description = "picks a node from a collection")
-	protected N pick(N n, Collection<N> c, Index<N> i, Collection<N> from,
-			int index) {
+	protected final N pick(N n, Collection<N> c, Index<N> i,
+			Collection<N> from, int index) {
 		int j = index;
 		if (from.isEmpty())
 			return null;
@@ -687,25 +687,6 @@ public abstract class Forester<N> implements Serializable {
 	@Attribute(value = "false", description = "the false value")
 	protected final Boolean False(N n, Collection<N> c, Index<N> i) {
 		return Boolean.FALSE;
-	}
-
-	/**
-	 * A boolean attribute that is true if the object parameter is not null.
-	 * 
-	 * @param n
-	 *            context node; required for method signature but ignored
-	 * @param c
-	 *            collection of which context node is a member; required for
-	 *            method signature but ignored
-	 * @param i
-	 *            tree index
-	 * @param o
-	 *            value to test
-	 * @return whether o isn't null
-	 */
-	@Attribute(description = "whether the parameter value is non-null")
-	protected final Boolean defined(N n, Collection<N> c, Index<N> i, Object o) {
-		return o == null ? false : true;
 	}
 
 	/**
@@ -1292,5 +1273,26 @@ public abstract class Forester<N> implements Serializable {
 		for (int in = list.size() - 1; in >= 0; in--)
 			b.append('/').append(list.get(in));
 		return b.toString();
+	}
+
+	/**
+	 * An attribute that turns anything into an attribute, allowing it to be
+	 * used in an attribute test. E.g.,
+	 * <code>//a[&#064;echo(foo//bar) = 3]</code>.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param c
+	 *            collection of which context node is a member; required for
+	 *            method signature but ignored
+	 * @param i
+	 *            tree index
+	 * @param o
+	 *            some object
+	 * @return the o parameter
+	 */
+	@Attribute(description = "converts anything into an attribute")
+	protected final Object echo(N n, Collection<N> c, Index<N> i, Object o) {
+		return o;
 	}
 }

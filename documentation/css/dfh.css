@@ -92,3 +92,9 @@ div#footnotes {
 	position: relative;
 	top: -0.2em;
 }
+
+.cb { /* code bold */
+	font-family: monospace;
+	font-weight: bold;
+	font-size: large;
+}
