@@ -371,7 +371,7 @@ subsequent_step = [{segment} &lt;separator&gt; &lt;step&gt; ]
 		<code>/&gt;</code>
 		separator.
 	</p>
-	<h4>Literal</h4>
+	<h5>Literal</h5>
 	<pre>/<b>a</b>
 //<b>foo</b>
 /><b>bar</b>
@@ -379,7 +379,7 @@ subsequent_step = [{segment} &lt;separator&gt; &lt;step&gt; ]
 ...</pre>
 	<p>Literal node type expressions require that a selected node have
 		precisely the type specified.</p>
-	<h4>Pattern</h4>
+	<h5>Pattern</h5>
 	<pre>/<b>~a~</b>
 //<b>~foo~</b>
 /><b>~bar~</b>
@@ -389,7 +389,7 @@ subsequent_step = [{segment} &lt;separator&gt; &lt;step&gt; ]
 		the bit between the tildes -- match some part of one of the node's
 		tags. The pattern must compile into a Java regular expression or an
 		error will be thrown when the path is compiled.</p>
-	<h4>Wildcard</h4>
+	<h5>Wildcard</h5>
 	<pre>/<b>*</b>
 //<b>*</b>
 <b>*</b><!-- Eclipse code beautifier bug --></pre>
@@ -976,12 +976,72 @@ Path&lt;N&gt; p = f.path(//*[@foo]);</pre>
 	<p>This is useful mostly for rapid exploratory hacks. Once you find
 		something that works, you can move your ad hoc attributes into your
 		forester class or an extension.</p>
-	<h2>Dependencies</h2>
+	<h4>Mixins</h4>
+	<p>
+		The typical way to provide attributes to an extension of tree path is
+		to implement them in a class extending
+		<code>Forester</code>
+		. This isn't done for any principled reason arising from the logic of
+		tree path expressions, however, but because Java's implementation of
+		inheritance and reflection make this easy. It would be more natural to
+		put attributes into libraries and load them into a Forester class as
+		needed. This mixin structure and Java are an uncomfortable fit, but I
+		have implemented it as an experimental improvement of TreePath.
+	</p>
+	<p>
+		A library of attributes to be mixed in orthogonally to the inheritance
+		hierarchy must extend the class
+		<code>AttributeLibrary</code>
+		, must be public, and must have a public zero-argument constructor.
+		For example:
+	</p>
+	<pre>public class TestLibrary extends AttributeLibrary&lt;Node&gt; {
+    public TestLibrary() {
+        super();
+    }
+
+    @Attribute
+    String foo(Node e, Collection&lt;Node&gt; c, Index&lt;Node&gt; i) {
+        return "foo";
+    }
+}</pre>
+	<p>
+		To load the attributes provided by this library in a class, you call
+		<code>Forester.mixin(Class&lt;? extends
+			AttributeLibrary&lt;N&gt;&gt;...)</code>
+		. You can load libraries in at any time, but if you want the new
+		attributes to persist through serialization it is recommended that you
+		add them in by overriding the
+		<code>init</code>
+		method like so:
+	</p>
+	<pre>@Override
+protected void init() {
+    if (attributes == null) {
+        super.init();
+        mixin(Library1.class, Library2.class);
+    }
+}</pre>
+	<p>
+		Note that this method can be used only to supplement the attributes
+		obtained from the class hierarchy. If
+		<code>MyForester</code>
+		provides attribute
+		<code>@foo</code>
+		and we try to mix an identically named method in from a library, the
+		native
+		<code>@foo</code>
+		will win out.
+	</p>
+	<h2>Dependencies, Thread Safety, and Serialization</h2>
 	<p>
 		The only dependency of this library is my
 		<code>dfh.grammar</code>
 		library, which has no dependencies.
 	</p>
+	<p>All the classes in this library are thread safe.</p>
+	<p>All the classes in this library are serializable, though you
+		have to take care if you use mixins.</p>
 	<h2>Why</h2>
 	<p>
 		I use my grammar library,
@@ -1017,25 +1077,11 @@ Path&lt;N&gt; p = f.path(//*[@foo]);</pre>
 		which were very nice. So here we are.
 	</p>
 	<h2>Future Plans</h2>
-	<p>The only thing I have in mind as an improvement to this library
-		is mixins. It would be nice to write libraries of attributes and just
-		mix them in without worrying about the inheritance hierarchy. It would
-		look like this:</p>
-	<pre>Forester&lt;N&gt; f = new MyForester() {
-    {
-        mixin(Library1.class, Library2.class, Library3.class);
-    }
-}</pre>
-	<p>You could also do this in a class, of course, to facilitate
-		reusing a particular collection of attributes. I have a pretty good
-		notion of how to go about this, in fact, but it requires a root and
-		branch refactoring of how attributes are handled, so I thought I'd
-		release what I've got first and include mixins in a future release.</p>
-	<p>Another thing I might do if I find the time is implement the
-		tree path specification in other languages, starting with Perl. I find
-		this useful. I'd like someone else to as well. If I make it available
-		to someone who prefers to work in another language, particularly one
-		that facilitates code sharing as Perl does, then I increase the odds
-		that someone other than myself will use it.</p>
+	<p>If I find the time I might implement the tree path specification
+		in other languages, starting with Perl. I find this useful. I'd like
+		someone else to as well. If I make it available to someone who prefers
+		to work in another language, particularly one that facilitates code
+		sharing as Perl does, then I increase the odds that someone other than
+		myself will use it.</p>
 </body>
 </html>

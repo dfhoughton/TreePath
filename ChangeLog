@@ -1,0 +1,7 @@
+1.01
+  * fixed erroneous validation code that prevented selecting from non-root
+    nodes
+  * implemented mixins
+
+1.00 10 May 2012
+  * first release
