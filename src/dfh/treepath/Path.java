@@ -62,7 +62,7 @@ public class Path<N> implements Serializable {
 	 * index. Use this method if you are doing many matches on the same tree as
 	 * it prevents redundant object creation and tree walking.
 	 * 
-	 * @param root
+	 * @param n
 	 *            a node in the tree; if this is not the root node and the
 	 *            tree's nodes do not know their own parents -- see
 	 *            {@link ParentIndex} -- this will be the de-facto root node
@@ -70,15 +70,12 @@ public class Path<N> implements Serializable {
 	 *            an index of the tree
 	 * @return the nodes matching the path in the order of their discovery
 	 */
-	public List<N> select(N root, Index<N> i) {
-		if (root == null)
+	public List<N> select(N n, Index<N> i) {
+		if (n == null)
 			throw new PathException("select called on null node");
 		if (!i.indexed())
 			i.index();
-		if (f.isRoot(root, null, i))
-			return new ArrayList<N>(sel(root, i));
-		throw new PathException(
-				"select can only be called with the root node of a tree");
+		return new ArrayList<N>(sel(n, i));
 	}
 
 	Collection<N> sel(N n, Index<N> index) {

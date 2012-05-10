@@ -233,4 +233,19 @@ public class BasicTests {
 		assertTrue(set.contains("<d />"));
 		assertTrue(set.contains("<foo />"));
 	}
+
+	@Test
+	public void relativePathTest() {
+		Forester<Element> f = new XMLToyForester();
+		Element root = parse("<a><b><c/></b></a>");
+		Index<Element> i = f.index(root);
+		Path<Element> p = f.path("//b");
+		List<Element> bs = p.select(root, i);
+		assertEquals(1, bs.size());
+		p = f.path("c");
+		bs = p.select(bs.get(0), i);
+		assertEquals(1, bs.size());
+		assertEquals("<c />", bs.get(0).toString());
+	}
+
 }
