@@ -8,6 +8,7 @@
  */
 package dfh.treepath;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -31,8 +32,9 @@ import dfh.treepath.ConditionalPredicate.Expression;
  * 
  * @param <N>
  */
-class CompiledAttribute<N> {
-	private final InstanceWrapper a;
+class CompiledAttribute<N> implements Serializable {
+	private static final long serialVersionUID = 1L;
+	private transient InstanceWrapper a;
 	private final Object[] args;
 	private final String name;
 	private static final MatchTest argTest = new MatchTest() {
@@ -47,9 +49,7 @@ class CompiledAttribute<N> {
 	CompiledAttribute(Match m, Forester<N> f) {
 		String s = m.first("aname").group();
 		name = s.substring(1);
-		a = f.attributes.get(name);
-		if (a == null)
-			throw new PathException("unknown attribute @" + name);
+		getA(f);
 		List<Match> argList = m.children()[1].closest(argTest);
 		args = new Object[argList.size()];
 		int index = 0;
@@ -57,6 +57,19 @@ class CompiledAttribute<N> {
 			Match am = arg.children()[0];
 			Object o = parseArgument(m, f, am);
 			args[index++] = o;
+		}
+	}
+
+	/**
+	 * Re-initializes things after deserialization.
+	 * 
+	 * @param f
+	 */
+	protected void getA(Forester<N> f) {
+		if (a == null) {
+			a = f.attributes.get(name);
+			if (a == null)
+				throw new PathException("unknown attribute @" + name);
 		}
 	}
 
@@ -103,6 +116,7 @@ class CompiledAttribute<N> {
 	}
 
 	Object apply(N n, Collection<N> c, Index<N> i) {
+		getA(i.f);
 		Object[] ops;
 		int varArgsIndex = -1;
 		Class<?> arType = null;
@@ -144,7 +158,8 @@ class CompiledAttribute<N> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object objectifyArgument(N n, Collection<N> c, Index<N> i, Object o) {
+	Object objectifyArgument(N n, Collection<N> c, Index<N> i, Object o) {
+		getA(i.f);
 		if (o instanceof CompiledAttribute<?>) {
 			CompiledAttribute<N> ca = (CompiledAttribute<N>) o;
 			return ca.apply(n, c, i);

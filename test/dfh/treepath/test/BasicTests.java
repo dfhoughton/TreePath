@@ -4,6 +4,11 @@ import static dfh.treepath.test.XMLToy.parse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -248,4 +253,71 @@ public class BasicTests {
 		assertEquals("<c />", bs.get(0).toString());
 	}
 
+	@Test
+	public void serializationTest1() throws IOException, ClassNotFoundException {
+		Forester<Element> f = new XMLToyForester();
+		Element root = parse("<a><b><c/></b></a>");
+		Index<Element> i = f.index(root);
+		Path<Element> p = f.path("//b");
+		List<Element> bs = p.select(root, i);
+		assertEquals(1, bs.size());
+		p = f.path("c");
+		bs = p.select(bs.get(0), i);
+		assertEquals(1, bs.size());
+		assertEquals("<c />", bs.get(0).toString());
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(f);
+		oos.close();
+		ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(
+				baos.toByteArray()));
+		f = (Forester<Element>) ois.readObject();
+		p = f.path("//b");
+		bs = p.select(root, i);
+		assertEquals(1, bs.size());
+		p = f.path("c");
+		bs = p.select(bs.get(0), i);
+		assertEquals(1, bs.size());
+		assertEquals("<c />", bs.get(0).toString());
+		baos = new ByteArrayOutputStream();
+		oos = new ObjectOutputStream(baos);
+		oos.writeObject(p);
+		oos.close();
+		ois = new ObjectInputStream(
+				new ByteArrayInputStream(baos.toByteArray()));
+		p = (Path<Element>) ois.readObject();
+		bs = f.path("//b").select(root, i);
+		bs = p.select(bs.get(0), i);
+		assertEquals(1, bs.size());
+		assertEquals("<c />", bs.get(0).toString());
+	}
+
+	@Test
+	public void serializationTest2() throws IOException, ClassNotFoundException {
+		Forester<Element> f = new XMLToyForester();
+		Element root = parse("<a><b/><b foo='1'/></a>");
+		Index<Element> i = f.index(root);
+		Path<Element> p = f.path("//b[@attr('foo')]");
+		List<Element> bs = p.select(root, i);
+		assertEquals(1, bs.size());
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(f);
+		oos.close();
+		ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(
+				baos.toByteArray()));
+		f = (Forester<Element>) ois.readObject();
+		p = f.path("//b[@attr('foo')]");
+		bs = p.select(root, i);
+		assertEquals(1, bs.size());
+		baos = new ByteArrayOutputStream();
+		oos = new ObjectOutputStream(baos);
+		oos.writeObject(p);
+		oos.close();
+		ois = new ObjectInputStream(
+				new ByteArrayInputStream(baos.toByteArray()));
+		p = (Path<Element>) ois.readObject();
+		bs = p.select(root, i);
+		assertEquals(1, bs.size());
+	}
 }

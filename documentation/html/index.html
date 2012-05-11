@@ -392,7 +392,9 @@ subsequent_step = [{segment} &lt;separator&gt; &lt;step&gt; ]
 	<h5>Wildcard</h5>
 	<pre>/<b>*</b>
 //<b>*</b>
-<b>*</b><!-- Eclipse code beautifier bug --></pre>
+<b>*</b>
+		<!-- Eclipse code beautifier bug -->
+	</pre>
 	<p>The wildcard node type expression matches every node.</p>
 	<h3>Axes</h3>
 	<p>
@@ -788,7 +790,9 @@ a<b>[not @foo and (//bar or @chuzzle > 1)]</b>
 		<code>dfh.treepath.Attribute</code>
 		annotation, optionally providing a name and/or a description.
 	</p>
-	<pre><!-- Eclipse code beautifier bug --><b>@Attribute</b>
+	<pre>
+		<!-- Eclipse code beautifier bug -->
+		<b>@Attribute</b>
 String foo(Node n, Collection&lt;Node&gt; c, Index&lt;Node&gt; i) { return "foo"; }
 
 <b>@Attribute("short")</b>
@@ -1040,8 +1044,11 @@ protected void init() {
 		library, which has no dependencies.
 	</p>
 	<p>All the classes in this library are thread safe.</p>
-	<p>All the classes in this library are serializable, though you
-		have to take care if you use mixins.</p>
+	<p>
+		All the classes in this library aside from
+		<code>Index</code>
+		are serializable, though you have to take care if you use mixins.
+	</p>
 	<h2>Why</h2>
 	<p>
 		I use my grammar library,
@@ -1077,6 +1084,8 @@ protected void init() {
 		which were very nice. So here we are.
 	</p>
 	<h2>Future Plans</h2>
+	<p>I may add mathematical expressions to the things that can occur
+		in predicates.</p>
 	<p>If I find the time I might implement the tree path specification
 		in other languages, starting with Perl. I find this useful. I'd like
 		someone else to as well. If I make it available to someone who prefers
