@@ -335,8 +335,10 @@ subsequent_step = [{segment} &lt;separator&gt; &lt;step&gt; ]
 			node is the root.</dd>
 		<dt class="cb">//</dt>
 		<dd>
-			The candidate node axis is
+			For the initial step, the candidate node axis is
 			<code>descendant-or-self</code>
+			, otherwise it is
+			<code>descendant</code>
 			.
 		</dd>
 		<dt class="cb">/&gt;</dt>
@@ -392,9 +394,7 @@ subsequent_step = [{segment} &lt;separator&gt; &lt;step&gt; ]
 	<h5>Wildcard</h5>
 	<pre>/<b>*</b>
 //<b>*</b>
-<b>*</b>
-		<!-- Eclipse code beautifier bug -->
-	</pre>
+<b>*</b><!-- Eclipse code beautifier bug --></pre>
 	<p>The wildcard node type expression matches every node.</p>
 	<h3>Axes</h3>
 	<p>
@@ -790,9 +790,7 @@ a<b>[not @foo and (//bar or @chuzzle > 1)]</b>
 		<code>dfh.treepath.Attribute</code>
 		annotation, optionally providing a name and/or a description.
 	</p>
-	<pre>
-		<!-- Eclipse code beautifier bug -->
-		<b>@Attribute</b>
+	<pre><!-- Eclipse code beautifier bug --><b>@Attribute</b>
 String foo(Node n, Collection&lt;Node&gt; c, Index&lt;Node&gt; i) { return "foo"; }
 
 <b>@Attribute("short")</b>
