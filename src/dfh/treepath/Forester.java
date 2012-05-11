@@ -55,12 +55,12 @@ public abstract class Forester<N> implements Serializable {
 	 * caching the results of reflective code.
 	 */
 	protected final static Map<Class<? extends Forester<?>>, Map<String, InstanceWrapper>> attributeCache = new HashMap<Class<? extends Forester<?>>, Map<String, InstanceWrapper>>();
-	transient Map<String, InstanceWrapper> attributes;
+	protected transient Map<String, InstanceWrapper> attributes;
 	final NodeTest<N>[] ignore;
 	/**
 	 * A place for the log attribute to send its logging.
 	 */
-	private PrintStream loggingStream = System.err;
+	transient private PrintStream loggingStream = System.err;
 
 	/**
 	 * Initializes the map from attributes to methods and records the node types
@@ -1138,7 +1138,7 @@ public abstract class Forester<N> implements Serializable {
 	 *         {@link #log(Object, Collection, Index, Object...)} attribute
 	 */
 	public PrintStream getLoggingStream() {
-		return loggingStream;
+		return loggingStream == null ? System.err : loggingStream;
 	}
 
 	/**
@@ -1174,7 +1174,7 @@ public abstract class Forester<N> implements Serializable {
 	@Attribute(description = "records parameters to a log stream")
 	protected final Boolean log(N n, Collection<N> c, Index<N> i, Object... msg) {
 		for (Object o : msg)
-			loggingStream.println(o);
+			getLoggingStream().println(o);
 		return Boolean.TRUE;
 	}
 
