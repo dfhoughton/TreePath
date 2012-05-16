@@ -15,8 +15,9 @@ TODO
 . perhaps create memoization function
 . allow use of native comparison methods when available
 * figure out how to handle variadic attributes
-. add mixin attributes
-. report method signatures for attributes in Forester.attributes()
+* add mixin attributes
+* report method signatures for attributes in Forester.attributes()
+. document negative indices
 
 RELICS
 ======
