@@ -418,6 +418,10 @@ subsequent_step = [{segment} &lt;separator&gt; &lt;step&gt; ]
 		axis, which is the list of nodes at or under the context node that
 		have no children.
 	</p>
+	<p>
+		See <a href="api/dfh/treepath/PathGrammar.Axis.html"><code>dfh.treepath.PathGrammar.Axis</code></a>
+		for the full list of axes.
+	</p>
 	<h3>Predicates</h3>
 	<p>
 		Predicates are filters which take a candidate set and eliminate nodes
@@ -465,6 +469,36 @@ a<b>[3]</b>
 		the preceding step, not the collection of all nodes selected by all
 		the context nodes together.
 	</p>
+	<p>One may use negative indices in tree path expressions. If you
+		add a negative index to the size of the collection indexed you get the
+		corresponding positive index, so -1 is the index of the last node in
+		the collection, -2, the index of the second to last node, and so
+		forth. For example in </p>
+		<pre>  a
+ /|\
+c d e</pre>
+<p>we have the following correspondences:</p>
+<pre>  a
+ /|\
+<b>c</b> d e
+
+/a/*[0] <i>or</i> /a/*[-3]
+
+
+  a
+ /|\
+c <b>d</b> e
+
+/a/*[1] <i>or</i> /a/*[-2]
+
+
+  a
+ /|\
+c d <b>e</b>
+
+/a/*[2] <i>or</i> /a/*[-1]</pre>
+	<p>If you overshoot the end of the collection in either direction
+		you simply get no nodes.</p>
 	<h4>Path</h4>
 	<pre>/a<b>[foo]</b>
 //a<b>[//bar]</b>

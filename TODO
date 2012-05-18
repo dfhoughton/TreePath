@@ -17,7 +17,7 @@ TODO
 * figure out how to handle variadic attributes
 * add mixin attributes
 * report method signatures for attributes in Forester.attributes()
-. document negative indices
+* document negative indices
 
 RELICS
 ======
