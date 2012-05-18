@@ -11,13 +11,8 @@ historical holding pen at the end.
 TODO
 ====
 
-* create extension class with basic attributes copied from XPath
 . perhaps create memoization function
 . allow use of native comparison methods when available
-* figure out how to handle variadic attributes
-* add mixin attributes
-* report method signatures for attributes in Forester.attributes()
-* document negative indices
 
 RELICS
 ======
@@ -51,3 +46,8 @@ Things swept out of TODO list:
 * let foresters provide attribute values for nodes
 * create unit tests to complete testing of boolean combinations of attribute tests
 * create @uid for debugging
+* create extension class with basic attributes copied from XPath
+* figure out how to handle variadic attributes
+* add mixin attributes
+* report method signatures for attributes in Forester.attributes()
+* document negative indices
