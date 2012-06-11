@@ -256,4 +256,11 @@ public class AttributeTests {
 			assertTrue(e.getMessage().startsWith("unknown attribute @"));
 		}
 	}
+	
+	@Test
+	public void doublePredicate() {
+		Element root = parse("<a><b><c/><d/></b><b><e/><d/></b><b><c/><e/></b></a>");
+		Path<Element> p = f.path("//b[child::*[1][@tag = 'e']]");
+		List<Element> l = p.select(root);
+	}
 }

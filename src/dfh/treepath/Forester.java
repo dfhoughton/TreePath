@@ -67,17 +67,19 @@ public abstract class Forester<N> implements Serializable {
 	 * to ignore.
 	 * 
 	 * @param ignorable
-	 *            node types to ignore
+	 *            node types to ignore; none ignored if parameter is null or
+	 *            empty
 	 */
 	@SuppressWarnings("unchecked")
 	public Forester(NodeTest<N>... ignorable) {
-		if (ignorable.length > 0) {
+		if (ignorable == null || ignorable.length == 0)
+			ignore = new NodeTest[0];
+		else {
 			Set<NodeTest<N>> set = new HashSet<NodeTest<N>>();
 			for (NodeTest<N> t : ignorable)
 				set.add(t);
 			ignore = set.toArray(new NodeTest[set.size()]);
-		} else
-			ignore = new NodeTest[0];
+		}
 	}
 
 	/**

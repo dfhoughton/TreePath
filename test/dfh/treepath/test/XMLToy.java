@@ -176,6 +176,19 @@ public class XMLToy {
 				String name) {
 			return e.attributes.get(name);
 		}
+
+		/**
+		 * An attribute that provides the node's tag.
+		 * 
+		 * @param e
+		 * @param c
+		 * @param i
+		 * @return
+		 */
+		@Attribute
+		public String tag(Element e, Collection<Element> c, Index<Element> i) {
+			return e.tag;
+		}
 	}
 
 	/**

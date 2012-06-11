@@ -1,4 +1,8 @@
-1.02
+1.02 11 June 2012
+  * null parameter passed to Forester constructure equivalent to empty varargs
+    argument
+  * added additional constant node tests to MatchPath for subsets of
+    zero-width nodes
 
 1.01 10 May 2012
   * fixed erroneous validation code that prevented selecting from non-root
