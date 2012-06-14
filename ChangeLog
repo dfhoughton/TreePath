@@ -1,4 +1,6 @@
 1.04
+  * escaped characters now cleaned out of tags
+  * created first() method to pick first node matched
 
 1.03 14 June 2012
   * index predicates can now be used with bare wildcards -- *[0] as opposed to

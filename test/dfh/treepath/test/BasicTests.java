@@ -331,4 +331,19 @@ public class BasicTests {
 		bs = p.select(root, i);
 		assertEquals(1, bs.size());
 	}
+
+	@Test
+	public void escapedChar() {
+		Element root = parse("<a><b/><c><b/><d><b/><b/></d></c></a>");
+		Path<Element> p = new XMLToyForester().path("//\\b");
+		Collection<Element> bs = p.select(root);
+		assertEquals(4, bs.size());
+	}
+
+	@Test
+	public void first() {
+		Element root = parse("<a><b/><c/><d/></a>");
+		Path<Element> p = new XMLToyForester().path("*");
+		assertEquals("b", p.first(root).tag);
+	}
 }

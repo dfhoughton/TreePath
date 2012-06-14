@@ -435,7 +435,7 @@ public abstract class Forester<N> implements Serializable {
 			s = cleanMatch(s);
 			return new ClosestMatching<N>(s, predicates, this);
 		} else
-			return new ClosestTag<N>(s, predicates, this);
+			return new ClosestTag<N>(unescape(s), predicates, this);
 	}
 
 	/**
@@ -448,14 +448,23 @@ public abstract class Forester<N> implements Serializable {
 	 */
 	private Selector<N> makeGlobalStep(Match step, boolean first) {
 		Match tagMatch = step.children()[0], predicates = step.children()[1];
-		String s = tagMatch.group();
+		String s = unescape(tagMatch.group());
 		if ("*".equals(s))
 			return new AnywhereWildcard<N>(predicates, this, first);
 		else if (s.charAt(0) == '~') {
 			s = cleanMatch(s);
 			return new AnywhereMatching<N>(s, predicates, this, first);
 		} else
-			return new AnywhereTag<N>(s, predicates, this, first);
+			return new AnywhereTag<N>(unescape(s), predicates, this, first);
+	}
+
+	/**
+	 * Remove escape characters
+	 * @param s
+	 * @return the string minus \ (unless escaped)
+	 */
+	private String unescape(String s) {
+		return s.replaceAll("\\\\(.)", "$1");
 	}
 
 	private Selector<N> makeRootStep(Match step) {
@@ -482,7 +491,7 @@ public abstract class Forester<N> implements Serializable {
 					s = cleanMatch(s);
 					return new RootMatching<N>(s, predicates, this);
 				} else
-					return new RootTag<N>(s, predicates, this);
+					return new RootTag<N>(unescape(s), predicates, this);
 			} else {
 				String aname = axisMatch.first(anameMT).group();
 				if ("*".equals(s))
@@ -491,7 +500,7 @@ public abstract class Forester<N> implements Serializable {
 					s = cleanMatch(s);
 					return new RootAxisMatching<N>(aname, s, predicates, this);
 				} else
-					return new RootAxisTag<N>(aname, s, predicates, this);
+					return new RootAxisTag<N>(aname, unescape(s), predicates, this);
 			}
 		}
 	}
@@ -504,7 +513,7 @@ public abstract class Forester<N> implements Serializable {
 	 * @return
 	 */
 	private String cleanMatch(String s) {
-		s = s.substring(1, s.length() - 1).replaceAll("\\\\(.)", "$1");
+		s = unescape(s.substring(1, s.length() - 1));
 		return s;
 	}
 
@@ -531,7 +540,7 @@ public abstract class Forester<N> implements Serializable {
 					s = cleanMatch(s);
 					return new ChildMatching<N>(s, predicates, this);
 				} else
-					return new ChildTag<N>(s, predicates, this);
+					return new ChildTag<N>(unescape(s), predicates, this);
 			} else {
 				String aname = axisMatch.first(anameMT).group();
 				if ("*".equals(s))
@@ -540,7 +549,7 @@ public abstract class Forester<N> implements Serializable {
 					s = cleanMatch(s);
 					return new AxisMatching<N>(aname, s, predicates, this);
 				} else
-					return new AxisTag<N>(aname, s, predicates, this);
+					return new AxisTag<N>(aname, unescape(s), predicates, this);
 			}
 		}
 	}

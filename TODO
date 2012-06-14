@@ -14,6 +14,8 @@ TODO
 . perhaps create memoization function
 . allow use of native comparison methods when available
 * let /foo/*[0] work -- index predicates on bare asterisk
+* add first() method in addition to select()
+. allow $ as a tag character
 
 RELICS
 ======

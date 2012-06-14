@@ -96,4 +96,47 @@ public class Path<N> implements Serializable {
 		}
 		return selection;
 	}
+
+	/**
+	 * Selects the first node in the tree that matches the path. If it is not a
+	 * relative path and the nodes in the tree do not know their own parents,
+	 * this match will fail unless the context node given is the root node.
+	 * <p>
+	 * This method is like {@link #first(Object)}, but uses a pre-constructed
+	 * index. Use this method if you are doing many matches on the same tree as
+	 * it prevents redundant object creation and tree walking.
+	 * 
+	 * @param n
+	 *            a node in the tree; if this is not the root node and the
+	 *            tree's nodes do not know their own parents -- see
+	 *            {@link ParentIndex} -- this will be the de-facto root node
+	 * @param i
+	 *            an index of the tree
+	 * @return the first node in the collection represented by the path
+	 */
+	public N first(N n, Index<N> i) {
+		if (n == null)
+			throw new PathException("select called on null node");
+		if (!i.indexed())
+			i.index();
+		Collection<N> c = sel(n, i);
+		if (c.isEmpty())
+			return null;
+		return c.iterator().next();
+	}
+
+	/**
+	 * Selects the first node in the tree that matches the path. If it is not a
+	 * relative path and the nodes in the tree do not know their own parents,
+	 * this match will fail unless the context node given is the root node.
+	 * 
+	 * @param n
+	 *            a node in the tree; if this is not the root node and the
+	 *            tree's nodes do not know their own parents -- see
+	 *            {@link ParentIndex} -- this will be the de-facto root node
+	 * @return the first node in the collection represented by the path
+	 */
+	public N first(N n) {
+		return first(n, f.index(n));
+	}
 }
