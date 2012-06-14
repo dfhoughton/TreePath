@@ -1,3 +1,5 @@
+1.05
+
 1.04 14 June 2012
   * escaped characters now cleaned out of tags and attribute names
   * created first() method to pick first node matched
