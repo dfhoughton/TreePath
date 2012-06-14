@@ -254,6 +254,17 @@ public class BasicTests {
 	}
 
 	@Test
+	public void indexedAsterisk() {
+		Forester<Element> f = new XMLToyForester();
+		Element root = parse("<a><b/><c/></a>");
+		Index<Element> i = f.index(root);
+		Path<Element> p = f.path("/a/*[1]");
+		List<Element> bs = p.select(root, i);
+		assertEquals(1, bs.size());
+		assertEquals("c", bs.get(0).tag);
+	}
+
+	@Test
 	public void serializationTest1() throws IOException, ClassNotFoundException {
 		Forester<Element> f = new XMLToyForester();
 		Element root = parse("<a><b><c/></b></a>");

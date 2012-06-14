@@ -34,9 +34,6 @@ abstract class WildcardSelector<N> implements Selector<N> {
 		final Predicate<N>[] predicates = new Predicate[predList.size()];
 		for (int i = 0; i < predicates.length; i++) {
 			predicates[i] = Predicate.build(predList.get(i), f);
-			if (predicates[i] instanceof IndexPredicate)
-				throw new PathException(
-						"index predicates cannot be used with the wildcard character");
 		}
 		test = new NodeTest<N>() {
 			private static final long serialVersionUID = 1L;

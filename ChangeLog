@@ -1,4 +1,6 @@
-1.03
+1.03 14 June 2012
+  * index predicates can now be used with bare wildcards -- *[0] as opposed to
+    child::*[0]
 
 1.02 11 June 2012
   * null parameter passed to Forester constructure equivalent to empty varargs

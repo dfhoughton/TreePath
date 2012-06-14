@@ -526,7 +526,7 @@ public abstract class Forester<N> implements Serializable {
 			String s = tagMatch.group();
 			if (axisMatch.length() == 0) {
 				if ("*".equals(s))
-					return new ChildWildcard<N>(predicates, this);
+					return new AxisWildcard<N>("child", predicates, this);
 				else if (s.charAt(0) == '~') {
 					s = cleanMatch(s);
 					return new ChildMatching<N>(s, predicates, this);

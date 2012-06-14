@@ -13,7 +13,7 @@ TODO
 
 . perhaps create memoization function
 . allow use of native comparison methods when available
-. let /foo/*[0] work -- index predicates on bare asterisk
+* let /foo/*[0] work -- index predicates on bare asterisk
 
 RELICS
 ======
