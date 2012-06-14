@@ -48,7 +48,7 @@ class CompiledAttribute<N> implements Serializable {
 
 	CompiledAttribute(Match m, Forester<N> f) {
 		String s = m.first("aname").group();
-		name = s.substring(1);
+		name = s.substring(1).replaceAll("\\\\(.)", "$1");
 		getA(f);
 		List<Match> argList = m.children()[1].closest(argTest);
 		args = new Object[argList.size()];

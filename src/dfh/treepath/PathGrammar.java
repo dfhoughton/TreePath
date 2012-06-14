@@ -118,7 +118,7 @@ public class PathGrammar {
 			"abbreviated = not after [ '//' | '/>' ] [ '.' | '..' | <id> ]",//
 			"forward = <wildcard> | <specific> | <pattern>",//
 			"wildcard = '*'",//
-			"specific = /(?:\\\\.|[\\p{L}_])(?:[\\p{L}\\p{N}_]|[-:](?=[\\p{L}_\\p{N}])|\\\\.)*+/",//
+			"specific = /(?:\\\\.|[\\p{L}$_])(?:[\\p{L}$\\p{N}_]|[-:](?=[\\p{L}_$\\p{N}])|\\\\.)*+/",//
 			"pattern = /~(?:[^~\\\\]|\\\\.)++~/",//
 			"aname = /@(?:[\\p{L}_$]|\\\\.)(?:[\\p{L}_$\\p{N}]|[-:](?=[\\p{L}_\\p{N}])|\\\\.)*+/",//
 			"attribute = <aname> <args>?",//

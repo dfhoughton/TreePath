@@ -2,6 +2,7 @@ package dfh.treepath.test;
 
 import static dfh.treepath.test.XMLToy.parse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -345,5 +346,12 @@ public class BasicTests {
 		Element root = parse("<a><b/><c/><d/></a>");
 		Path<Element> p = new XMLToyForester().path("*");
 		assertEquals("b", p.first(root).tag);
+	}
+
+	@Test
+	public void dollar() {
+		Element root = parse("<a><$b/><c/><d/></a>");
+		Path<Element> p = new XMLToyForester().path("//$b");
+		assertNotNull(p.first(root));
 	}
 }

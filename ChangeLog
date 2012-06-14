@@ -1,6 +1,7 @@
 1.04
-  * escaped characters now cleaned out of tags
+  * escaped characters now cleaned out of tags and attribute names
   * created first() method to pick first node matched
+  * $ now acceptable as a character in tag names
 
 1.03 14 June 2012
   * index predicates can now be used with bare wildcards -- *[0] as opposed to

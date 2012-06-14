@@ -262,5 +262,14 @@ public class AttributeTests {
 		Element root = parse("<a><b><c/><d/></b><b><e/><d/></b><b><c/><e/></b></a>");
 		Path<Element> p = f.path("//b[child::*[1][@tag = 'e']]");
 		List<Element> l = p.select(root);
+		assertEquals(1, l.size());
+	}
+
+	@Test
+	public void escapedCharTest() {
+		Element root = parse("<a><b/><b foo='bar'/></a>");
+		Path<Element> p = f.path("//b[@\\attr('foo')]");
+		Collection<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
 	}
 }
