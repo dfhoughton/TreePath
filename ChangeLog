@@ -1,3 +1,5 @@
+1.04
+
 1.03 14 June 2012
   * index predicates can now be used with bare wildcards -- *[0] as opposed to
     child::*[0]
