@@ -1,4 +1,4 @@
-1.05
+1.05 15 June 2012
   * improved escaping of regexes: now only ~ is escapable, by doubling
 
 1.04 14 June 2012
