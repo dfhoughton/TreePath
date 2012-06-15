@@ -1,4 +1,5 @@
 1.05
+  * improved escaping of regexes: now only ~ is escapable, by doubling
 
 1.04 14 June 2012
   * escaped characters now cleaned out of tags and attribute names

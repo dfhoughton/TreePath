@@ -333,7 +333,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            path expression
 	 * @return compiled path expression
 	 */
-	public Path<N> path(String path) {
+	public final Path<N> path(String path) {
 		if (path == null)
 			throw new PathException("path expression cannot be null");
 		try {
@@ -369,7 +369,7 @@ public abstract class Forester<N> implements Serializable {
 	 * @param n
 	 * @return relative path
 	 */
-	Path<N> path(Match n) {
+	final Path<N> path(Match n) {
 		List<Match> paths = n.closest(pathMt);
 		@SuppressWarnings("unchecked")
 		Selector<N>[][] selectors = new Selector[paths.size()][];
@@ -396,7 +396,7 @@ public abstract class Forester<N> implements Serializable {
 		}
 	};
 
-	private Selector<N>[] makePath(Match match) {
+	private final Selector<N>[] makePath(Match match) {
 		List<Match> subsequentSteps = match.closest(segmentMT);
 		@SuppressWarnings("unchecked")
 		Selector<N>[] path = new Selector[subsequentSteps.size()];
@@ -407,7 +407,7 @@ public abstract class Forester<N> implements Serializable {
 		return path;
 	}
 
-	private Selector<N> makeStep(Match fs, boolean first) {
+	private final Selector<N> makeStep(Match fs, boolean first) {
 		Match slash, step;
 		slash = fs.children()[0];
 		step = fs.children()[1];
@@ -425,15 +425,14 @@ public abstract class Forester<N> implements Serializable {
 		}
 	}
 
-	private Selector<N> makeClosestStep(Match step) {
+	private final Selector<N> makeClosestStep(Match step) {
 		Match predicates = step.children()[1];
 		Match tagMatch = step.children()[0].children()[0].children()[1];
 		String s = tagMatch.group();
 		if ("*".equals(s))
 			return new ClosestWildcard<N>(predicates, this);
 		else if (s.charAt(0) == '~') {
-			s = cleanMatch(s);
-			return new ClosestMatching<N>(s, predicates, this);
+			return new ClosestMatching<N>(cleanMatch(s), predicates, this);
 		} else
 			return new ClosestTag<N>(unescape(s), predicates, this);
 	}
@@ -446,28 +445,28 @@ public abstract class Forester<N> implements Serializable {
 	 * @param first
 	 * @return the {@link Selector} representing the step
 	 */
-	private Selector<N> makeGlobalStep(Match step, boolean first) {
+	private final Selector<N> makeGlobalStep(Match step, boolean first) {
 		Match tagMatch = step.children()[0], predicates = step.children()[1];
-		String s = unescape(tagMatch.group());
+		String s = tagMatch.group();
 		if ("*".equals(s))
 			return new AnywhereWildcard<N>(predicates, this, first);
 		else if (s.charAt(0) == '~') {
-			s = cleanMatch(s);
-			return new AnywhereMatching<N>(s, predicates, this, first);
+			return new AnywhereMatching<N>(cleanMatch(s), predicates, this, first);
 		} else
 			return new AnywhereTag<N>(unescape(s), predicates, this, first);
 	}
 
 	/**
 	 * Remove escape characters
+	 * 
 	 * @param s
 	 * @return the string minus \ (unless escaped)
 	 */
-	private String unescape(String s) {
+	private final String unescape(String s) {
 		return s.replaceAll("\\\\(.)", "$1");
 	}
 
-	private Selector<N> makeRootStep(Match step) {
+	private final Selector<N> makeRootStep(Match step) {
 		Match predicates = step.children()[1];
 		step = step.children()[0].children()[0];
 		if (step.rule().label().id.equals("abbreviated")) {
@@ -500,7 +499,8 @@ public abstract class Forester<N> implements Serializable {
 					s = cleanMatch(s);
 					return new RootAxisMatching<N>(aname, s, predicates, this);
 				} else
-					return new RootAxisTag<N>(aname, unescape(s), predicates, this);
+					return new RootAxisTag<N>(aname, unescape(s), predicates,
+							this);
 			}
 		}
 	}
@@ -513,11 +513,11 @@ public abstract class Forester<N> implements Serializable {
 	 * @return
 	 */
 	private String cleanMatch(String s) {
-		s = unescape(s.substring(1, s.length() - 1));
+		s = s.substring(1, s.length() - 1).replaceAll("~~", "~");
 		return s;
 	}
 
-	private Selector<N> makeRelativeStep(Match step) {
+	private final Selector<N> makeRelativeStep(Match step) {
 		Match predicates = step.children()[1];
 		step = step.children()[0].children()[0];
 		if (step.rule().label().id.equals("abbreviated")) {
@@ -537,8 +537,7 @@ public abstract class Forester<N> implements Serializable {
 				if ("*".equals(s))
 					return new AxisWildcard<N>("child", predicates, this);
 				else if (s.charAt(0) == '~') {
-					s = cleanMatch(s);
-					return new ChildMatching<N>(s, predicates, this);
+					return new ChildMatching<N>(cleanMatch(s), predicates, this);
 				} else
 					return new ChildTag<N>(unescape(s), predicates, this);
 			} else {
@@ -546,8 +545,7 @@ public abstract class Forester<N> implements Serializable {
 				if ("*".equals(s))
 					return new AxisWildcard<N>(aname, predicates, this);
 				else if (s.charAt(0) == '~') {
-					s = cleanMatch(s);
-					return new AxisMatching<N>(aname, s, predicates, this);
+					return new AxisMatching<N>(aname, cleanMatch(s), predicates, this);
 				} else
 					return new AxisTag<N>(aname, unescape(s), predicates, this);
 			}

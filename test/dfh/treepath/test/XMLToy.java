@@ -36,7 +36,7 @@ public class XMLToy {
 			"element = <s> [ <simple> | <container> ] <s>",//
 			"simple = '<' <tag> <attributes> <s> '/>'",//
 			"container = '<' <tag> <attributes> '>' <element>*+ '</' 2 '>'",//
-			"tag = /[\\w$]([\\w$]|:[\\w$])*+/",//
+			"tag = /[\\w$~]([\\w$~]|:[\\w$~])*+/",//
 			"attributes = [ <s> <attribute> ]*+",//
 			"attribute = <tag> '=' <quoted>",//
 			"quoted = <dquote> | <squote>",//

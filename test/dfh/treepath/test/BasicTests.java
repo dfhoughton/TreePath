@@ -354,4 +354,18 @@ public class BasicTests {
 		Path<Element> p = new XMLToyForester().path("//$b");
 		assertNotNull(p.first(root));
 	}
+
+	@Test
+	public void escapedTildeInPattern() {
+		Element root = parse("<a><~b/><c/><d/></a>");
+		Path<Element> p = new XMLToyForester().path("//~~~~");
+		assertNotNull(p.first(root));
+	}
+
+	@Test
+	public void regularEscapeInPattern() {
+		Element root = parse("<a><b/><c/><d/></a>");
+		Path<Element> p = new XMLToyForester().path("//~\\bb~");
+		assertNotNull(p.first(root));
+	}
 }
