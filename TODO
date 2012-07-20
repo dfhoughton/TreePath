@@ -13,6 +13,7 @@ TODO
 
 . perhaps create memoization function
 . allow use of native comparison methods when available
+. adjust neglectable nodes in MatchPath
 
 RELICS
 ======

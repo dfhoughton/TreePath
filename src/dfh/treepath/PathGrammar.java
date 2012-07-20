@@ -23,6 +23,7 @@ import dfh.grammar.MatchTest;
  * @author David F. Houghton - Apr 18, 2012
  * 
  */
+@SuppressWarnings("serial")
 public class PathGrammar {
 	/**
 	 * Axes known to tree path grammar.

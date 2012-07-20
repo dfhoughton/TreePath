@@ -25,6 +25,7 @@ import dfh.treepath.PathGrammar;
 public class PrecedenceTest {
 	private static Grammar g;
 
+	@SuppressWarnings("serial")
 	@BeforeClass
 	public static void makeGrammar() {
 		String[] rules = {
