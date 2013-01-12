@@ -72,6 +72,11 @@ semantics with the following exceptions:\*
 
 \*\* There is one modification to this rule: unescaped hyphens may be used word-medially so long as they are followed by a  regular word character. So `@foo-bar` is acceptable but `@foo--bar` must be written as `@foo\--bar`.
 
+Full Documentation
+------------------
+
+The full documentation of this library is available at [my site](http://dfhoughton.org/treepath/).
+
 License
 -------
 This software is distributed under the terms of the FSF Lesser Gnu
