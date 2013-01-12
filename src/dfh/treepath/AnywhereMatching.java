@@ -16,7 +16,7 @@ import dfh.grammar.Match;
 import dfh.treepath.PathGrammar.Axis;
 
 /**
- * {@link Selector} implementing <code>//~foo~</code> and the like.
+ * {@link Selector} implementing {@code //~foo~} and the like.
  * <p>
  * 
  * @author David F. Houghton - Apr 29, 2012

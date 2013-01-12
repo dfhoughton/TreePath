@@ -9,7 +9,7 @@
 package dfh.treepath;
 
 /**
- * {@link NodeTest} that always returns <code>true</code>. Implements wildcard
+ * {@link NodeTest} that always returns {@code true}. Implements wildcard
  * expression -- "*".
  * <p>
  * 

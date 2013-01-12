@@ -16,7 +16,7 @@ import dfh.treepath.ConditionalPredicate.Expression;
 
 /**
  * An expression that evaluates the various attribute test expressions:
- * <code>&#064;foo = 'bar'</code>, <code>&#064;bar &lt; &#064;quux</code>, etc.
+ * {@code @foo = 'bar'}, {@code bar < @quux}, etc.
  * <p>
  * 
  * @author David F. Houghton - Apr 30, 2012
@@ -121,7 +121,8 @@ class AttributeTestExpression<N> implements Expression<N> {
 				if (rv instanceof Collection<?> && o instanceof Collection<?>) {
 					Collection<N> c1 = (Collection<N>) rv, c2 = (Collection<N>) o;
 					if (c1.size() == c2.size()) {
-						for (Iterator<N> i1 = c1.iterator(), i2 = c2.iterator(); i1.hasNext();) {
+						for (Iterator<N> i1 = c1.iterator(), i2 = c2.iterator(); i1
+								.hasNext();) {
 							N n1 = i1.next(), n2 = i2.next();
 							if (n1 != n2)
 								return false;
@@ -150,7 +151,8 @@ class AttributeTestExpression<N> implements Expression<N> {
 			else if (o instanceof Collection<?> && rv instanceof Collection<?>) {
 				Collection<N> c1 = (Collection<N>) rv, c2 = (Collection<N>) o;
 				if (c1.size() == c2.size()) {
-					for (Iterator<N> i1 = c1.iterator(), i2 = c2.iterator(); i1.hasNext();) {
+					for (Iterator<N> i1 = c1.iterator(), i2 = c2.iterator(); i1
+							.hasNext();) {
 						N n1 = i1.next(), n2 = i2.next();
 						if (n1 != n2)
 							return c == ComparisonOperator.ne ? true : false;

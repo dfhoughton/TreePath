@@ -178,7 +178,7 @@ public abstract class Forester<N> implements Serializable {
 	 * 
 	 * @param o
 	 * @return whether the value returned by an attribute evaluates to
-	 *         <code>true</code>
+	 *         {@code true}
 	 */
 	protected boolean attribToBoolean(Object o) {
 		if (o instanceof Boolean)
@@ -438,7 +438,7 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	/**
-	 * Makes a <code>//foo</code> step.
+	 * Makes a {@code //foo} step.
 	 * 
 	 * @param step
 	 *            the node from the path parse tree representing the step
@@ -451,7 +451,8 @@ public abstract class Forester<N> implements Serializable {
 		if ("*".equals(s))
 			return new AnywhereWildcard<N>(predicates, this, first);
 		else if (s.charAt(0) == '~') {
-			return new AnywhereMatching<N>(cleanMatch(s), predicates, this, first);
+			return new AnywhereMatching<N>(cleanMatch(s), predicates, this,
+					first);
 		} else
 			return new AnywhereTag<N>(unescape(s), predicates, this, first);
 	}
@@ -545,7 +546,8 @@ public abstract class Forester<N> implements Serializable {
 				if ("*".equals(s))
 					return new AxisWildcard<N>(aname, predicates, this);
 				else if (s.charAt(0) == '~') {
-					return new AxisMatching<N>(aname, cleanMatch(s), predicates, this);
+					return new AxisMatching<N>(aname, cleanMatch(s),
+							predicates, this);
 				} else
 					return new AxisTag<N>(aname, unescape(s), predicates, this);
 			}
@@ -574,8 +576,7 @@ public abstract class Forester<N> implements Serializable {
 
 	/**
 	 * An attribute for selecting a member from a collection of nodes returned
-	 * by a path. E.g., <code>&#064;pick(foo//bar, 1)</code>. The index is
-	 * zero-based.
+	 * by a path. E.g., {@code @pick(foo//bar, 1)}. The index is zero-based.
 	 * 
 	 * @param n
 	 *            context node
@@ -589,8 +590,8 @@ public abstract class Forester<N> implements Serializable {
 	 * @param index
 	 *            the index in the collection selected from corresponding to the
 	 *            node selected
-	 * @return the node selected, or <code>null</code> if there is no
-	 *         appropriate node
+	 * @return the node selected, or {@code null} if there is no appropriate
+	 *         node
 	 */
 	@Attribute(description = "picks a node from a collection")
 	protected final N pick(N n, Collection<N> c, Index<N> i,
@@ -616,8 +617,8 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	/**
-	 * An attribute for selecting a member from a collection of nodes returned
-	 * by a path. E.g., &#064;size(foo//bar).
+	 * An attribute for querying the size a collection of nodes returned by a
+	 * path. E.g., {@code @size(foo//bar)}.
 	 * 
 	 * @param n
 	 *            context node
@@ -665,8 +666,8 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	/**
-	 * An attribute whose value is always <code>null</code>. This attribute
-	 * cannot be overridden.
+	 * An attribute whose value is always {@code null}. This attribute cannot be
+	 * overridden.
 	 * 
 	 * @param n
 	 *            context node; required for method signature but ignored
@@ -675,7 +676,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            method signature but ignored
 	 * @param i
 	 *            tree index; required for method signature but ignored
-	 * @return <code>null</code>
+	 * @return {@code null}
 	 */
 	@Attribute(value = "null", description = "the null value")
 	protected final Object Null(N n, Collection<N> c, Index<N> i) {
@@ -683,8 +684,8 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	/**
-	 * An attribute whose value is always <code>true</code>. This attribute
-	 * cannot be overridden.
+	 * An attribute whose value is always {@code true}. This attribute cannot be
+	 * overridden.
 	 * 
 	 * @param n
 	 *            context node; required for method signature but ignored
@@ -693,7 +694,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            method signature but ignored
 	 * @param i
 	 *            tree index; required for method signature but ignored
-	 * @return <code>true</code>
+	 * @return {@code true}
 	 */
 	@Attribute(value = "true", description = "the true value")
 	protected final Boolean True(N n, Collection<N> c, Index<N> i) {
@@ -701,8 +702,8 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	/**
-	 * An attribute whose value is always <code>false</code>. This attribute
-	 * cannot be overridden.
+	 * An attribute whose value is always {@code false}. This attribute cannot
+	 * be overridden.
 	 * 
 	 * @param n
 	 *            context node; required for method signature but ignored
@@ -711,7 +712,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            method signature but ignored
 	 * @param i
 	 *            tree index
-	 * @return <code>false</code>
+	 * @return {@code false}
 	 */
 	@Attribute(value = "false", description = "the false value")
 	protected final Boolean False(N n, Collection<N> c, Index<N> i) {
@@ -1178,7 +1179,7 @@ public abstract class Forester<N> implements Serializable {
 	 * @param msg
 	 *            0 or more messages to print, one per line, to the debugging
 	 *            stream
-	 * @return <code>true</code> -- this attribute does no filtering
+	 * @return {@code true} -- this attribute does no filtering
 	 */
 	@Attribute(description = "records parameters to a log stream")
 	protected final Boolean log(N n, Collection<N> c, Index<N> i, Object... msg) {
@@ -1209,10 +1210,10 @@ public abstract class Forester<N> implements Serializable {
 	/**
 	 * A convenience method that returns the value of the given attribute for a
 	 * particular node in a particular context. If the collection or index is
-	 * <code>null</code>, a fresh one wil be created. The collection will be a
-	 * single member list containing only the context node. The index will be
-	 * the index generated by {@link #index(Object)}, which treats the context
-	 * node as the root of its own tree.
+	 * {@code null}, a fresh one wil be created. The collection will be a single
+	 * member list containing only the context node. The index will be the index
+	 * generated by {@link #index(Object)}, which treats the context node as the
+	 * root of its own tree.
 	 * <p>
 	 * If you can calculate the attribute value directly, this will be more
 	 * efficient as it will involve no reflection and possible guesswork as to
@@ -1282,7 +1283,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            method signature but ignored
 	 * @param i
 	 *            tree index
-	 * @return <code>true</code>
+	 * @return {@code true}
 	 */
 	@Attribute(description = "unique id of context node representing its position in its tree")
 	protected final String uid(N n, Collection<N> c, Index<N> i) {
@@ -1310,8 +1311,7 @@ public abstract class Forester<N> implements Serializable {
 
 	/**
 	 * An attribute that turns anything into an attribute, allowing it to be
-	 * used in an attribute test. E.g.,
-	 * <code>//a[&#064;echo(foo//bar) = 3]</code>.
+	 * used in an attribute test. E.g., {@code //a[@echo(foo//bar) = 3]}.
 	 * 
 	 * @param n
 	 *            context node

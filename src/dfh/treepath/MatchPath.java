@@ -145,7 +145,7 @@ public class MatchPath extends FunctionalForester<Match> {
 	}
 
 	/**
-	 * Returns <code>{@link Match#length()} == 0</code>.
+	 * Returns {@code {@link Match#length()} == 0}.
 	 * 
 	 * @param m
 	 *            context node
