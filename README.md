@@ -76,3 +76,4 @@ License
 -------
 This software is distributed under the terms of the FSF Lesser Gnu
 Public License (see lgpl.txt).
+
