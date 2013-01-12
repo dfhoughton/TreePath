@@ -651,7 +651,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            a candidate node set selected by a path
 	 * @return the number of nodes selected by the path
 	 */
-	@Attribute(description = "the size in nodes of the tree rooted at the current node")
+	@Attribute(description = "the size in nodes of the tree rooted at node")
 	protected int tsize(N n, Collection<N> c, Index<N> i) {
 		int size = 1;
 		for (N child : children(n, i))
@@ -674,7 +674,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            a candidate node set selected by a path
 	 * @return the number of nodes selected by the path
 	 */
-	@Attribute(description = "the number of leaves under this node; 1 if node is a leaf")
+	@Attribute(description = "the number of leaves under node; 1 if node is a leaf")
 	protected int width(N n, Collection<N> c, Index<N> i) {
 		if (isLeaf(n, c, i))
 			return 1;
@@ -684,7 +684,7 @@ public abstract class Forester<N> implements Serializable {
 		return width;
 	}
 
-	@Attribute(description = "the number of steps between this node and root")
+	@Attribute(description = "the number of steps between node and root")
 	protected int depth(N n, Collection<N> c, Index<N> i) {
 		if (isRoot(n, c, i))
 			return 0;
@@ -696,7 +696,7 @@ public abstract class Forester<N> implements Serializable {
 		return depth;
 	}
 
-	@Attribute(description = "the longest path between this node and a leaf; 1 if this is a leaf")
+	@Attribute(description = "the longest path between node and a leaf; 1 if node is a leaf")
 	protected int height(N n, Collection<N> c, Index<N> i) {
 		if (isLeaf(n, c, i))
 			return 1;
@@ -719,7 +719,7 @@ public abstract class Forester<N> implements Serializable {
 	 *            tree index
 	 * @return whether n is the tree root
 	 */
-	@Attribute(value = "root", description = "whether the context node is the root")
+	@Attribute(value = "root", description = "whether the node is root")
 	protected boolean isRoot(N n, Collection<N> c, Index<N> i) {
 		return i.isRoot(n);
 	}

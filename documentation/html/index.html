@@ -394,7 +394,9 @@ subsequent_step = [{segment} &lt;separator&gt; &lt;step&gt; ]
 	<h5>Wildcard</h5>
 	<pre>/<b>*</b>
 //<b>*</b>
-<b>*</b><!-- Eclipse code beautifier bug --></pre>
+<b>*</b>
+		<!-- Eclipse code beautifier bug -->
+	</pre>
 	<p>The wildcard node type expression matches every node.</p>
 	<h3>Axes</h3>
 	<p>
@@ -473,12 +475,12 @@ a<b>[3]</b>
 		add a negative index to the size of the collection indexed you get the
 		corresponding positive index, so -1 is the index of the last node in
 		the collection, -2, the index of the second to last node, and so
-		forth. For example in </p>
-		<pre>  a
+		forth. For example in</p>
+	<pre>  a
  /|\
 c d e</pre>
-<p>we have the following correspondences:</p>
-<pre>  a
+	<p>we have the following correspondences:</p>
+	<pre>  a
  /|\
 <b>c</b> d e
 
@@ -802,6 +804,58 @@ a<b>[not @foo and (//bar or @chuzzle > 1)]</b>
 			convert anything into an attribute that can be used in an attribute
 			test.
 		</dd>
+		<dt class="cb">@tsize</dt>
+		<dd>
+			The number of nodes<span class="fn">This will be the count of
+				non-ignorable nodes.</span> in the tree rooted at the context node.
+			<code>//*[@leaf & @tsize = 1]</code>
+			is equivalent to
+			<code>//*[@leaf]</code>
+			, while
+			<code>//*[@leaf & @tsize = 2]</code>
+			will always return an empty collection.
+		</dd>
+		<dt class="cb">@width</dt>
+		<dd>
+			The number of leaves under the current node.
+			<code>//*[@leaf & @width = 1]</code>
+			is equivalent to
+			<code>//*[@leaf]</code>
+			, while
+			<code>//*[@leaf & @width = 2]</code>
+			will always return an empty collection.
+		</dd>
+		<dt class="cb">@depth</dt>
+		<dd>
+			The number of steps between the current node and the root.
+			<code>//*[@root & @depth = 0]</code>
+			is equivalent to
+			<code>//*[@root]</code>
+			(which is equivalent to the more efficient expression
+			<code>/.</code>
+			) , while
+			<code>//*[@root & @depth > 0]</code>
+			will always return an empty collection.
+		</dd>
+		<dt class="cb">@height</dt>
+		<dd>
+			The length of the longest path from the current node to a leaf, where
+			the
+			<code>@height</code>
+			of a leaf is 1. The height of
+			<code>a</code>
+			in
+			<pre>
+  <b>a</b>
+ / <b>\</b>
+b  <b>foo</b>
+|  / <b>|</b>
+c d  <b>e</b>
+     <b>|</b>
+    <b>foo</b>
+</pre>
+			is 4.
+		</dd>
 	</dl>
 	<p>
 		The
@@ -824,7 +878,9 @@ a<b>[not @foo and (//bar or @chuzzle > 1)]</b>
 		<code>dfh.treepath.Attribute</code>
 		annotation, optionally providing a name and/or a description.
 	</p>
-	<pre><!-- Eclipse code beautifier bug --><b>@Attribute</b>
+	<pre>
+		<!-- Eclipse code beautifier bug -->
+		<b>@Attribute</b>
 String foo(Node n, Collection&lt;Node&gt; c, Index&lt;Node&gt; i) { return "foo"; }
 
 <b>@Attribute("short")</b>
@@ -873,7 +929,7 @@ Number num(Node n, Collection&lt;Node&gt; c, Index&lt;Node&gt; i, Number num) { 
 	</p>
 	<pre>	public static void main(String[] args) {
 		int length = 0;
-		for (String s : MatchPath.standard().attributes.keySet())
+		for (String s : MatchPath.standard().attributes().keySet())
 			length = Math.max(length, s.length());
 		String format = "@%-" + length + "s : %s%n%" + length + "s    %s%n";
 		for (Entry&lt;String, String[]&gt; e : MatchPath.standard().attributes()
@@ -885,6 +941,8 @@ Number num(Node n, Collection&lt;Node&gt; c, Index&lt;Node&gt; i, Number num) { 
 	returns
 	<pre class="results">@assertion       : whether node is an assertion
                    public boolean dfh.treepath.MatchPath.assertion(...)
+@depth           : the number of steps between node and root
+                   protected int dfh.treepath.Forester.depth(...)
 @echo            : converts anything into an attribute
                    protected final Object dfh.treepath.Forester.echo(...,Object)
 @explicit        : whether the rule generating this node is explicitly defined
@@ -893,6 +951,8 @@ Number num(Node n, Collection&lt;Node&gt; c, Index&lt;Node&gt; i, Number num) { 
                    protected final Boolean dfh.treepath.Forester.False(...)
 @group           : group matched
                    public String dfh.treepath.MatchPath.group(...)
+@height          : the longest path between node and a leaf; 1 if node is a leaf
+                   protected int dfh.treepath.Forester.height(...)
 @id              : the nodes string id, if any
                    protected String dfh.treepath.Forester.id(...)
 @index           : the index of the context node in the context collection
@@ -926,8 +986,8 @@ Number num(Node n, Collection&lt;Node&gt; c, Index&lt;Node&gt; i, Number num) { 
 @null            : the null value
                    protected final Object dfh.treepath.Forester.Null(...)
 @pick            : picks a node from a collection
-                   protected Object dfh.treepath.Forester.pick(...,java.util.Collection,int)
-@root            : whether the context node is the root
+                   protected final Object dfh.treepath.Forester.pick(...,java.util.Collection,int)
+@root            : whether the node is root
                    protected boolean dfh.treepath.Forester.isRoot(...)
 @s:cmp           : compare string order
                    protected Integer dfh.treepath.FunctionalForester.compare(...,String,String)
@@ -975,15 +1035,18 @@ Number num(Node n, Collection&lt;Node&gt; c, Index&lt;Node&gt; i, Number num) { 
                    protected final Object dfh.treepath.Forester.This(...)
 @true            : the true value
                    protected final Boolean dfh.treepath.Forester.True(...)
+@tsize           : the size in nodes of the tree rooted at node
+                   protected int dfh.treepath.Forester.tsize(...)
 @u:def           : whether the parameter value is non-null
                    protected final Boolean dfh.treepath.FunctionalForester.defined(...,Object)
 @u:millis        : current time in milliseconds
                    protected Long dfh.treepath.FunctionalForester.millis(...)
 @uid             : unique id of context node representing its position in its tree
                    protected final String dfh.treepath.Forester.uid(...)
+@width           : the number of leaves under node; 1 if node is a leaf
+                   protected int dfh.treepath.Forester.width(...)
 @zero            : whether node is zero-width
-                   public boolean dfh.treepath.MatchPath.zero(...)
-	</pre>
+                   public boolean dfh.treepath.MatchPath.zero(...) </pre>
 	<p>The ellipsis represents arguments you do not provide in tree
 		path expressions. A final array represents a varargs argument.</p>
 	<b>Rationale</b>
