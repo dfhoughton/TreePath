@@ -16,7 +16,7 @@ import dfh.grammar.Match;
 
 /**
  * Base {@link Selector} class for steps involving the wildcard expression
- * <code>*</code>.
+ * {@code *}.
  * <p>
  * 
  * @author David F. Houghton - Apr 29, 2012

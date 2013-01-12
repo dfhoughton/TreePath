@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Instantiates the predicate in <code>a[1]</code> and the like. This predicate
+ * Instantiates the predicate in {@code a[1]} and the like. This predicate
  * returns the
  * <p>
  * 

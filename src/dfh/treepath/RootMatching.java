@@ -18,8 +18,8 @@ import java.util.regex.PatternSyntaxException;
 import dfh.grammar.Match;
 
 /**
- * {@link Selector} implementing <code>/~foo~</code> and the like, where this is
- * the first expression in the path.
+ * {@link Selector} implementing {@code /~foo~} and the like, where this is the
+ * first expression in the path.
  * <p>
  * 
  * @author David F. Houghton - Apr 29, 2012

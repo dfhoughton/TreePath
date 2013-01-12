@@ -33,46 +33,46 @@ public class PathGrammar {
 	 */
 	public static enum Axis {
 		/**
-		 * E.g., <code>//foo/preceding::*</code>
+		 * E.g., {@code //foo/preceding::*}
 		 */
 		preceding, /**
-		 * E.g., <code>//foo/preceding-sibling::*</code>
+		 * E.g., {@code //foo/preceding-sibling::*}
 		 */
 		precedingSibling, /**
-		 * E.g., <code>//foo/following::*</code>
+		 * E.g., {@code //foo/following::*}
 		 */
 		following, /**
-		 * E.g., <code>//foo/following-sibling::*</code>
+		 * E.g., {@code //foo/following-sibling::*}
 		 */
 		followingSibling, /**
-		 * E.g., <code>//foo/ancestor::*</code>
+		 * E.g., {@code //foo/ancestor::*}
 		 */
 		ancestor, /**
-		 * E.g., <code>//foo/ancestor-or-self::*</code>
+		 * E.g., {@code //foo/ancestor-or-self::*}
 		 */
 		ancestorOrSelf, /**
-		 * E.g., <code>//foo/descendant::*</code>
+		 * E.g., {@code //foo/descendant::*}
 		 */
 		descendant, /**
-		 * E.g., <code>//foo/descendant-or-self::*</code>
+		 * E.g., {@code //foo/descendant-or-self::*}
 		 */
 		descendantOrSelf, /**
-		 * E.g., <code>//foo/sibling::*</code>
+		 * E.g., {@code //foo/sibling::*}
 		 */
 		sibling, /**
-		 * E.g., <code>//foo/sibling-or-self::*</code>
+		 * E.g., {@code //foo/sibling-or-self::*}
 		 */
 		siblingOrSelf, /**
-		 * E.g., <code>//foo/leaf::*</code>
+		 * E.g., {@code //foo/leaf::*}
 		 */
 		leaf, /**
-		 * E.g., <code>//foo/self::*</code>
+		 * E.g., {@code //foo/self::*}
 		 */
 		self, /**
-		 * E.g., <code>//foo/parent::*</code>
+		 * E.g., {@code //foo/parent::*}
 		 */
 		parent, /**
-		 * E.g., <code>//foo/child::*</code>
+		 * E.g., {@code //foo/child::*}
 		 */
 		child;
 		/**

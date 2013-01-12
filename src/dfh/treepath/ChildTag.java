@@ -13,7 +13,7 @@ import java.util.Collection;
 import dfh.grammar.Match;
 
 /**
- * {@link Selector} implementing <code>/foo</code> and the like.
+ * {@link Selector} implementing {@code /foo} and the like.
  * <p>
  * 
  * @author David F. Houghton - Apr 29, 2012
