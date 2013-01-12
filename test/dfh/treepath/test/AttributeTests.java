@@ -256,7 +256,7 @@ public class AttributeTests {
 			assertTrue(e.getMessage().startsWith("unknown attribute @"));
 		}
 	}
-	
+
 	@Test
 	public void doublePredicate() {
 		Element root = parse("<a><b><c/><d/></b><b><e/><d/></b><b><c/><e/></b></a>");
@@ -271,5 +271,41 @@ public class AttributeTests {
 		Path<Element> p = f.path("//b[@\\attr('foo')]");
 		Collection<Element> bs = p.select(root);
 		assertEquals(1, bs.size());
+	}
+
+	@Test
+	public void treeSizeTest() {
+		Element root = parse("<a><b/><b foo='bar'/></a>");
+		Path<Element> p = f.path("//*[@tsize = 1]");
+		List<Element> bs = p.select(root);
+		assertEquals(2, bs.size());
+		assertEquals("b", bs.get(0).tag);
+	}
+
+	@Test
+	public void widthTest() {
+		Element root = parse("<a><b/><b foo='bar'/></a>");
+		Path<Element> p = f.path("//*[@width = 2]");
+		List<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
+		assertEquals("a", bs.get(0).tag);
+	}
+
+	@Test
+	public void depthTest() {
+		Element root = parse("<a><b/><b foo='bar'/></a>");
+		Path<Element> p = f.path("//*[@depth = 1]");
+		List<Element> bs = p.select(root);
+		assertEquals(2, bs.size());
+		assertEquals("b", bs.get(0).tag);
+	}
+
+	@Test
+	public void heightTest() {
+		Element root = parse("<a><b/><b foo='bar'/></a>");
+		Path<Element> p = f.path("//*[@height = 2]");
+		List<Element> bs = p.select(root);
+		assertEquals(1, bs.size());
+		assertEquals("a", bs.get(0).tag);
 	}
 }

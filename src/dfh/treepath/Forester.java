@@ -637,6 +637,76 @@ public abstract class Forester<N> implements Serializable {
 	}
 
 	/**
+	 * An attribute for querying the size of a tree rooted at the context node.
+	 * E.g., {@code //foo[@tsize = 3]}.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param c
+	 *            collection of which context node is a member; required for
+	 *            method signature but ignored
+	 * @param i
+	 *            tree index
+	 * @param from
+	 *            a candidate node set selected by a path
+	 * @return the number of nodes selected by the path
+	 */
+	@Attribute(description = "the size in nodes of the tree rooted at the current node")
+	protected int tsize(N n, Collection<N> c, Index<N> i) {
+		int size = 1;
+		for (N child : children(n, i))
+			size += tsize(child, c, i);
+		return size;
+	}
+
+	/**
+	 * An attribute for querying the size of a tree rooted at the context node.
+	 * E.g., {@code //foo[@tsize = 3]}.
+	 * 
+	 * @param n
+	 *            context node
+	 * @param c
+	 *            collection of which context node is a member; required for
+	 *            method signature but ignored
+	 * @param i
+	 *            tree index
+	 * @param from
+	 *            a candidate node set selected by a path
+	 * @return the number of nodes selected by the path
+	 */
+	@Attribute(description = "the number of leaves under this node; 1 if node is a leaf")
+	protected int width(N n, Collection<N> c, Index<N> i) {
+		if (isLeaf(n, c, i))
+			return 1;
+		int width = 0;
+		for (N child : children(n, i))
+			width += width(child, c, i);
+		return width;
+	}
+
+	@Attribute(description = "the number of steps between this node and root")
+	protected int depth(N n, Collection<N> c, Index<N> i) {
+		if (isRoot(n, c, i))
+			return 0;
+		int depth = -1;
+		do {
+			depth++;
+			n = parent(n, i);
+		} while (n != null);
+		return depth;
+	}
+
+	@Attribute(description = "the longest path between this node and a leaf; 1 if this is a leaf")
+	protected int height(N n, Collection<N> c, Index<N> i) {
+		if (isLeaf(n, c, i))
+			return 1;
+		int max = 0;
+		for (N child : children(n, i))
+			max = Math.max(max, height(child, c, i));
+		return max + 1;
+	}
+
+	/**
 	 * A boolean attribute that evalues to true if the context node is the tree
 	 * root.
 	 * 

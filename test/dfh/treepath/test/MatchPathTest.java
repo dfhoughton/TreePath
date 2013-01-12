@@ -276,4 +276,52 @@ public class MatchPathTest {
 		assertTrue(set.contains("b"));
 		assertTrue(set.contains(""));
 	}
+
+	@Test
+	public void treeSizeTest() {
+		Grammar g = new Grammar("rule = 'a'+");
+		Match m = g.matches("aaa").match();
+		@SuppressWarnings("unchecked")
+		MatchPath mp = new MatchPath();
+		List<Match> list = mp.path("//*[@tsize = 1]").select(m);
+		assertEquals(3, list.size());
+		for (Match n : list)
+			assertEquals("a", n.group());
+	}
+
+	@Test
+	public void treeWidthTest() {
+		Grammar g = new Grammar("rule = 'a'+");
+		Match m = g.matches("aaa").match();
+		@SuppressWarnings("unchecked")
+		MatchPath mp = new MatchPath();
+		List<Match> list = mp.path("//*[@width = 1]").select(m);
+		assertEquals(3, list.size());
+		for (Match n : list)
+			assertEquals("a", n.group());
+	}
+
+	@Test
+	public void treeDepthTest() {
+		Grammar g = new Grammar("rule = 'a'+");
+		Match m = g.matches("aaa").match();
+		@SuppressWarnings("unchecked")
+		MatchPath mp = new MatchPath();
+		List<Match> list = mp.path("//*[@depth = 1]").select(m);
+		assertEquals(3, list.size());
+		for (Match n : list)
+			assertEquals("a", n.group());
+	}
+
+	@Test
+	public void treeHeightTest() {
+		Grammar g = new Grammar("rule = 'a'+");
+		Match m = g.matches("aaa").match();
+		@SuppressWarnings("unchecked")
+		MatchPath mp = new MatchPath();
+		List<Match> list = mp.path("//*[@height = 1]").select(m);
+		assertEquals(3, list.size());
+		for (Match n : list)
+			assertEquals("a", n.group());
+	}
 }
