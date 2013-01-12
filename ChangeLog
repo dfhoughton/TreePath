@@ -1,5 +1,6 @@
 1.06
   * added @width, @depth, @height, and @tsize
+  * increased stock of node types ignored by MatchPath.standard()
 
 1.05 15 June 2012
   * improved escaping of regexes: now only ~ is escapable, by doubling
