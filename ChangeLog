@@ -1,4 +1,4 @@
-1.06
+1.06 12 January 2012
   * added @width, @depth, @height, and @tsize
   * increased stock of node types ignored by MatchPath.standard()
 
