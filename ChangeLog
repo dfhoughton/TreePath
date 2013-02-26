@@ -1,6 +1,10 @@
 1.07
+  * fixed escape character issue
+  * fixed unescaped ^ in xor rule
+  * changed definition of @s:ucfirst to only affect the first letter of the
+    string
 
-1.06 12 January 2012
+1.06 12 January 2013
   * added @width, @depth, @height, and @tsize
   * increased stock of node types ignored by MatchPath.standard()
 

@@ -356,6 +356,8 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 	 *            method signature but ignored
 	 * @param i
 	 *            tree index; required for method signature but ignored
+	 * @param s
+	 *            string to modify
 	 * @param pattern
 	 *            infix
 	 * @param replacement
@@ -503,8 +505,7 @@ public abstract class FunctionalForester<N> extends Forester<N> {
 		case 1:
 			return s.toUpperCase();
 		default:
-			return s.substring(0, 1).toUpperCase()
-					+ s.substring(1).toLowerCase();
+			return s.substring(0, 1).toUpperCase() + s.substring(1);
 		}
 	}
 

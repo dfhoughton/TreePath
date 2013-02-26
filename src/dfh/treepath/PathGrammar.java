@@ -129,8 +129,8 @@ public class PathGrammar {
 			"signed_int = /[+-]?+/ <int>",//
 			"float = /[+-]?+/ <int>?+ /\\.\\d++/ [ /e[+-]?+/i <int> ]?+",//
 			"literal = <squote> | <dquote>",//
-			"squote = /'(?:[^']|\\\\.)*+'/",//
-			"dquote = /\"(?:[^\"]|\\\\.)*+\"/",//
+			"squote = /'(?:[^'\\\\]|\\\\.)*+'/",//
+			"dquote = /\"(?:[^\"\\\\]|\\\\.)*+\"/",//
 			"predicate = '[' <s> [ <signed_int> | <treepath> | <attribute_test> | <condition> ] <s> ']'",//
 			"int = /\\b(?:0|[1-9][0-9]*+)\\b/",//
 			"s = /\\s*+/",//
@@ -143,7 +143,7 @@ public class PathGrammar {
 			"not_cnd = /!|(?<!\\/)\\bnot\\b(?!\\/)/ <s> <condition> (not_precedence)",//
 			"or_cnd = <condition> [ <s> /\\|{2}|(?<!\\/)\\bor\\b(?!\\/)/ <s> <condition> ]+",//
 			"and_cnd = <condition> [ <s> /&|(?<!\\/)\\band\\b(?!\\/)/ <s> <condition> ]+ (and_precedence)",//
-			"xor_cnd = <condition> [ <s> /^|(?<!\\/)\\bxor\\b(?!\\/)/ <s> <condition> ]+ (xor_precedence)",//
+			"xor_cnd = <condition> [ <s> /\\^|(?<!\\/)\\bxor\\b(?!\\/)/ <s> <condition> ]+ (xor_precedence)",//
 	};
 	/**
 	 * A reference to the compiled grammar, mostly useful for testing.
@@ -187,7 +187,7 @@ public class PathGrammar {
 			@Override
 			public boolean passes(Match n, CharSequence s) {
 				for (Match m : n.closest(t)) {
-					if (!good.contains(m.children()[0].rule().label().id))
+					if (!good.contains(m.children()[0].labelId()))
 						return false;
 				}
 				return true;

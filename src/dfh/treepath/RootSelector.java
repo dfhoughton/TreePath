@@ -14,6 +14,15 @@ import java.util.List;
 
 import dfh.grammar.Match;
 
+/**
+ * {@link Selector} implementing {@code /.}, {@code /*}, {@code /*[@foo]} and
+ * the like, where this is the first expression in the path.
+ * <p>
+ * 
+ * @author David F. Houghton - Apr 29, 2012
+ * 
+ * @param <N>
+ */
 class RootSelector<N> extends TestSelector<N> {
 	private static final long serialVersionUID = 1L;
 

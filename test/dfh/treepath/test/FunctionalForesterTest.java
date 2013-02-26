@@ -396,7 +396,7 @@ public class FunctionalForesterTest {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PrintStream out = new PrintStream(baos);
 		f.setLoggingStream(out);
-		Path<Element> p = f.path("/.[@log(@s:ucfirst('FOO'))]");
+		Path<Element> p = f.path("/.[@log(@s:ucfirst('foo'))]");
 		p.select(root);
 		out.close();
 		String s = baos.toString().trim();

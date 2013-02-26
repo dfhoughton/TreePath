@@ -77,15 +77,15 @@ public class AttributeTests {
 
 	@Test
 	public void attributeTestValueTest() {
-		Element root = parse("<a><b id='foo'/></a>");
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		PrintStream out = new PrintStream(baos);
-		f.setLoggingStream(out);
-		Path<Element> p = f.path("//b[@log(@id = 'foo')]");
-		p.select(root);
-		out.close();
-		String output = baos.toString().trim();
-		assertEquals("true", output);
+			Element root = parse("<a><b id='foo'/></a>");
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			PrintStream out = new PrintStream(baos);
+			f.setLoggingStream(out);
+			Path<Element> p = f.path("//b[@log(@id = 'foo')]");
+			p.select(root);
+			out.close();
+			String output = baos.toString().trim();
+			assertEquals("true", output);
 	}
 
 	@SuppressWarnings("serial")
@@ -181,7 +181,7 @@ public class AttributeTests {
 
 	@Test
 	public void rootTest() {
-		Element root = parse("<a><b/><b id='bar' /></a>");
+		Element root = parse("<a><b/><b id='bar' /><a/></a>");
 		Path<Element> p = f.path("//a[@root]");
 		List<Element> l = p.select(root);
 		assertEquals(1, l.size());
