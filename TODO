@@ -16,6 +16,7 @@ TODO
 . adjust neglectable nodes in MatchPath
 . create attribute selectors
 . refactor to have a separate compiler
+. add . as an acceptable non-terminal character in names
 
 RELICS
 ======
